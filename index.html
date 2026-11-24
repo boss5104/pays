@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Smart Expense Tracker - รายจ่ายประจำ</title>
+    <meta name="description" content="บันทึกรายได้และค่าใช้จ่ายประจำรายเดือน ใช้งานง่าย ทำงานได้แม้ออฟไลน์">
+
+    <!-- PWA / Add to Home Screen -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#0B1020">
+    <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Smart Expense">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #070A16;
+            --bg-2: #0B1020;
+            --surface: rgba(255, 255, 255, 0.045);
+            --surface-2: rgba(255, 255, 255, 0.075);
+            --surface-solid: #121831;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-strong: rgba(232, 196, 106, 0.35);
+            --text: #F3F4F8;
+            --text-2: #A9AFC4;
+            --text-3: #6E7591;
+            --gold: #E8C46A;
+            --gold-2: #C9963E;
+            --gold-grad: linear-gradient(135deg, #FFF1C2 0%, #EBC871 35%, #C9963E 75%, #9C6E25 100%);
+            --emerald: #34D399;
+            --emerald-2: #059669;
+            --rose: #FB7185;
+            --amber: #FBBF24;
+            --indigo: #A5B4FC;
+            --radius: 22px;
+            --radius-sm: 14px;
+            --shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.7);
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html { -webkit-text-size-adjust: 100%; }
+        body {
+            margin: 0;
+            font-family: 'Prompt', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: "";
+            position: fixed; inset: 0;
+            background:
+                radial-gradient(900px 500px at 10% -10%, rgba(232, 196, 106, 0.13), transparent 60%),
+                radial-gradient(700px 500px at 110% 10%, rgba(99, 102, 241, 0.16), transparent 60%),
+                radial-gradient(800px 600px at 50% 120%, rgba(5, 150, 105, 0.10), transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        button, input { font: inherit; color: inherit; }
+        button { cursor: pointer; border: 0; background: none; }
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
+        .wrap { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; padding: 0 16px; }
+
+        /* ---------- Top bar ---------- */
+        .topbar {
+            position: sticky; top: 0; z-index: 30;
+            padding-top: var(--safe-top);
+            background: rgba(7, 10, 22, 0.72);
+            backdrop-filter: saturate(160%) blur(18px);
+            -webkit-backdrop-filter: saturate(160%) blur(18px);
+            border-bottom: 1px solid var(--border);
+        }
+        .topbar-inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 68px; }
+        .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+        .brand img { width: 40px; height: 40px; border-radius: 11px; box-shadow: 0 6px 18px -6px rgba(232, 196, 106, 0.45); flex-shrink: 0; }
+        .brand-title { font-weight: 600; font-size: 16px; letter-spacing: 0.2px; white-space: nowrap; }
+        .brand-title span { background: var(--gold-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .brand-sub { font-size: 11.5px; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
+        .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-3); flex-shrink: 0; }
+        .dot.on { background: var(--emerald); box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.18); }
+        .top-actions { display: flex; gap: 8px; align-items: center; }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            height: 42px; padding: 0 16px; border-radius: 12px;
+            font-size: 14px; font-weight: 500; white-space: nowrap;
+            transition: transform .15s ease, background .2s ease, box-shadow .2s ease, opacity .2s;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+        .btn-gold { background: var(--gold-grad); color: #2A1D05; font-weight: 600; box-shadow: 0 8px 22px -10px rgba(232, 196, 106, 0.8); }
+        .btn-gold:hover { box-shadow: 0 10px 28px -8px rgba(232, 196, 106, 0.9); }
+        .btn-ghost { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+        .btn-ghost:hover { background: var(--surface-2); }
+        .btn-emerald { background: linear-gradient(135deg, #34D399, #059669); color: #03241A; font-weight: 600; }
+        .btn-danger { background: rgba(251, 113, 133, 0.12); color: var(--rose); border: 1px solid rgba(251, 113, 133, 0.25); }
+        .btn-icon { width: 42px; padding: 0; }
+        .btn-sm { height: 36px; padding: 0 12px; font-size: 13px; border-radius: 10px; }
+
+        /* ---------- Layout ---------- */
+        main { padding: 22px 0 calc(40px + var(--safe-bottom)); display: grid; gap: 18px; }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px;
+            box-shadow: var(--shadow);
+        }
+        .card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+        .card-title { display: flex; align-items: center; gap: 12px; }
+        .card-title h2 { margin: 0; font-size: 16px; font-weight: 600; }
+        .card-title p { margin: 0; font-size: 12px; color: var(--text-3); }
+        .ico {
+            width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; flex-shrink: 0;
+            background: var(--surface-2); border: 1px solid var(--border);
+        }
+        .ico svg { width: 19px; height: 19px; }
+        .ico.gold { color: var(--gold); background: rgba(232, 196, 106, 0.1); border-color: rgba(232, 196, 106, 0.22); }
+        .ico.green { color: var(--emerald); background: rgba(52, 211, 153, 0.1); border-color: rgba(52, 211, 153, 0.22); }
+        .ico.indigo { color: var(--indigo); background: rgba(165, 180, 252, 0.1); border-color: rgba(165, 180, 252, 0.22); }
+
+        /* ---------- Month navigator ---------- */
+        .month-nav {
+            display: flex; align-items: center; justify-content: space-between; gap: 10px;
+            background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 8px;
+        }
+        .month-label {
+            position: relative; flex: 1; text-align: center; padding: 6px 10px; border-radius: 12px; cursor: pointer;
+            transition: background .2s;
+        }
+        .month-label:hover { background: var(--surface-2); }
+        .month-label .m { font-size: 18px; font-weight: 600; }
+        .month-label .hint { font-size: 11px; color: var(--text-3); }
+        .month-label input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; border: 0; }
+
+        /* ---------- Hero ---------- */
+        .hero {
+            position: relative; overflow: hidden;
+            border-radius: 26px; padding: 26px;
+            background:
+                radial-gradient(500px 220px at 100% 0%, rgba(232, 196, 106, 0.22), transparent 60%),
+                linear-gradient(145deg, #1A2142 0%, #10152B 55%, #0B0F20 100%);
+            border: 1px solid var(--border-strong);
+            box-shadow: 0 30px 60px -25px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        }
+        .hero::after {
+            content: ""; position: absolute; right: -60px; bottom: -80px; width: 260px; height: 260px; border-radius: 50%;
+            border: 1px solid rgba(232, 196, 106, 0.15); box-shadow: 0 0 0 30px rgba(232, 196, 106, 0.03), 0 0 0 60px rgba(232, 196, 106, 0.02);
+            pointer-events: none;
+        }
+        .hero-label { font-size: 13px; color: var(--text-2); display: flex; align-items: center; gap: 8px; }
+        .chip { font-size: 11px; padding: 3px 10px; border-radius: 999px; background: rgba(232, 196, 106, 0.12); color: var(--gold); border: 1px solid rgba(232, 196, 106, 0.25); }
+        .hero-amount { font-size: clamp(34px, 8vw, 48px); font-weight: 700; letter-spacing: -0.5px; margin: 6px 0 2px; line-height: 1.15; font-variant-numeric: tabular-nums; }
+        .hero-amount.pos { background: var(--gold-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .hero-amount.neg { color: var(--rose); }
+        .hero-note { font-size: 12px; color: var(--text-3); }
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; position: relative; z-index: 1; }
+        .stat { background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); border-radius: 16px; padding: 12px 14px; min-width: 0; }
+        .stat .k { font-size: 11.5px; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .stat .v { font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+        .v.green { color: var(--emerald); } .v.indigo { color: var(--indigo); } .v.amber { color: var(--amber); }
+        .progress { margin-top: 18px; position: relative; z-index: 1; }
+        .progress-top { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-2); margin-bottom: 8px; }
+        .bar { height: 8px; border-radius: 999px; background: rgba(255, 255, 255, 0.07); overflow: hidden; }
+        .bar > span { display: block; height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, #059669, #34D399); transition: width .6s cubic-bezier(.2, .8, .2, 1); }
+
+        /* ---------- Forms ---------- */
+        .add-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+        .add-row > .field { grid-column: 1 / -1; }
+        .add-row .btn { min-width: 110px; }
+        .field {
+            height: 46px; width: 100%; border-radius: 12px; padding: 0 14px;
+            background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); outline: none;
+            font-size: 14.5px; transition: border-color .2s, background .2s, box-shadow .2s;
+        }
+        .field::placeholder { color: var(--text-3); }
+        .field:focus { border-color: rgba(232, 196, 106, 0.55); background: rgba(255, 255, 255, 0.06); box-shadow: 0 0 0 4px rgba(232, 196, 106, 0.1); }
+        .money { position: relative; }
+        .money .field { padding-right: 34px; }
+        .money::after { content: "฿"; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--text-3); font-size: 14px; pointer-events: none; }
+        .add-row .btn { height: 46px; }
+
+        .sum-strip { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin: 14px 0 6px; padding: 12px 14px; border-radius: 14px; background: rgba(255, 255, 255, 0.03); border: 1px dashed var(--border); font-size: 13px; color: var(--text-2); }
+        .sum-strip b { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+        /* ---------- Lists ---------- */
+        .list { display: grid; gap: 8px; margin-top: 10px; }
+        .item {
+            display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 12px;
+            padding: 10px 10px 10px 14px; border-radius: 14px;
+            background: rgba(255, 255, 255, 0.025); border: 1px solid var(--border);
+            transition: background .2s, border-color .2s, opacity .2s;
+            animation: rise .35s ease both;
+        }
+        .item:hover { background: rgba(255, 255, 255, 0.05); }
+        .item.income { grid-template-columns: auto 1fr auto auto; }
+        .item.paid { opacity: 0.62; }
+        .item .avatar { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; }
+        .item .avatar svg { width: 17px; height: 17px; }
+        .avatar.g { background: rgba(52, 211, 153, 0.12); color: var(--emerald); }
+        .inline {
+            width: 100%; min-width: 0; background: transparent; border: 0; border-bottom: 1px solid transparent;
+            outline: none; padding: 4px 2px; font-size: 14.5px; font-weight: 500; border-radius: 0;
+            transition: border-color .2s;
+        }
+        .inline:hover { border-bottom-color: rgba(255, 255, 255, 0.15); }
+        .inline:focus { border-bottom-color: var(--gold); }
+        .amt-wrap { display: flex; align-items: center; gap: 4px; color: var(--text-2); font-size: 13px; }
+        .inline.amt { width: 104px; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; color: var(--text); }
+        .item.paid .inline { text-decoration: line-through; color: var(--text-3); }
+        .del { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; color: var(--text-3); transition: background .2s, color .2s; }
+        .del:hover { background: rgba(251, 113, 133, 0.12); color: var(--rose); }
+        .del svg { width: 17px; height: 17px; }
+
+        .check { position: relative; width: 26px; height: 26px; flex-shrink: 0; }
+        .check input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; z-index: 1; }
+        .check span {
+            position: absolute; inset: 0; border-radius: 8px; border: 1.5px solid rgba(255, 255, 255, 0.25);
+            display: grid; place-items: center; transition: all .2s;
+        }
+        .check span svg { width: 15px; height: 15px; color: #03241A; opacity: 0; transform: scale(.5); transition: all .2s; }
+        .check input:checked + span { background: linear-gradient(135deg, #34D399, #059669); border-color: transparent; }
+        .check input:checked + span svg { opacity: 1; transform: scale(1); }
+        .check input:focus-visible + span { box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.25); }
+
+        .empty { text-align: center; padding: 26px 12px; color: var(--text-3); font-size: 13px; border: 1px dashed var(--border); border-radius: 14px; }
+        .empty svg { width: 28px; height: 28px; opacity: .6; margin-bottom: 6px; }
+
+        .tag { font-size: 11px; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+        .tag.paid { background: rgba(52, 211, 153, 0.12); color: var(--emerald); }
+        .tag.due { background: rgba(251, 191, 36, 0.12); color: var(--amber); }
+
+        /* ---------- Annual grid ---------- */
+        .year-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .mcard {
+            text-align: left; padding: 14px; border-radius: 16px; background: rgba(255, 255, 255, 0.025);
+            border: 1px solid var(--border); transition: transform .2s, background .2s, border-color .2s; display: flex; flex-direction: column; gap: 6px; min-width: 0;
+        }
+        .mcard:hover { transform: translateY(-2px); background: rgba(255, 255, 255, 0.05); }
+        .mcard.sel { border-color: var(--border-strong); background: linear-gradient(160deg, rgba(232, 196, 106, 0.12), rgba(232, 196, 106, 0.02)); }
+        .mcard .top { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+        .mcard .mn { font-size: 13px; font-weight: 600; }
+        .mcard .cnt { font-size: 11px; color: var(--text-3); }
+        .mcard .tot { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+        .mcard .left { font-size: 11.5px; color: var(--text-3); }
+        .mcard .left b { font-weight: 600; }
+        .mini { height: 4px; border-radius: 999px; background: rgba(255, 255, 255, 0.07); overflow: hidden; }
+        .mini span { display: block; height: 100%; background: var(--gold-grad); border-radius: 999px; }
+        .mcard .actions { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+        .link { font-size: 12px; color: var(--gold); padding: 4px 0; }
+        .link:hover { text-decoration: underline; }
+        .pos-t { color: var(--emerald); } .neg-t { color: var(--rose); }
+
+        /* ---------- Sheets / modals ---------- */
+        .overlay {
+            position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px;
+            background: rgba(3, 5, 12, 0.62); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+            opacity: 0; pointer-events: none; transition: opacity .25s ease;
+        }
+        .overlay.open { opacity: 1; pointer-events: auto; }
+        .sheet {
+            width: 100%; max-width: 460px; max-height: 88vh; overflow-y: auto;
+            background: linear-gradient(180deg, #161D38, #0E1328);
+            border: 1px solid var(--border); border-radius: 24px; padding: 22px;
+            box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.9);
+            transform: translateY(16px) scale(.98); transition: transform .3s cubic-bezier(.2, .8, .2, 1);
+        }
+        .overlay.open .sheet { transform: none; }
+        .sheet-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+        .sheet-head h3 { margin: 0; font-size: 17px; font-weight: 600; }
+        .sheet-head p { margin: 2px 0 0; font-size: 12.5px; color: var(--text-3); }
+        .x { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--surface); color: var(--text-2); flex-shrink: 0; }
+        .x:hover { background: var(--surface-2); }
+        .x svg { width: 16px; height: 16px; }
+        .sheet .btn { width: 100%; height: 46px; }
+        .stack { display: grid; gap: 10px; }
+        .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: rgba(255, 255, 255, 0.04); border-radius: 12px; margin-bottom: 14px; }
+        .tabs button { height: 38px; border-radius: 9px; font-size: 13.5px; color: var(--text-2); transition: all .2s; }
+        .tabs button.on { background: var(--surface-2); color: var(--text); box-shadow: 0 2px 8px rgba(0, 0, 0, .3); }
+        .muted { font-size: 12px; color: var(--text-3); text-align: center; margin: 12px 0 0; }
+        .summary-box { display: grid; gap: 6px; padding: 14px; border-radius: 14px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); font-size: 13.5px; margin-bottom: 14px; }
+        .summary-box div { display: flex; justify-content: space-between; }
+        .summary-box .total { border-top: 1px solid var(--border); padding-top: 8px; margin-top: 4px; font-weight: 600; }
+        .detail-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.03); font-size: 13.5px; }
+        .detail-row .l { display: flex; align-items: center; gap: 8px; min-width: 0; }
+        .detail-row .l span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .detail-row.paid .nm, .detail-row.paid .am { text-decoration: line-through; color: var(--text-3); }
+
+        .steps { display: grid; gap: 10px; margin: 4px 0 16px; padding: 0; list-style: none; counter-reset: s; }
+        .steps li { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; color: var(--text-2); }
+        .steps li::before { counter-increment: s; content: counter(s); flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: rgba(232, 196, 106, 0.14); color: var(--gold); font-size: 13px; font-weight: 600; }
+        .steps b { color: var(--text); font-weight: 500; }
+        .install-hero { display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: 16px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); margin-bottom: 16px; }
+        .install-hero img { width: 60px; height: 60px; border-radius: 15px; box-shadow: 0 10px 24px -8px rgba(232, 196, 106, .5); }
+        .install-hero .t { font-weight: 600; }
+        .install-hero .s { font-size: 12px; color: var(--text-3); }
+        .kbd { display: inline-flex; align-items: center; gap: 4px; padding: 1px 8px; border-radius: 7px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text); font-size: 12.5px; vertical-align: middle; }
+        .kbd svg { width: 14px; height: 14px; }
+
+        .menu { position: absolute; right: 0; top: 50px; min-width: 230px; padding: 6px; border-radius: 14px; background: #161D38; border: 1px solid var(--border); box-shadow: var(--shadow); display: none; z-index: 40; }
+        .menu.open { display: block; animation: rise .2s ease; }
+        .menu button { width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 13.5px; text-align: left; color: var(--text-2); }
+        .menu button:hover { background: var(--surface-2); color: var(--text); }
+        .menu button.danger { color: var(--rose); }
+        .menu svg { width: 17px; height: 17px; }
+        .menu hr { border: 0; border-top: 1px solid var(--border); margin: 6px 4px; }
+
+        /* ---------- Toast ---------- */
+        .toast {
+            position: fixed; left: 50%; bottom: calc(24px + var(--safe-bottom)); z-index: 70;
+            transform: translate(-50%, 20px); opacity: 0; pointer-events: none;
+            background: #1C2447; border: 1px solid var(--border-strong); color: var(--text);
+            padding: 12px 18px; border-radius: 14px; font-size: 14px; box-shadow: var(--shadow);
+            transition: all .3s cubic-bezier(.2, .8, .2, 1); max-width: calc(100vw - 32px); text-align: center;
+        }
+        .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+        @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+        .hide { display: none !important; }
+
+        @media (max-width: 860px) {
+            .two-col { grid-template-columns: 1fr; }
+            .year-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .card { padding: 18px; border-radius: 20px; }
+            .hero { padding: 22px 18px; }
+            .stats { grid-template-columns: 1fr 1fr; }
+            .stats .stat:first-child { grid-column: span 2; }
+            .year-grid { grid-template-columns: 1fr 1fr; }
+            .brand-title { font-size: 15px; }
+            .install-text { display: none; }
+            .btn-install { width: 42px; padding: 0; }
+            .inline.amt { width: 84px; }
+            .item { gap: 8px; padding-left: 10px; }
+            .overlay { align-items: flex-end; padding: 0; }
+            .sheet { max-width: none; border-radius: 24px 24px 0 0; padding-bottom: calc(22px + var(--safe-bottom)); transform: translateY(100%); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============ Top bar ============ -->
+    <header class="topbar">
+        <div class="wrap topbar-inner">
+            <div class="brand">
+                <img src="icons/icon-192.png" alt="">
+                <div style="min-width:0">
+                    <div class="brand-title">Smart <span>Expense</span></div>
+                    <div class="brand-sub"><i class="dot" id="syncDot"></i><span id="userEmailDisplay">บันทึกในเครื่องนี้</span></div>
+                </div>
+            </div>
+            <div class="top-actions" style="position:relative">
+                <button type="button" id="installBtn" class="btn btn-gold btn-install" title="เพิ่มไอคอนไปยังหน้าจอ">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M12 7v7m-3-3 3 3 3-3"/><path d="M10 18h4"/></svg>
+                    <span class="install-text">เพิ่มไปยังหน้าจอ</span>
+                </button>
+                <button type="button" id="menuBtn" class="btn btn-ghost btn-icon" title="เมนู" aria-haspopup="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="19" r="1.2"/></svg>
+                </button>
+                <div class="menu" id="menu" role="menu">
+                    <button type="button" id="syncMenuBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 1 0-1.4-8.78A6 6 0 1 0 6 17.7"/><path d="m9 15 3-3 3 3M12 12v9"/></svg>
+                        <span>ซิงก์ข้อมูลข้ามเครื่อง (ไม่บังคับ)</span>
+                    </button>
+                    <button type="button" id="logoutBtn" class="hide">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+                        <span>ออกจากระบบซิงก์</span>
+                    </button>
+                    <button type="button" id="installMenuBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M12 7v7m-3-3 3 3 3-3"/></svg>
+                        <span>เพิ่มไอคอนไปยังหน้าจอ</span>
+                    </button>
+                    <hr>
+                    <button type="button" id="resetBtn" class="danger">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
+                        <span>ล้างข้อมูลทั้งหมด</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="wrap">
+
+        <!-- ============ Month navigator ============ -->
+        <div class="month-nav">
+            <button type="button" id="prevMonthBtn" class="btn btn-ghost btn-icon" title="เดือนก่อนหน้า" aria-label="เดือนก่อนหน้า">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <label class="month-label" title="แตะเพื่อเลือกเดือน">
+                <div class="m" id="monthLabel">—</div>
+                <div class="hint">แตะเพื่อเลือกเดือน</div>
+                <input type="month" id="selectedMonthPicker" aria-label="เลือกเดือน">
+            </label>
+            <button type="button" id="nextMonthBtn" class="btn btn-ghost btn-icon" title="เดือนถัดไป" aria-label="เดือนถัดไป">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+        </div>
+
+        <!-- ============ Hero summary ============ -->
+        <section class="hero">
+            <div class="hero-label">เงินเหลือใช้สุทธิ <span class="chip" id="heroMonthChip">เดือนนี้</span></div>
+            <div class="hero-amount pos" id="remainingBudget">0 ฿</div>
+            <div class="hero-note">รายได้รวมทั้งหมด หักลบกับยอดค่าใช้จ่ายประจำที่ยังต้องจ่ายในเดือนที่เลือก</div>
+            <div class="stats">
+                <div class="stat"><div class="k">รายได้รวม</div><div class="v green" id="statIncome">0 ฿</div></div>
+                <div class="stat"><div class="k">ค่าใช้จ่ายเดือนนี้</div><div class="v indigo" id="totalFixed">0 ฿</div></div>
+                <div class="stat"><div class="k">ยังไม่ได้จ่าย</div><div class="v amber" id="remainingFixed">0 ฿</div></div>
+            </div>
+            <div class="progress">
+                <div class="progress-top"><span>ความคืบหน้าการจ่าย</span><span id="paidProgressText">0 / 0 รายการ</span></div>
+                <div class="bar"><span id="paidProgressBar"></span></div>
+            </div>
+        </section>
+
+        <div class="two-col">
+            <!-- ============ Fixed expenses ============ -->
+            <section class="card">
+                <div class="card-head">
+                    <div class="card-title">
+                        <div class="ico indigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+                        <div><h2>ค่าใช้จ่ายประจำ</h2><p id="fixedMonthText">เดือนที่เลือก</p></div>
+                    </div>
+                    <button type="button" id="copyPrevMonthBtn" class="btn btn-ghost btn-sm" title="คัดลอกรายการจากเดือนก่อนหน้า">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        คัดลอกจากเดือนก่อน
+                    </button>
+                </div>
+                <form class="add-row" id="fixedForm" autocomplete="off">
+                    <input type="text" id="fixedName" class="field" placeholder="ชื่อรายการ เช่น Netflix, ค่าหอ, ผ่อนรถ" maxlength="80">
+                    <div class="money"><input type="number" id="fixedAmount" class="field" placeholder="ราคา" inputmode="decimal" step="any" min="0"></div>
+                    <button type="submit" class="btn btn-gold">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>เพิ่ม
+                    </button>
+                </form>
+                <div class="list" id="fixedExpenseList"></div>
+            </section>
+
+            <!-- ============ Incomes ============ -->
+            <section class="card">
+                <div class="card-head">
+                    <div class="card-title">
+                        <div class="ico green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg></div>
+                        <div><h2>รายได้ประจำเดือน</h2><p>ใช้คำนวณทุกเดือน</p></div>
+                    </div>
+                </div>
+                <form class="add-row" id="incomeForm" autocomplete="off">
+                    <input type="text" id="incomeName" class="field" placeholder="รายได้จากอะไร เช่น เงินเดือน, ขายของ" maxlength="80">
+                    <div class="money"><input type="number" id="incomeAmount" class="field" placeholder="จำนวนเงิน" inputmode="decimal" step="any" min="0"></div>
+                    <button type="submit" class="btn btn-emerald">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>เพิ่ม
+                    </button>
+                </form>
+                <div class="sum-strip"><span>ผลรวมของรายได้</span><b class="pos-t" id="totalCustomIncome">0 ฿</b></div>
+                <div class="list" id="customIncomeList"></div>
+            </section>
+        </div>
+
+        <!-- ============ Annual overview ============ -->
+        <section class="card">
+            <div class="card-head">
+                <div class="card-title">
+                    <div class="ico gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15v2M11 11v6M15 8v9M19 5v12"/></svg></div>
+                    <div><h2>ภาพรวมรายปี <span id="currentYearDisplay"></span></h2><p>แตะการ์ดเพื่อเลือกเดือน หรือดูรายละเอียด</p></div>
+                </div>
+            </div>
+            <div class="year-grid" id="annualSummaryGrid"></div>
+        </section>
+
+        <p class="muted">ข้อมูลถูกบันทึกอัตโนมัติในเครื่องนี้ · ใช้งานได้แม้ไม่มีอินเทอร์เน็ต</p>
+    </main>
+
+    <!-- ============ Month detail sheet ============ -->
+    <div class="overlay" id="monthDetailModal" aria-hidden="true">
+        <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <div class="sheet-head">
+                <div><h3 id="modalTitle">รายละเอียดประจำเดือน</h3><p>สรุปรายได้และค่าใช้จ่ายประจำ</p></div>
+                <button type="button" class="x" data-close aria-label="ปิด"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+            </div>
+            <div id="modalContent"></div>
+            <div class="stack" style="margin-top:16px">
+                <button type="button" class="btn btn-gold" id="modalSelectBtn">ไปที่เดือนนี้</button>
+                <button type="button" class="btn btn-ghost" data-close>ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ Install guide sheet ============ -->
+    <div class="overlay" id="installModal" aria-hidden="true">
+        <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="installTitle">
+            <div class="sheet-head">
+                <div><h3 id="installTitle">เพิ่มไอคอนไปยังหน้าจอ</h3><p>เปิดใช้งานได้ทันทีเหมือนแอป ไม่ต้องเปิดเบราว์เซอร์</p></div>
+                <button type="button" class="x" data-close aria-label="ปิด"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+            </div>
+            <div class="install-hero">
+                <img src="icons/icon-192.png" alt="">
+                <div><div class="t">Smart Expense</div><div class="s">รายรับ–รายจ่ายประจำ · ใช้งานออฟไลน์ได้</div></div>
+            </div>
+            <ol class="steps" id="iosSteps">
+                <li><span>แตะปุ่ม <span class="kbd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>แชร์</span> ที่แถบล่าง (หรือด้านบน) ของ Safari</span></li>
+                <li><span>เลื่อนลงแล้วเลือก <b>“เพิ่มไปยังหน้าจอโฮม”</b> (Add to Home Screen)</span></li>
+                <li><span>แตะ <b>“เพิ่ม”</b> ที่มุมขวาบน — ไอคอนจะปรากฏบนหน้าจอทันที</span></li>
+            </ol>
+            <ol class="steps hide" id="otherSteps">
+                <li><span>แตะปุ่มเมนู <span class="kbd">⋮</span> ของเบราว์เซอร์ (มุมขวาบน)</span></li>
+                <li><span>เลือก <b>“ติดตั้งแอป”</b> หรือ <b>“เพิ่มลงในหน้าจอหลัก”</b></span></li>
+                <li><span>กด <b>“ติดตั้ง / เพิ่ม”</b> เพื่อยืนยัน</span></li>
+            </ol>
+            <button type="button" class="btn btn-ghost" data-close>เข้าใจแล้ว</button>
+        </div>
+    </div>
+
+    <!-- ============ Optional cloud sync sheet ============ -->
+    <div class="overlay" id="authModal" aria-hidden="true">
+        <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+            <div class="sheet-head">
+                <div><h3 id="authTitle">ซิงก์ข้อมูลข้ามเครื่อง</h3><p id="authSubtitle">ไม่บังคับ — ใช้เมื่อต้องการเปิดข้อมูลชุดเดียวกันในหลายอุปกรณ์</p></div>
+                <button type="button" class="x" data-close aria-label="ปิด"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+            </div>
+            <div class="tabs">
+                <button type="button" id="loginTab" class="on">เข้าสู่ระบบ</button>
+                <button type="button" id="registerTab">สมัครสมาชิกใหม่</button>
+            </div>
+            <form id="authForm" class="stack">
+                <input type="email" id="authEmail" class="field" placeholder="อีเมล" required autocomplete="email">
+                <input type="password" id="authPassword" class="field" placeholder="รหัสผ่าน (อย่างน้อย 6 ตัวอักษร)" required minlength="6" autocomplete="current-password">
+                <button type="submit" id="authBtn" class="btn btn-gold">เข้าสู่ระบบ</button>
+            </form>
+            <p class="muted">ถ้าไม่เข้าสู่ระบบ แอปยังใช้งานได้ตามปกติ ข้อมูลจะบันทึกไว้ในเครื่องนี้</p>
+        </div>
+    </div>
+
+    <!-- ============ Confirm dialog ============ -->
+    <div class="overlay" id="confirmModal" aria-hidden="true">
+        <div class="sheet" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" style="max-width:380px">
+            <div class="sheet-head"><div><h3 id="confirmTitle">ยืนยัน</h3><p id="confirmText"></p></div></div>
+            <div class="stack">
+                <button type="button" class="btn btn-danger" id="confirmOk">ยืนยัน</button>
+                <button type="button" class="btn btn-ghost" id="confirmCancel">ยกเลิก</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module">
+        // ================= Firebase (ซิงก์แบบไม่บังคับ — โหลดเมื่อจำเป็นเท่านั้น) =================
+        const firebaseConfig = {
+            apiKey: "AIzaSyC42HIKh0mxAps5rT0k9E25vY3qy_9zBNI",
+            authDomain: "raijai-2ac4e.firebaseapp.com",
+            projectId: "raijai-2ac4e",
+            storageBucket: "raijai-2ac4e.firebasestorage.app",
+            messagingSenderId: "340255005766",
+            appId: "1:340255005766:web:8bba83e9a6e7933083be47"
+        };
+        const FB = "https://www.gstatic.com/firebasejs/10.8.0/";
+        const STORAGE_KEY = 'smart_expense_data';
+        const SYNC_FLAG = 'smart_expense_sync';
+
+        let fb = null;            // { auth, db, ...functions }
+        let currentUid = null;
+        let isRegisterMode = false;
+
+        async function loadFirebase() {
+            if (fb) return fb;
+            const [appMod, authMod, fsMod] = await Promise.all([
+                import(FB + "firebase-app.js"),
+                import(FB + "firebase-auth.js"),
+                import(FB + "firebase-firestore.js")
+            ]);
+            const app = appMod.initializeApp(firebaseConfig);
+            fb = {
+                auth: authMod.getAuth(app),
+                db: fsMod.getFirestore(app),
+                createUser: authMod.createUserWithEmailAndPassword,
+                signIn: authMod.signInWithEmailAndPassword,
+                signOut: authMod.signOut,
+                onAuth: authMod.onAuthStateChanged,
+                doc: fsMod.doc, setDoc: fsMod.setDoc, getDoc: fsMod.getDoc
+            };
+            fb.onAuth(fb.auth, async (user) => {
+                if (user) {
+                    currentUid = user.uid;
+                    safeSet(SYNC_FLAG, '1');
+                    setUserStatus(user.email, true);
+                    await loadCloudData();
+                } else {
+                    currentUid = null;
+                    setUserStatus(null, false);
+                }
+            });
+            return fb;
+        }
+
+        // ================= Data =================
+        let appData = { fixedExpenses: [], customIncomes: [] };
+
+        function safeGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
+        function safeSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
+        function safeDel(k) { try { localStorage.removeItem(k); } catch {} }
+
+        function normalize(data) {
+            const num = (v) => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
+            return {
+                fixedExpenses: (data?.fixedExpenses || []).map(f => ({ id: String(f.id), month: f.month, name: String(f.name ?? ''), amount: num(f.amount), paid: !!f.paid })),
+                customIncomes: (data?.customIncomes || []).map(i => ({ id: String(i.id), name: String(i.name ?? ''), amount: num(i.amount) }))
+            };
+        }
+
+        (function loadFromLocalStorage() {
+            const saved = safeGet(STORAGE_KEY);
+            if (!saved) return;
+            try { appData = normalize(JSON.parse(saved)); } catch (e) { console.error("Error parsing local storage", e); }
+        })();
+
+        const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+        async function saveData() {
+            safeSet(STORAGE_KEY, JSON.stringify(appData));
+            if (currentUid && fb) {
+                try { await fb.setDoc(fb.doc(fb.db, "users", currentUid), appData); }
+                catch (error) { console.error("Error saving to cloud: ", error); toast('ซิงก์ขึ้นคลาวด์ไม่สำเร็จ (บันทึกในเครื่องแล้ว)'); }
+            }
+        }
+
+        async function loadCloudData() {
+            if (!currentUid || !fb) return;
+            try {
+                const snap = await fb.getDoc(fb.doc(fb.db, "users", currentUid));
+                if (snap.exists()) {
+                    appData = normalize(snap.data());
+                    safeSet(STORAGE_KEY, JSON.stringify(appData));
+                } else {
+                    await saveData();
+                }
+                updateUI();
+            } catch (error) {
+                console.error("Error loading from cloud: ", error);
+            }
+        }
+
+        // ================= Helpers =================
+        const $ = (id) => document.getElementById(id);
+        const baht = (n) => n.toLocaleString('th-TH', { maximumFractionDigits: 2 }) + ' ฿';
+        const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        const MONTHS = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+        const MONTHS_SHORT = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+        const monthTitle = (key) => { const [y, m] = key.split('-').map(Number); return `${MONTHS[m - 1]} ${y + 543}`; };
+        const shiftMonth = (key, off) => { let [y, m] = key.split('-').map(Number); m += off; while (m > 12) { m -= 12; y++; } while (m < 1) { m += 12; y--; } return `${y}-${String(m).padStart(2, '0')}`; };
+        const ICON_TRASH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></svg>';
+        const ICON_COIN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9.5c-.5-1-1.6-1.5-3-1.5-1.7 0-3 .8-3 2s1.3 1.7 3 2 3 .8 3 2-1.3 2-3 2c-1.4 0-2.5-.5-3-1.5M12 6v2m0 8v2"/></svg>';
+        const ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+
+        let toastTimer;
+        function toast(msg) {
+            const t = $('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+        }
+
+        function openSheet(id) { const el = $(id); el.classList.add('open'); el.setAttribute('aria-hidden', 'false'); }
+        function closeSheet(id) { const el = $(id); el.classList.remove('open'); el.setAttribute('aria-hidden', 'true'); }
+        document.querySelectorAll('.overlay').forEach(ov => {
+            ov.addEventListener('click', (e) => {
+                if (e.target === ov || e.target.closest('[data-close]')) closeSheet(ov.id);
+            });
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') document.querySelectorAll('.overlay.open').forEach(o => closeSheet(o.id));
+        });
+
+        function confirmDialog(title, text, okLabel = 'ยืนยัน') {
+            return new Promise((resolve) => {
+                $('confirmTitle').textContent = title;
+                $('confirmText').textContent = text;
+                $('confirmOk').textContent = okLabel;
+                openSheet('confirmModal');
+                const done = (v) => { closeSheet('confirmModal'); $('confirmOk').onclick = $('confirmCancel').onclick = null; resolve(v); };
+                $('confirmOk').onclick = () => done(true);
+                $('confirmCancel').onclick = () => done(false);
+            });
+        }
+
+        function setUserStatus(email, online) {
+            $('userEmailDisplay').textContent = email ? `ซิงก์แล้ว: ${email}` : 'บันทึกในเครื่องนี้';
+            $('syncDot').classList.toggle('on', !!online);
+            $('logoutBtn').classList.toggle('hide', !online);
+            $('syncMenuBtn').classList.toggle('hide', !!online);
+        }
+
+        // ================= Month =================
+        const picker = $('selectedMonthPicker');
+        const now = new Date();
+        picker.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        const selectedMonth = () => picker.value || `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+        $('prevMonthBtn').addEventListener('click', () => { picker.value = shiftMonth(selectedMonth(), -1); updateUI(); });
+        $('nextMonthBtn').addEventListener('click', () => { picker.value = shiftMonth(selectedMonth(), 1); updateUI(); });
+        picker.addEventListener('change', updateUI);
+        picker.closest('label').addEventListener('click', (e) => {
+            if (typeof picker.showPicker === 'function') { try { picker.showPicker(); e.preventDefault(); } catch {} }
+        });
+
+        // ================= Menu =================
+        const menu = $('menu');
+        $('menuBtn').addEventListener('click', (e) => { e.stopPropagation(); menu.classList.toggle('open'); });
+        document.addEventListener('click', (e) => { if (!menu.contains(e.target)) menu.classList.remove('open'); });
+        menu.addEventListener('click', (e) => { if (e.target.closest('button')) menu.classList.remove('open'); });
+
+        // ================= Optional sync (auth) =================
+        $('syncMenuBtn').addEventListener('click', () => { openSheet('authModal'); loadFirebase().catch(() => {}); });
+
+        function setAuthMode(register) {
+            isRegisterMode = register;
+            $('loginTab').classList.toggle('on', !register);
+            $('registerTab').classList.toggle('on', register);
+            $('authBtn').textContent = register ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ';
+            $('authPassword').autocomplete = register ? 'new-password' : 'current-password';
+        }
+        $('loginTab').addEventListener('click', () => setAuthMode(false));
+        $('registerTab').addEventListener('click', () => setAuthMode(true));
+
+        $('authForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = $('authEmail').value.trim();
+            const pass = $('authPassword').value;
+            const btn = $('authBtn');
+            btn.disabled = true; btn.style.opacity = .6;
+            try {
+                const f = await loadFirebase();
+                if (isRegisterMode) await f.createUser(f.auth, email, pass);
+                else await f.signIn(f.auth, email, pass);
+                closeSheet('authModal');
+                $('authPassword').value = '';
+                toast(isRegisterMode ? 'สมัครสมาชิกสำเร็จ เริ่มซิงก์ข้อมูลแล้ว' : 'เข้าสู่ระบบสำเร็จ เริ่มซิงก์ข้อมูลแล้ว');
+            } catch (error) {
+                toast('เกิดข้อผิดพลาด: ' + (error.code || error.message || 'เชื่อมต่อไม่ได้'));
+            } finally {
+                btn.disabled = false; btn.style.opacity = '';
+            }
+        });
+
+        $('logoutBtn').addEventListener('click', async () => {
+            if (!(await confirmDialog('ออกจากระบบซิงก์?', 'ข้อมูลยังคงอยู่ในเครื่องนี้ และจะไม่ซิงก์ขึ้นคลาวด์อีกจนกว่าจะเข้าสู่ระบบใหม่', 'ออกจากระบบ'))) return;
+            try { if (fb) await fb.signOut(fb.auth); } catch {}
+            safeDel(SYNC_FLAG);
+            currentUid = null;
+            setUserStatus(null, false);
+            toast('ออกจากระบบแล้ว');
+        });
+
+        // ถ้าเคยเข้าสู่ระบบซิงก์ไว้ ให้กลับมาเชื่อมต่อเองเบื้องหลัง (ไม่ต้องใส่รหัสใหม่)
+        if (safeGet(SYNC_FLAG) === '1') loadFirebase().catch(() => {});
+
+        // ================= Incomes =================
+        $('incomeForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = $('incomeName').value.trim();
+            const amount = parseFloat($('incomeAmount').value);
+            if (!name || isNaN(amount)) { toast('กรุณากรอกชื่อและจำนวนเงิน'); return; }
+            appData.customIncomes.push({ id: newId(), name, amount });
+            $('incomeName').value = ''; $('incomeAmount').value = '';
+            $('incomeName').focus();
+            saveData(); updateUI();
+        });
+
+        // ================= Fixed expenses =================
+        $('fixedForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = $('fixedName').value.trim();
+            const amount = parseFloat($('fixedAmount').value);
+            if (!name || isNaN(amount)) { toast('กรุณากรอกชื่อรายการและราคา'); return; }
+            appData.fixedExpenses.push({ id: newId(), month: selectedMonth(), name, amount, paid: false });
+            $('fixedName').value = ''; $('fixedAmount').value = '';
+            $('fixedName').focus();
+            saveData(); updateUI();
+        });
+
+        $('copyPrevMonthBtn').addEventListener('click', () => {
+            const cur = selectedMonth();
+            const prev = shiftMonth(cur, -1);
+            const prevItems = appData.fixedExpenses.filter(f => f.month === prev);
+            if (prevItems.length === 0) { toast(`ไม่พบรายการของเดือน${monthTitle(prev)}`); return; }
+            const curNames = new Set(appData.fixedExpenses.filter(f => f.month === cur).map(f => f.name));
+            let added = 0;
+            prevItems.forEach(item => {
+                if (!curNames.has(item.name)) {
+                    appData.fixedExpenses.push({ id: newId(), month: cur, name: item.name, amount: item.amount, paid: false });
+                    added++;
+                }
+            });
+            if (added > 0) { saveData(); updateUI(); toast(`คัดลอกสำเร็จ ${added} รายการ จาก${monthTitle(prev)}`); }
+            else toast('รายการของเดือนนี้ครบแล้ว ไม่มีรายการใหม่ให้คัดลอก');
+        });
+
+        // ---- Event delegation for list items (edit / toggle / delete) ----
+        function bindList(listEl, collection) {
+            listEl.addEventListener('change', (e) => {
+                const row = e.target.closest('[data-id]'); if (!row) return;
+                const item = appData[collection].find(x => x.id === row.dataset.id); if (!item) return;
+                const field = e.target.dataset.field;
+                if (field === 'paid') item.paid = e.target.checked;
+                else if (field === 'name') { const v = e.target.value.trim(); if (!v) { e.target.value = item.name; return; } item.name = v; }
+                else if (field === 'amount') { const v = parseFloat(e.target.value); if (isNaN(v)) { e.target.value = item.amount; return; } item.amount = v; }
+                else return;
+                saveData(); updateUI();
+            });
+            listEl.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && e.target.classList.contains('inline')) e.target.blur();
+            });
+            listEl.addEventListener('click', async (e) => {
+                const btn = e.target.closest('[data-del]'); if (!btn) return;
+                const row = btn.closest('[data-id]');
+                const item = appData[collection].find(x => x.id === row.dataset.id); if (!item) return;
+                if (!(await confirmDialog('ลบรายการนี้?', `“${item.name}” จำนวน ${baht(item.amount)}`, 'ลบรายการ'))) return;
+                appData[collection] = appData[collection].filter(x => x.id !== item.id);
+                saveData(); updateUI();
+                toast('ลบรายการแล้ว');
+            });
+        }
+        bindList($('customIncomeList'), 'customIncomes');
+        bindList($('fixedExpenseList'), 'fixedExpenses');
+
+        $('resetBtn').addEventListener('click', async () => {
+            if (!(await confirmDialog('ล้างข้อมูลทั้งหมด?', 'รายได้และค่าใช้จ่ายทุกเดือนจะถูกลบถาวร ไม่สามารถกู้คืนได้', 'ล้างข้อมูล'))) return;
+            appData = { fixedExpenses: [], customIncomes: [] };
+            safeDel(STORAGE_KEY);
+            saveData(); updateUI();
+            toast('ล้างข้อมูลเรียบร้อย');
+        });
+
+        // ================= Render =================
+        const emptyHTML = (text) => `<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18"/></svg><div>${text}</div></div>`;
+
+        function updateUI() {
+            const month = selectedMonth();
+            const incomes = appData.customIncomes;
+            const totalIncome = incomes.reduce((s, i) => s + i.amount, 0);
+
+            // Header texts
+            $('monthLabel').textContent = monthTitle(month);
+            $('heroMonthChip').textContent = monthTitle(month);
+            $('fixedMonthText').textContent = monthTitle(month);
+
+            // Incomes
+            const incEl = $('customIncomeList');
+            incEl.innerHTML = incomes.length ? incomes.map(i => `
+                <div class="item income" data-id="${esc(i.id)}">
+                    <div class="avatar g">${ICON_COIN}</div>
+                    <input class="inline" data-field="name" value="${esc(i.name)}" aria-label="ชื่อรายได้" maxlength="80">
+                    <div class="amt-wrap"><input class="inline amt" type="number" inputmode="decimal" step="any" data-field="amount" value="${i.amount}" aria-label="จำนวนเงิน">฿</div>
+                    <button type="button" class="del" data-del title="ลบ" aria-label="ลบ">${ICON_TRASH}</button>
+                </div>`).join('') : emptyHTML('ยังไม่มีรายได้ — เพิ่มรายการแรกด้านบน');
+            $('totalCustomIncome').textContent = baht(totalIncome);
+
+            // Fixed expenses for month
+            const items = appData.fixedExpenses.filter(f => f.month === month);
+            const totalFixed = items.reduce((s, f) => s + f.amount, 0);
+            const unpaid = items.filter(f => !f.paid).reduce((s, f) => s + f.amount, 0);
+            const paidCount = items.filter(f => f.paid).length;
+
+            const fixEl = $('fixedExpenseList');
+            fixEl.innerHTML = items.length ? items.map(f => `
+                <div class="item ${f.paid ? 'paid' : ''}" data-id="${esc(f.id)}">
+                    <label class="check" title="${f.paid ? 'จ่ายแล้ว' : 'ยังไม่จ่าย'}"><input type="checkbox" data-field="paid" ${f.paid ? 'checked' : ''} aria-label="จ่ายแล้ว"><span>${ICON_CHECK}</span></label>
+                    <input class="inline" data-field="name" value="${esc(f.name)}" aria-label="ชื่อรายการ" maxlength="80">
+                    <div class="amt-wrap"><input class="inline amt" type="number" inputmode="decimal" step="any" data-field="amount" value="${f.amount}" aria-label="ราคา">฿</div>
+                    <button type="button" class="del" data-del title="ลบ" aria-label="ลบ">${ICON_TRASH}</button>
+                </div>`).join('') : emptyHTML('ยังไม่มีค่าใช้จ่ายในเดือนนี้ — เพิ่มรายการ หรือคัดลอกจากเดือนก่อน');
+
+            // Hero
+            const net = totalIncome - unpaid;
+            const heroEl = $('remainingBudget');
+            heroEl.textContent = baht(net);
+            heroEl.className = 'hero-amount ' + (net >= 0 ? 'pos' : 'neg');
+            $('statIncome').textContent = baht(totalIncome);
+            $('totalFixed').textContent = baht(totalFixed);
+            $('remainingFixed').textContent = baht(unpaid);
+            $('paidProgressText').textContent = `${paidCount} / ${items.length} รายการ`;
+            $('paidProgressBar').style.width = items.length ? (paidCount / items.length * 100) + '%' : '0%';
+
+            updateAnnualSummary(month, totalIncome);
+        }
+
+        function updateAnnualSummary(currentMonth, totalIncome) {
+            const year = currentMonth.split('-')[0];
+            $('currentYearDisplay').textContent = Number(year) + 543;
+            const totals = MONTHS.map((_, idx) => {
+                const key = `${year}-${String(idx + 1).padStart(2, '0')}`;
+                const its = appData.fixedExpenses.filter(f => f.month === key);
+                return { key, idx, count: its.length, total: its.reduce((s, f) => s + f.amount, 0) };
+            });
+            const max = Math.max(1, ...totals.map(t => t.total));
+            $('annualSummaryGrid').innerHTML = totals.map(t => {
+                const left = totalIncome - t.total;
+                const sel = t.key === currentMonth;
+                return `
+                <div class="mcard ${sel ? 'sel' : ''}" data-month="${t.key}" role="button" tabindex="0" aria-label="เลือก${MONTHS[t.idx]}">
+                    <div class="top"><span class="mn">${MONTHS[t.idx]}</span><span class="cnt">${t.count} รายการ</span></div>
+                    <div class="tot">${baht(t.total)}</div>
+                    <div class="mini"><span style="width:${(t.total / max * 100).toFixed(1)}%"></span></div>
+                    <div class="left">เหลือใช้ <b class="${left >= 0 ? 'pos-t' : 'neg-t'}">${baht(left)}</b></div>
+                    <div class="actions">
+                        <span class="cnt">${sel ? '● กำลังดู' : MONTHS_SHORT[t.idx]}</span>
+                        <button type="button" class="link" data-detail="${t.key}">รายละเอียด →</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        $('annualSummaryGrid').addEventListener('click', (e) => {
+            const d = e.target.closest('[data-detail]');
+            if (d) { openMonthModal(d.dataset.detail); return; }
+            const card = e.target.closest('[data-month]');
+            if (card) selectMonth(card.dataset.month);
+        });
+        $('annualSummaryGrid').addEventListener('keydown', (e) => {
+            const card = e.target.closest('[data-month]');
+            if (card && (e.key === 'Enter' || e.key === ' ') && e.target === card) { e.preventDefault(); selectMonth(card.dataset.month); }
+        });
+
+        function selectMonth(key) {
+            picker.value = key;
+            updateUI();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        let modalMonth = null;
+        function openMonthModal(key) {
+            modalMonth = key;
+            $('modalTitle').textContent = monthTitle(key);
+            const items = appData.fixedExpenses.filter(f => f.month === key);
+            const income = appData.customIncomes.reduce((s, i) => s + i.amount, 0);
+            const total = items.reduce((s, f) => s + f.amount, 0);
+            const net = income - total;
+            let html = `
+                <div class="summary-box">
+                    <div><span>รายได้รวม</span><b class="pos-t">${baht(income)}</b></div>
+                    <div><span>ค่าใช้จ่ายประจำ</span><b style="color:var(--indigo)">${baht(total)}</b></div>
+                    <div class="total"><span>คงเหลือสุทธิ</span><b class="${net >= 0 ? 'pos-t' : 'neg-t'}">${baht(net)}</b></div>
+                </div>
+                <div style="font-size:13px;color:var(--text-2);margin-bottom:8px">รายการค่าใช้จ่าย (${items.length})</div>`;
+            html += items.length ? `<div class="stack">${items.map(f => `
+                <div class="detail-row ${f.paid ? 'paid' : ''}">
+                    <div class="l"><span class="tag ${f.paid ? 'paid' : 'due'}">${f.paid ? 'จ่ายแล้ว' : 'ยังไม่จ่าย'}</span><span class="nm">${esc(f.name)}</span></div>
+                    <b class="am">${baht(f.amount)}</b>
+                </div>`).join('')}</div>` : emptyHTML('ยังไม่มีการบันทึกค่าใช้จ่ายในเดือนนี้');
+            $('modalContent').innerHTML = html;
+            openSheet('monthDetailModal');
+        }
+        $('modalSelectBtn').addEventListener('click', () => { closeSheet('monthDetailModal'); if (modalMonth) selectMonth(modalMonth); });
+
+        // ================= Add to Home Screen =================
+        let deferredPrompt = null;
+        const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+        function refreshInstallUI() {
+            const installed = isStandalone();
+            $('installBtn').classList.toggle('hide', installed);
+            $('installMenuBtn').classList.toggle('hide', installed);
+        }
+        refreshInstallUI();
+
+        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
+        window.addEventListener('appinstalled', () => { deferredPrompt = null; refreshInstallUI(); toast('เพิ่มไอคอนไปยังหน้าจอเรียบร้อย 🎉'); });
+
+        async function handleInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                if (outcome === 'accepted') toast('กำลังเพิ่มไอคอนไปยังหน้าจอ…');
+                return;
+            }
+            const ios = isIOS();
+            $('iosSteps').classList.toggle('hide', !ios);
+            $('otherSteps').classList.toggle('hide', ios);
+            openSheet('installModal');
+        }
+        $('installBtn').addEventListener('click', handleInstall);
+        $('installMenuBtn').addEventListener('click', handleInstall);
+
+        if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+            window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(err => console.warn('SW register failed', err)));
+        }
+
+        // ================= Start =================
+        updateUI();
+    </script>
+</body>
+</html>
