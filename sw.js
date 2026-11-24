@@ -1,5 +1,6 @@
 // Service worker: ทำให้แอปเปิดได้แม้ออฟไลน์ และติดตั้งลงหน้าจอได้
-const CACHE = 'smart-expense-v4';
+// เปลี่ยนชื่อแคชทุกครั้งที่ออกเวอร์ชันใหม่ (ให้ตรงกับ APP_VERSION ใน index.html และ version.json)
+const CACHE = 'smart-expense-2.2.0';
 const SHELL = [
   './',
   './index.html',
@@ -28,6 +29,9 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
+
+  // ไฟล์ตรวจเวอร์ชัน: ดึงจากเน็ตเสมอ ไม่ใช้แคช
+  if (url.origin === self.location.origin && url.pathname.endsWith('/version.json')) return;
 
   // หน้าเว็บ: ลองดึงจากเน็ตก่อน (ได้เวอร์ชันล่าสุด) ถ้าออฟไลน์ใช้จากแคช
   if (req.mode === 'navigate') {
