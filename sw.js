@@ -1,9 +1,10 @@
 // Service worker: ทำให้แอปเปิดได้แม้ออฟไลน์ และติดตั้งลงหน้าจอได้
-const CACHE = 'smart-expense-v1';
+const CACHE = 'smart-expense-v2';
 const SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
+  './google-apps-script.gs',
   './icons/icon.svg',
   './icons/icon-192.png',
   './icons/icon-512.png',
