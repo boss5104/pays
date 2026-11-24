@@ -1,5 +1,5 @@
 // Service worker: ทำให้แอปเปิดได้แม้ออฟไลน์ และติดตั้งลงหน้าจอได้
-const CACHE = 'smart-expense-v2';
+const CACHE = 'smart-expense-v3';
 const SHELL = [
   './',
   './index.html',

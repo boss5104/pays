@@ -22,7 +22,8 @@ const FIXED_SHEET = 'ค่าใช้จ่ายประจำ';
 const INCOME_SHEET = 'รายได้';
 const META_SHEET = '_meta';
 const FIXED_HEADERS = ['เดือน (ปปปป-ดด)', 'รายการ', 'จำนวนเงิน (บาท)', 'จ่ายแล้ว', 'id'];
-const INCOME_HEADERS = ['รายการ', 'จำนวนเงิน (บาท)', 'id'];
+const INCOME_HEADERS = ['รายการ', 'จำนวนเงิน (บาท)', 'id', 'ใช้แล้ว (เดือน)'];
+const VERSION = 2; // แอปใช้ตรวจว่าเป็นโค้ดเวอร์ชันใหม่ (รองรับช่องติ๊ก "ใช้แล้ว" และการอัปเดตอัตโนมัติ)
 
 function doGet(e) {
   return respond_(handle_((e && e.parameter) || {}));
@@ -43,14 +44,16 @@ function handle_(p) {
     if (SECRET && String(p.key || '') !== SECRET) return { ok: false, error: 'unauthorized' };
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     switch (p.action || 'load') {
+      case 'ping': // เบา ๆ: แอปเรียกทุก 15 วินาทีเพื่อตรวจว่ามีการแก้ไขจากเครื่องอื่นหรือไม่
+        return { ok: true, updatedAt: getUpdatedAt_(ss), version: VERSION };
       case 'load':
-        return { ok: true, data: readAll_(ss), sheetUrl: ss.getUrl(), sheetName: ss.getName() };
+        return { ok: true, data: readAll_(ss), sheetUrl: ss.getUrl(), sheetName: ss.getName(), version: VERSION };
       case 'save': {
         const lock = LockService.getScriptLock();
         lock.waitLock(20000);
         try {
           const at = writeAll_(ss, p.data || {});
-          return { ok: true, updatedAt: at, sheetUrl: ss.getUrl(), sheetName: ss.getName() };
+          return { ok: true, updatedAt: at, sheetUrl: ss.getUrl(), sheetName: ss.getName(), version: VERSION };
         } finally {
           lock.releaseLock();
         }
@@ -99,7 +102,7 @@ function readAll_(ss) {
 
   const customIncomes = readRows_(incomeSh, INCOME_HEADERS.length, 2)
     .map(function (r) {
-      return { id: r.id, name: String(r.v[0]).trim(), amount: toNum_(r.v[1]) };
+      return { id: r.id, name: String(r.v[0]).trim(), amount: toNum_(r.v[1]), used: toMonthList_(r.v[3], tz) };
     })
     .filter(function (x) { return x.name; });
 
@@ -112,11 +115,12 @@ function writeAll_(ss, data) {
   });
   fixed.sort(function (a, b) { return a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0; });
   const incomes = (data.customIncomes || []).map(function (i) {
-    return [String(i.name || ''), toNum_(i.amount), String(i.id || Utilities.getUuid())];
+    const used = (Array.isArray(i.used) ? i.used : []).map(String).filter(function (m) { return /^\d{4}-\d{2}$/.test(m); });
+    return [String(i.name || ''), toNum_(i.amount), String(i.id || Utilities.getUuid()), used.join(', ')];
   });
 
   writeTable_(getSheet_(ss, FIXED_SHEET, FIXED_HEADERS), FIXED_HEADERS.length, fixed, { textCols: [1, 2, 5], moneyCol: 3, checkCol: 4 });
-  writeTable_(getSheet_(ss, INCOME_SHEET, INCOME_HEADERS), INCOME_HEADERS.length, incomes, { textCols: [1, 3], moneyCol: 2 });
+  writeTable_(getSheet_(ss, INCOME_SHEET, INCOME_HEADERS), INCOME_HEADERS.length, incomes, { textCols: [1, 3, 4], moneyCol: 2 });
 
   const at = toNum_(data.updatedAt) || Date.now();
   setUpdatedAt_(ss, at);
@@ -126,7 +130,8 @@ function writeAll_(ss, data) {
 function getSheet_(ss, name, headers) {
   let sh = ss.getSheetByName(name);
   if (!sh) sh = ss.insertSheet(name);
-  if (headers && sh.getLastRow() === 0) {
+  // สร้างหัวตาราง (หรือเติมหัวคอลัมน์ใหม่ให้ชีตที่สร้างด้วยโค้ดเวอร์ชันเก่า)
+  if (headers && (sh.getLastRow() === 0 || sh.getRange(1, headers.length).getValue() === '')) {
     sh.getRange(1, 1, 1, headers.length)
       .setValues([headers])
       .setFontWeight('bold')
@@ -191,6 +196,14 @@ function toMonth_(v, tz) {
   if (v instanceof Date) return Utilities.formatDate(v, tz, 'yyyy-MM');
   const m = String(v).trim().match(/^(\d{4})-(\d{1,2})/);
   return m ? m[1] + '-' + ('0' + m[2]).slice(-2) : '';
+}
+
+// "2026-10, 2026-11" → ['2026-10', '2026-11']
+function toMonthList_(v, tz) {
+  if (v instanceof Date) return [Utilities.formatDate(v, tz, 'yyyy-MM')];
+  return String(v || '').split(/[,\s]+/)
+    .map(function (s) { return toMonth_(s, tz); })
+    .filter(function (s, i, a) { return s && a.indexOf(s) === i; });
 }
 
 function toNum_(v) {
