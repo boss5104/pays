@@ -27,14 +27,15 @@ const SAV_TX_SHEET = 'รายการฝากเงิน';
 const META_SHEET = '_meta';
 const FIXED_HEADERS = ['เดือน (ปปปป-ดด)', 'รายการ', 'จำนวนเงิน (บาท)', 'จ่ายแล้ว', 'id'];
 const INCOME_HEADERS = ['รายการ', 'จำนวนเงิน (บาท)', 'id', 'ใช้แล้ว (เดือน)'];
-const LOAN_HEADERS = ['รายการผ่อน', 'ไอคอน', 'จำนวนงวด (เดือน)', 'ยอดต่อเดือน (บาท)', 'งวดแรก (ปปปป-ดด)', 'ครบกำหนดทุกวันที่', 'หมายเหตุ', 'id'];
-const LOAN_PAY_HEADERS = ['รายการผ่อน', 'งวดที่', 'ครบกำหนด', 'จ่ายแล้ว', 'วันที่จ่าย', 'หมายเหตุ', 'id รายการผ่อน'];
-const SAV_ACC_HEADERS = ['บัญชี / เป้าหมาย', 'ไอคอน', 'เป้าหมาย (บาท)', 'หมายเหตุ', 'id'];
+const LOAN_HEADERS = ['รายการผ่อน', 'ไอคอน', 'จำนวนงวด (เดือน)', 'ค่างวดปกติ (บาท)', 'งวดแรก (ปปปป-ดด)', 'ครบกำหนดทุกวันที่', 'หมายเหตุ', 'id', 'ค่าใช้จ่ายเพิ่มต่องวด (ค่าอะไร=บาท; …)', 'จ่ายจริงต่องวด (บาท)'];
+const LOAN_PAY_HEADERS = ['รายการผ่อน', 'งวดที่', 'ครบกำหนด', 'จ่ายแล้ว', 'วันที่จ่าย', 'หมายเหตุ', 'id รายการผ่อน', 'จ่ายจริง (บาท)'];
+const SAV_ACC_HEADERS = ['ฝากเงินอะไร (บัญชี / เป้าหมาย)', 'ไอคอน', 'เป้าหมาย (บาท)', 'หมายเหตุ', 'id', 'ประเภทเงินฝาก', 'ฝากต่อเดือน (บาท)'];
 const SAV_TX_HEADERS = ['วันที่', 'ประเภท', 'บัญชี', 'จำนวนเงิน (บาท)', 'หมายเหตุ', 'id', 'id บัญชี'];
 const DATA_SHEETS = [FIXED_SHEET, INCOME_SHEET, LOAN_SHEET, LOAN_PAY_SHEET, SAV_ACC_SHEET, SAV_TX_SHEET];
 // แอปใช้ตรวจว่าเป็นโค้ดเวอร์ชันใหม่
 //   v2: ช่องติ๊ก "ใช้แล้ว" ของรายรับ + อัปเดตอัตโนมัติ · v3: ผ่อนชำระ + เงินฝาก
-const VERSION = 3;
+//   v4: ผ่อน — ค่าใช้จ่ายเพิ่ม/จ่ายจริง · เงินฝาก — ประเภท/ฝากต่อเดือน
+const VERSION = 4;
 
 function doGet(e) {
   return respond_(handle_((e && e.parameter) || {}));
@@ -122,7 +123,8 @@ function readAll_(ss) {
     .map(function (r) {
       return {
         id: r.id, name: String(r.v[0]).trim(), icon: String(r.v[1] || '').trim(), months: toNum_(r.v[2]),
-        amount: toNum_(r.v[3]), start: toMonth_(r.v[4], tz), dueDay: toNum_(r.v[5]), note: String(r.v[6] || ''), pays: []
+        amount: toNum_(r.v[3]), start: toMonth_(r.v[4], tz), dueDay: toNum_(r.v[5]), note: String(r.v[6] || ''),
+        extras: parseExtras_(r.v[8]), pays: []
       };
     })
     .filter(function (x) { return x.name; });
@@ -134,13 +136,22 @@ function readAll_(ss) {
     if (!l || n < 1) return;
     const paid = v[3] === true || String(v[3]).toUpperCase() === 'TRUE';
     const date = toDate_(v[4], tz), note = String(v[5] || '').trim();
-    if (paid || date || note) l.pays.push({ n: n, paid: paid, date: date, note: note });
+    // จ่ายจริง: ว่าง หรือเท่ากับยอดปกติของรายการ (ค่างวด + ค่าใช้จ่ายเพิ่ม) = ใช้ยอดปกติ
+    let actual = null;
+    if (String(v[7]).trim() !== '') {
+      const a = toNum_(v[7]);
+      if (Math.abs(a - loanActual_(l)) >= 0.005) actual = a;
+    }
+    if (paid || date || note || actual !== null) l.pays.push({ n: n, paid: paid, date: date, note: note, actual: actual });
   });
 
   // ---- เงินฝาก ----
   const savAccounts = readRows_(getSheet_(ss, SAV_ACC_SHEET, SAV_ACC_HEADERS), SAV_ACC_HEADERS.length, 4)
     .map(function (r) {
-      return { id: r.id, name: String(r.v[0]).trim(), icon: String(r.v[1] || '').trim(), goal: toNum_(r.v[2]), note: String(r.v[3] || '') };
+      return {
+        id: r.id, name: String(r.v[0]).trim(), icon: String(r.v[1] || '').trim(), goal: toNum_(r.v[2]), note: String(r.v[3] || ''),
+        kind: String(r.v[5] || '').trim(), monthly: toNum_(r.v[6])
+      };
     })
     .filter(function (x) { return x.name; });
   const accByName = {};
@@ -182,30 +193,35 @@ function writeAll_(ss, data) {
       const id = String(l.id || Utilities.getUuid());
       const months = Math.min(600, Math.max(1, Math.round(toNum_(l.months)) || 1));
       const name = String(l.name || ''), start = String(l.start || ''), dueDay = Math.round(toNum_(l.dueDay)) || 1;
-      loanRows.push([name, String(l.icon || ''), months, toNum_(l.amount), start, dueDay, String(l.note || ''), id]);
+      const extras = parseExtras_(l.extras);
+      const perPeriod = loanActual_({ amount: toNum_(l.amount), extras: extras });
+      loanRows.push([name, String(l.icon || ''), months, toNum_(l.amount), start, dueDay, String(l.note || ''), id, formatExtras_(extras), perPeriod]);
       const pays = {};
       (Array.isArray(l.pays) ? l.pays : []).forEach(function (p) { pays[Math.round(toNum_(p.n))] = p; });
       for (let n = 1; n <= months; n++) {
         const p = pays[n] || {};
-        payRows.push([name, n, dueDate_(start, n, dueDay), !!p.paid, String(p.date || ''), String(p.note || ''), id]);
+        const hasActual = p.actual !== null && p.actual !== undefined && String(p.actual) !== '';
+        // งวดที่จ่ายแล้วแสดงยอดจ่ายจริงเสมอ (อ่านกลับ: ถ้าเท่ากับยอดปกติ จะถือว่าไม่ได้แก้)
+        const actual = hasActual ? toNum_(p.actual) : (p.paid ? perPeriod : '');
+        payRows.push([name, n, dueDate_(start, n, dueDay), !!p.paid, String(p.date || ''), String(p.note || ''), id, actual]);
       }
     });
-    writeTable_(getSheet_(ss, LOAN_SHEET, LOAN_HEADERS), LOAN_HEADERS.length, loanRows, { textCols: [1, 2, 5, 7, 8], moneyCol: 4 });
-    writeTable_(getSheet_(ss, LOAN_PAY_SHEET, LOAN_PAY_HEADERS), LOAN_PAY_HEADERS.length, payRows, { textCols: [1, 3, 5, 6, 7], checkCol: 4 });
+    writeTable_(getSheet_(ss, LOAN_SHEET, LOAN_HEADERS), LOAN_HEADERS.length, loanRows, { textCols: [1, 2, 5, 7, 8, 9], moneyCol: [4, 10] });
+    writeTable_(getSheet_(ss, LOAN_PAY_SHEET, LOAN_PAY_HEADERS), LOAN_PAY_HEADERS.length, payRows, { textCols: [1, 3, 5, 6, 7], checkCol: 4, moneyCol: 8 });
   }
   if (Array.isArray(data.savAccounts) && Array.isArray(data.savTx)) {
     const accName = {};
     const accRows = data.savAccounts.map(function (a) {
       const id = String(a.id || Utilities.getUuid());
       accName[id] = String(a.name || '');
-      return [String(a.name || ''), String(a.icon || ''), toNum_(a.goal), String(a.note || ''), id];
+      return [String(a.name || ''), String(a.icon || ''), toNum_(a.goal), String(a.note || ''), id, String(a.kind || ''), toNum_(a.monthly)];
     });
     const txRows = data.savTx.map(function (t) {
       const acc = String(t.acc || '');
       return [String(t.date || ''), t.type === 'out' ? 'ถอน' : 'ฝาก', accName[acc] || '', Math.abs(toNum_(t.amount)), String(t.note || ''), String(t.id || Utilities.getUuid()), acc];
     });
     txRows.sort(function (a, b) { return a[0] < b[0] ? 1 : a[0] > b[0] ? -1 : 0; }); // ใหม่สุดอยู่บน
-    writeTable_(getSheet_(ss, SAV_ACC_SHEET, SAV_ACC_HEADERS), SAV_ACC_HEADERS.length, accRows, { textCols: [1, 2, 4, 5], moneyCol: 3 });
+    writeTable_(getSheet_(ss, SAV_ACC_SHEET, SAV_ACC_HEADERS), SAV_ACC_HEADERS.length, accRows, { textCols: [1, 2, 4, 5, 6], moneyCol: [3, 7] });
     writeTable_(getSheet_(ss, SAV_TX_SHEET, SAV_TX_HEADERS), SAV_TX_HEADERS.length, txRows, { textCols: [1, 2, 3, 5, 6, 7], moneyCol: 4 });
   }
 
@@ -267,7 +283,7 @@ function writeTable_(sh, width, rows, opt) {
   if (!rows.length) return;
   const n = rows.length;
   (opt.textCols || []).forEach(function (c) { sh.getRange(2, c, n, 1).setNumberFormat('@'); });
-  if (opt.moneyCol) sh.getRange(2, opt.moneyCol, n, 1).setNumberFormat('#,##0.00');
+  [].concat(opt.moneyCol || []).forEach(function (c) { sh.getRange(2, c, n, 1).setNumberFormat('#,##0.00'); });
   if (opt.checkCol) sh.getRange(2, opt.checkCol, n, 1).insertCheckboxes(); // ต้องใส่ก่อน setValues
   sh.getRange(2, 1, n, width).setValues(rows);
   sh.autoResizeColumns(1, width);
@@ -316,6 +332,28 @@ function toMonthList_(v, tz) {
   return String(v || '').split(/[,\s]+/)
     .map(function (s) { return toMonth_(s, tz); })
     .filter(function (s, i, a) { return s && a.indexOf(s) === i; });
+}
+
+// "ดอกเบี้ย=150; ประกัน=50" หรือ [{ name, amount }] → [{ name, amount }]
+function parseExtras_(v) {
+  let arr = [];
+  if (Array.isArray(v)) arr = v;
+  else String(v || '').split(/[;\n]+/).forEach(function (x) {
+    const i = x.lastIndexOf('=');
+    if (i >= 0) arr.push({ name: x.slice(0, i), amount: x.slice(i + 1) });
+  });
+  return arr.map(function (e) {
+    return { name: String(e.name || '').replace(/[=;\n\r]/g, ' ').replace(/\s+/g, ' ').trim() || 'ค่าใช้จ่ายเพิ่ม', amount: toNum_(e.amount) };
+  }).filter(function (e) { return e.amount; });
+}
+
+function formatExtras_(extras) {
+  return extras.map(function (e) { return e.name + '=' + e.amount; }).join('; ');
+}
+
+// จ่ายจริงต่องวด = ค่างวดปกติ + ค่าใช้จ่ายเพิ่ม
+function loanActual_(l) {
+  return toNum_(l.amount) + (l.extras || []).reduce(function (s, e) { return s + toNum_(e.amount); }, 0);
 }
 
 function toNum_(v) {
