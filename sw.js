@@ -1,6 +1,6 @@
 // Service worker: ทำให้แอปเปิดได้แม้ออฟไลน์ และติดตั้งลงหน้าจอได้
 // เปลี่ยนชื่อแคชทุกครั้งที่ออกเวอร์ชันใหม่ (ให้ตรงกับ APP_VERSION ใน index.html และ version.json)
-const CACHE = 'smart-expense-2.8.0';
+const CACHE = 'smart-expense-2.9.0';
 const SHELL = [
   './',
   './index.html',
