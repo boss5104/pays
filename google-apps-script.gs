@@ -27,7 +27,7 @@ const SAV_TX_SHEET = 'รายการฝากเงิน';
 const META_SHEET = '_meta';
 const FIXED_HEADERS = ['เดือน (ปปปป-ดด)', 'รายการ', 'จำนวนเงิน (บาท)', 'จ่ายแล้ว', 'id'];
 const INCOME_HEADERS = ['รายการ', 'จำนวนเงิน (บาท)', 'id', 'ใช้แล้ว (เดือน)'];
-const LOAN_HEADERS = ['รายการผ่อน', 'ไอคอน', 'จำนวนงวด (เดือน)', 'ค่างวดปกติ (บาท)', 'งวดแรก (ปปปป-ดด)', 'ครบกำหนดทุกวันที่', 'หมายเหตุ', 'id', 'ค่าใช้จ่ายเพิ่มต่องวด (ค่าอะไร=บาท; …)', 'จ่ายจริงต่องวด (บาท)'];
+const LOAN_HEADERS = ['รายการผ่อน', 'ไอคอน', 'จำนวนงวด (เดือน)', 'ค่างวดปกติ (บาท)', 'งวดแรก (ปปปป-ดด)', 'ครบกำหนดทุกวันที่', 'หมายเหตุ', 'id', 'ค่าใช้จ่ายเพิ่มต่องวด (ค่าอะไร=บาท; …)', 'จ่ายจริงต่องวด (บาท)', 'ค่างวดงวดแรก (บาท — ว่าง = เท่าค่างวดปกติ)'];
 const LOAN_PAY_HEADERS = ['รายการผ่อน', 'งวดที่', 'ครบกำหนด', 'จ่ายแล้ว', 'วันที่จ่าย', 'หมายเหตุ', 'id รายการผ่อน', 'จ่ายจริง (บาท)'];
 const SAV_ACC_HEADERS = ['ฝากเงินอะไร (บัญชี / เป้าหมาย)', 'ไอคอน', 'เป้าหมาย (บาท)', 'หมายเหตุ', 'id', 'ประเภทเงินฝาก', 'ฝากต่อเดือน (บาท)'];
 const SAV_TX_HEADERS = ['วันที่', 'ประเภท', 'บัญชี', 'จำนวนเงิน (บาท)', 'หมายเหตุ', 'id', 'id บัญชี'];
@@ -35,7 +35,8 @@ const DATA_SHEETS = [FIXED_SHEET, INCOME_SHEET, LOAN_SHEET, LOAN_PAY_SHEET, SAV_
 // แอปใช้ตรวจว่าเป็นโค้ดเวอร์ชันใหม่
 //   v2: ช่องติ๊ก "ใช้แล้ว" ของรายรับ + อัปเดตอัตโนมัติ · v3: ผ่อนชำระ + เงินฝาก
 //   v4: ผ่อน — ค่าใช้จ่ายเพิ่ม/จ่ายจริง · เงินฝาก — ประเภท/ฝากต่อเดือน
-const VERSION = 4;
+//   v5: ผ่อน — ค่างวดงวดแรก (ต่างจากงวดอื่นได้)
+const VERSION = 5;
 
 function doGet(e) {
   return respond_(handle_((e && e.parameter) || {}));
@@ -124,7 +125,7 @@ function readAll_(ss) {
       return {
         id: r.id, name: String(r.v[0]).trim(), icon: String(r.v[1] || '').trim(), months: toNum_(r.v[2]),
         amount: toNum_(r.v[3]), start: toMonth_(r.v[4], tz), dueDay: toNum_(r.v[5]), note: String(r.v[6] || ''),
-        extras: parseExtras_(r.v[8]), pays: []
+        extras: parseExtras_(r.v[8]), first: String(r.v[10]).trim() === '' ? null : toNum_(r.v[10]), pays: []
       };
     })
     .filter(function (x) { return x.name; });
@@ -140,7 +141,7 @@ function readAll_(ss) {
     let actual = null;
     if (String(v[7]).trim() !== '') {
       const a = toNum_(v[7]);
-      if (Math.abs(a - loanActual_(l)) >= 0.005) actual = a;
+      if (Math.abs(a - loanActual_(l, n)) >= 0.005) actual = a;
     }
     if (paid || date || note || actual !== null) l.pays.push({ n: n, paid: paid, date: date, note: note, actual: actual });
   });
@@ -194,19 +195,21 @@ function writeAll_(ss, data) {
       const months = Math.min(600, Math.max(1, Math.round(toNum_(l.months)) || 1));
       const name = String(l.name || ''), start = String(l.start || ''), dueDay = Math.round(toNum_(l.dueDay)) || 1;
       const extras = parseExtras_(l.extras);
-      const perPeriod = loanActual_({ amount: toNum_(l.amount), extras: extras });
-      loanRows.push([name, String(l.icon || ''), months, toNum_(l.amount), start, dueDay, String(l.note || ''), id, formatExtras_(extras), perPeriod]);
+      const hasFirst = l.first !== null && l.first !== undefined && String(l.first) !== '';
+      const lc = { amount: toNum_(l.amount), first: hasFirst ? toNum_(l.first) : null, extras: extras };
+      const perPeriod = loanActual_(lc, 2);
+      loanRows.push([name, String(l.icon || ''), months, toNum_(l.amount), start, dueDay, String(l.note || ''), id, formatExtras_(extras), perPeriod, hasFirst ? toNum_(l.first) : '']);
       const pays = {};
       (Array.isArray(l.pays) ? l.pays : []).forEach(function (p) { pays[Math.round(toNum_(p.n))] = p; });
       for (let n = 1; n <= months; n++) {
         const p = pays[n] || {};
         const hasActual = p.actual !== null && p.actual !== undefined && String(p.actual) !== '';
         // งวดที่จ่ายแล้วแสดงยอดจ่ายจริงเสมอ (อ่านกลับ: ถ้าเท่ากับยอดปกติ จะถือว่าไม่ได้แก้)
-        const actual = hasActual ? toNum_(p.actual) : (p.paid ? perPeriod : '');
+        const actual = hasActual ? toNum_(p.actual) : (p.paid ? loanActual_(lc, n) : '');
         payRows.push([name, n, dueDate_(start, n, dueDay), !!p.paid, String(p.date || ''), String(p.note || ''), id, actual]);
       }
     });
-    writeTable_(getSheet_(ss, LOAN_SHEET, LOAN_HEADERS), LOAN_HEADERS.length, loanRows, { textCols: [1, 2, 5, 7, 8, 9], moneyCol: [4, 10] });
+    writeTable_(getSheet_(ss, LOAN_SHEET, LOAN_HEADERS), LOAN_HEADERS.length, loanRows, { textCols: [1, 2, 5, 7, 8, 9], moneyCol: [4, 10, 11] });
     writeTable_(getSheet_(ss, LOAN_PAY_SHEET, LOAN_PAY_HEADERS), LOAN_PAY_HEADERS.length, payRows, { textCols: [1, 3, 5, 6, 7], checkCol: 4, moneyCol: 8 });
   }
   if (Array.isArray(data.savAccounts) && Array.isArray(data.savTx)) {
@@ -351,9 +354,10 @@ function formatExtras_(extras) {
   return extras.map(function (e) { return e.name + '=' + e.amount; }).join('; ');
 }
 
-// จ่ายจริงต่องวด = ค่างวดปกติ + ค่าใช้จ่ายเพิ่ม
-function loanActual_(l) {
-  return toNum_(l.amount) + (l.extras || []).reduce(function (s, e) { return s + toNum_(e.amount); }, 0);
+// จ่ายจริงของงวดที่ n = ค่างวดตามสัญญา (งวดแรกอาจต่างจากงวดอื่น) + ค่าใช้จ่ายเพิ่ม
+function loanActual_(l, n) {
+  const base = (n === 1 && l.first !== null && l.first !== undefined) ? toNum_(l.first) : toNum_(l.amount);
+  return base + (l.extras || []).reduce(function (s, e) { return s + toNum_(e.amount); }, 0);
 }
 
 function toNum_(v) {
