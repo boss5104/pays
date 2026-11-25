@@ -529,6 +529,305 @@
         .kbd-hint kbd { font: inherit; font-size: 11px; padding: 0 5px; border-radius: 5px; border: 1px solid var(--line-2); color: var(--text-2); background: var(--surface-2); }
         .menu-item .new-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-left: auto; }
 
+        /* ================= Pages & tab bar ================= */
+        .page { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; min-width: 0; }
+        main { grid-template-columns: minmax(0, 1fr); }
+        .page:not(.on) { display: none; }
+        .page.on > * { animation: rise .5s cubic-bezier(.2, .8, .2, 1) backwards; }
+        .page.on > :nth-child(2) { animation-delay: .05s; }
+        .page.on > :nth-child(3) { animation-delay: .1s; }
+        .page.on > :nth-child(4) { animation-delay: .15s; }
+        .page.on > :nth-child(n+5) { animation-delay: .2s; }
+        main { padding-bottom: calc(108px + var(--safe-bottom)); }
+
+        .tabbar {
+            position: fixed; left: 50%; bottom: calc(10px + var(--safe-bottom)); z-index: 45; transform: translateX(-50%);
+            display: grid; grid-template-columns: repeat(3, 1fr); width: min(430px, calc(100vw - 20px)); padding: 6px;
+            border-radius: 24px; border: 1px solid var(--line);
+            background: color-mix(in srgb, var(--surface) 80%, transparent);
+            backdrop-filter: blur(20px) saturate(1.6); -webkit-backdrop-filter: blur(20px) saturate(1.6);
+            box-shadow: 0 20px 44px -20px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .05);
+        }
+        .tab-ind {
+            position: absolute; top: 6px; bottom: 6px; left: 6px; width: calc((100% - 12px) / 3); border-radius: 18px;
+            background: var(--accent-grad); box-shadow: 0 8px 20px -10px rgba(201, 150, 62, .9), inset 0 1px 0 rgba(255, 255, 255, .3);
+            transform: translateX(calc(var(--i, 0) * 100%)); transition: transform .5s cubic-bezier(.34, 1.4, .5, 1);
+        }
+        .tab {
+            position: relative; z-index: 1; height: 54px; border-radius: 18px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 3px; font-size: 11.5px; font-weight: 500; color: var(--text-3); transition: color .3s;
+        }
+        .tab svg { width: 22px; height: 22px; }
+        .tab:hover { color: var(--text); }
+        .tab.on { color: var(--accent-ink); }
+        .tab.on svg { animation: tabPop .55s cubic-bezier(.3, 1.6, .5, 1); }
+        @keyframes tabPop { 0% { transform: scale(.7) rotate(-12deg); } 60% { transform: scale(1.18) rotate(6deg); } 100% { transform: none; } }
+        .tab-badge {
+            position: absolute; top: 5px; left: calc(50% + 5px); min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px;
+            background: linear-gradient(135deg, #FF7A85, #E0414E); color: #fff; font-size: 10.5px; font-weight: 600; line-height: 18px; text-align: center;
+            box-shadow: 0 0 0 2px var(--surface), 0 4px 10px -3px rgba(224, 65, 78, .8); animation: bob 2.2s ease-in-out infinite;
+        }
+        @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+        .toast { bottom: calc(92px + var(--safe-bottom)); }
+        .update-bar { bottom: calc(88px + var(--safe-bottom)); }
+
+        /* ---- Hero variants ---- */
+        .hero.v-loan {
+            background: radial-gradient(440px 220px at 100% 0%, rgba(176, 150, 255, 0.24), transparent 70%),
+                        linear-gradient(145deg, #29224A 0%, #18152E 55%, #0E0C1C 100%);
+            border-color: rgba(190, 172, 255, 0.28);
+        }
+        .hero.v-loan::after { border-color: rgba(190, 172, 255, 0.16); box-shadow: 0 0 0 28px rgba(190, 172, 255, 0.035), 0 0 0 56px rgba(190, 172, 255, 0.02); }
+        .hero.v-sav {
+            background: radial-gradient(440px 220px at 100% 0%, rgba(94, 224, 170, 0.22), transparent 70%),
+                        linear-gradient(145deg, #143630 0%, #0F2220 55%, #091514 100%);
+            border-color: rgba(120, 230, 180, 0.26);
+        }
+        .hero.v-sav::after { border-color: rgba(120, 230, 180, 0.15); box-shadow: 0 0 0 28px rgba(120, 230, 180, 0.035), 0 0 0 56px rgba(120, 230, 180, 0.02); }
+        .hero.v-sav .net-v { background: linear-gradient(135deg, #EFFFF7 0%, #A6F2CF 45%, #45C48F 100%); -webkit-background-clip: text; background-clip: text; }
+        .hero.v-sav .eyebrow { color: #8CEBC0; }
+        .hero.v-loan .eyebrow { color: #C9B8FF; }
+        .hero-label { display: flex; flex-direction: column; align-items: center; line-height: 1.25; }
+        .hero-label b { font-size: 16px; font-weight: 600; }
+        .hero .kpi-v.red { color: #FF9C9C; }
+        .hero .sw.red { background: #FF9C9C; }
+        .sw.red { background: var(--red); }
+        .ico.violet { background: rgba(150, 120, 255, .14); color: #9B86F5; }
+
+        /* ---- Common bits ---- */
+        .seg-sm.three { grid-template-columns: repeat(3, auto); }
+        .seg-sm button .n { font-size: 10.5px; opacity: .7; margin-left: 3px; }
+        .btn-add {
+            display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 15px 0 12px; border-radius: 12px;
+            background: var(--accent-grad); color: var(--accent-ink); font-weight: 600; font-size: 13px; white-space: nowrap;
+            box-shadow: 0 8px 18px -10px rgba(201, 150, 62, .9), inset 0 1px 0 rgba(255, 255, 255, .25); transition: transform .2s cubic-bezier(.3, 1.6, .5, 1);
+        }
+        .btn-add svg { width: 16px; height: 16px; transition: transform .35s cubic-bezier(.3, 1.6, .5, 1); }
+        .btn-add:hover svg { transform: rotate(90deg); }
+        .btn-add:active { transform: scale(.94); }
+        .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+        .icon-btn.sm { width: 32px; height: 32px; border-radius: 9px; }
+        .icon-btn.sm svg { width: 16px; height: 16px; }
+        .badge { display: inline-block; font-size: 11px; line-height: 18px; padding: 0 8px; border-radius: 999px; font-weight: 500; white-space: nowrap; vertical-align: 1px; }
+        .badge.overdue { background: linear-gradient(135deg, #FF7A85, #E0414E); color: #fff; animation: wiggle 2s ease-in-out infinite; }
+        .badge.today { background: linear-gradient(135deg, #F7C468, #E08A1E); color: #fff; animation: wiggle 2.4s ease-in-out infinite; }
+        .badge.soon { background: var(--amber-soft); color: var(--amber); }
+        .badge.later { background: var(--surface-2); color: var(--text-3); }
+        .badge.paid { background: var(--green-soft); color: var(--green); }
+        @keyframes wiggle { 0%, 76%, 100% { transform: rotate(0); } 80% { transform: rotate(-7deg) scale(1.06); } 85% { transform: rotate(6deg) scale(1.06); } 90% { transform: rotate(-4deg); } 95% { transform: rotate(2deg); } }
+        .check.pop span { animation: checkPop .45s cubic-bezier(.3, 1.6, .5, 1); }
+        @keyframes checkPop { 0% { transform: scale(.6); } 55% { transform: scale(1.25); } 100% { transform: none; } }
+        .empty-big { text-align: center; padding: 30px 16px 26px; }
+        .empty-big .e { display: inline-block; font-size: 46px; line-height: 1; animation: float 3.2s ease-in-out infinite; filter: drop-shadow(0 10px 14px rgba(0, 0, 0, .18)); }
+        .empty-big b { display: block; font-size: 15px; font-weight: 600; margin-top: 12px; }
+        .empty-big p { color: var(--text-3); font-size: 12.5px; margin: 4px auto 16px; max-width: 320px; }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-8px) rotate(3deg); } }
+        @keyframes jelly { 0%, 100% { transform: none; } 30% { transform: scale(1.25, .8); } 50% { transform: scale(.85, 1.15); } 70% { transform: scale(1.08, .95); } }
+        @keyframes growX { from { transform: scaleX(0); } }
+
+        /* ---- Forms in sheets ---- */
+        .form { display: grid; gap: 12px; }
+        .fl { display: grid; gap: 5px; min-width: 0; }
+        .fl > span { font-size: 12px; font-weight: 500; color: var(--text-2); }
+        .fl > span i { font-style: normal; color: var(--text-3); font-weight: 400; }
+        .row2.one { grid-template-columns: 1fr; }
+        .field.ta { height: auto; min-height: 66px; padding: 9px 11px; resize: vertical; line-height: 1.5; }
+        input[type="date"].field, .date-in { -webkit-appearance: none; appearance: none; min-height: 38px; text-align: left; }
+        input[type="date"]::-webkit-date-and-time-value { text-align: left; }
+        .emoji-pick { display: flex; flex-wrap: wrap; gap: 6px; }
+        .emoji-pick button {
+            width: 40px; height: 40px; border-radius: 12px; font-size: 20px; background: var(--surface-2); border: 1.5px solid transparent;
+            transition: transform .25s cubic-bezier(.3, 1.6, .5, 1), background .2s, border-color .2s;
+        }
+        .emoji-pick button:hover { transform: translateY(-2px); }
+        .emoji-pick button.on { border-color: var(--accent); background: var(--accent-soft); transform: scale(1.1) rotate(-6deg); }
+        .calc-box { display: grid; gap: 4px; padding: 12px 14px; border-radius: 12px; background: var(--surface-2); font-size: 13px; color: var(--text-2); }
+        .calc-box div { display: flex; justify-content: space-between; gap: 10px; }
+        .calc-box b { color: var(--text); font-weight: 600; }
+        .calc-box .big b { font-size: 16px; background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+        /* ================= Installments ================= */
+        .loan-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 12px; align-items: start; }
+        .loan-card {
+            position: relative; overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: 20px;
+            padding: 16px 16px 10px; box-shadow: var(--card-shadow);
+        }
+        .loan-card::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--accent-grad); opacity: .9; }
+        .loan-card.overdue::before { background: linear-gradient(90deg, #FF7A85, #E0414E); }
+        .loan-card.done::before { background: var(--check-grad); }
+        .loan-card.enter { animation: rise .5s cubic-bezier(.2, .8, .2, 1) backwards; }
+        .loan-card.enter .lc-bar > span { animation: growX 1s cubic-bezier(.2, .8, .2, 1) backwards .15s; }
+        .lc-top { display: grid; grid-template-columns: 46px 1fr auto auto; gap: 12px; align-items: center; }
+        .lc-ico {
+            width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; font-size: 24px;
+            background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--line); transition: transform .35s cubic-bezier(.3, 1.6, .5, 1);
+        }
+        .loan-card:hover .lc-ico { transform: rotate(-9deg) scale(1.08); }
+        .lc-title { min-width: 0; }
+        .lc-name { font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .lc-meta { font-size: 12px; color: var(--text-3); }
+        .lc-pct { font-size: 22px; font-weight: 700; letter-spacing: -.4px; background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .lc-pct small { font-size: 12px; font-weight: 600; }
+        .loan-card.done .lc-pct { background: var(--check-grad); -webkit-background-clip: text; background-clip: text; }
+        .lc-bar { height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; margin: 14px 0 6px; }
+        .lc-bar > span { position: relative; display: block; height: 100%; border-radius: 999px; background: var(--accent-grad); overflow: hidden; transform-origin: left; }
+        .lc-bar > span::after {
+            content: ""; position: absolute; inset: 0; transform: translateX(-100%);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .5), transparent); animation: shimmer 2.8s ease-in-out infinite;
+        }
+        @keyframes shimmer { 55%, 100% { transform: translateX(100%); } }
+        .loan-card.done .lc-bar > span { background: var(--check-grad); }
+        .lc-prog-t { display: flex; justify-content: space-between; gap: 8px; font-size: 11.5px; color: var(--text-3); }
+        .lc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 12px; }
+        .lc-stat { background: var(--surface-2); border-radius: 12px; padding: 7px 10px; min-width: 0; }
+        .lc-stat span { display: block; font-size: 11px; color: var(--text-3); }
+        .lc-stat b { display: block; font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .lc-next {
+            display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; padding: 10px 10px 10px 12px;
+            border-radius: 14px; background: var(--accent-soft); border: 1px dashed color-mix(in srgb, var(--accent) 45%, transparent);
+        }
+        .lc-next.overdue { background: var(--red-soft); border-color: color-mix(in srgb, var(--red) 45%, transparent); }
+        .lc-next.done { background: var(--green-soft); border-color: color-mix(in srgb, var(--green) 45%, transparent); }
+        .lc-next .t { font-size: 12.5px; color: var(--text-2); line-height: 1.6; min-width: 0; }
+        .lc-next .t b { color: var(--text); font-weight: 600; }
+        .pay-btn {
+            flex-shrink: 0; height: 36px; padding: 0 14px 0 11px; border-radius: 11px; display: inline-flex; align-items: center; gap: 6px;
+            background: var(--check-grad); color: #fff; font-weight: 600; font-size: 12.5px; white-space: nowrap;
+            box-shadow: 0 8px 16px -8px rgba(47, 166, 116, .9), inset 0 1px 0 rgba(255, 255, 255, .25); transition: transform .2s cubic-bezier(.3, 1.6, .5, 1);
+        }
+        .pay-btn svg { width: 15px; height: 15px; }
+        .pay-btn:hover { transform: translateY(-1px); }
+        .pay-btn:active { transform: scale(.93); }
+        .lc-note { margin-top: 10px; font-size: 12.5px; color: var(--text-2); padding: 8px 11px; border-radius: 11px; background: var(--surface-2); white-space: pre-wrap; word-break: break-word; }
+        .lc-toggle {
+            width: 100%; margin-top: 8px; height: 34px; border-radius: 10px; font-size: 12.5px; color: var(--text-2);
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .lc-toggle:hover { background: var(--surface-2); color: var(--text); }
+        .lc-toggle svg { width: 15px; height: 15px; transition: transform .3s; }
+        .loan-card.open .lc-toggle svg { transform: rotate(180deg); }
+        .sched { border-top: 1px solid var(--line); margin: 2px -4px 4px; padding: 4px 0 0; max-height: 380px; overflow-y: auto; overscroll-behavior: contain; animation: rise .3s ease; }
+        .srow {
+            display: grid; grid-template-columns: 22px 1fr auto 30px; gap: 4px 10px; align-items: center;
+            padding: 8px 6px; border-radius: 12px; transition: background .2s;
+        }
+        .srow + .srow { box-shadow: 0 -1px 0 var(--line); }
+        .srow.current { background: var(--accent-soft); box-shadow: none; }
+        .srow.current + .srow { box-shadow: none; }
+        .s-main { min-width: 0; }
+        .s-n { font-size: 13.5px; font-weight: 500; display: flex; align-items: center; gap: 6px; min-width: 0; }
+        .s-n .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .s-amt { font-size: 12px; color: var(--text-3); font-weight: 400; }
+        .s-d { font-size: 11.5px; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .s-n .t { white-space: nowrap; }
+        .s-e { font-size: 16px; }
+        .srow.paid .s-n .nm, .srow.paid .s-n > .t { color: var(--text-3); text-decoration: line-through; }
+        .s-side { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; text-align: right; }
+        .paid-date { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--green); white-space: nowrap; }
+        .date-in {
+            height: 28px; min-height: 28px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--text);
+            padding: 0 7px; font-size: 12px; width: 124px; outline: none;
+        }
+        .date-in:focus { border-color: var(--accent); }
+        .note-btn { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; color: var(--text-3); opacity: .75; }
+        .note-btn:hover { background: var(--surface-2); color: var(--text); opacity: 1; }
+        .note-btn.has { color: var(--accent); opacity: 1; }
+        .note-btn svg { width: 15px; height: 15px; }
+        .s-note { grid-column: 2 / -1; height: 32px; font-size: 12.5px; border-radius: 8px; }
+        .srow.strip { grid-template-columns: 22px 1fr auto; padding: 9px 4px; }
+        .strip-total { font-size: 15px; font-weight: 600; white-space: nowrap; }
+
+        /* ================= Savings ================= */
+        .hero-top { display: flex; align-items: center; justify-content: space-between; }
+        .mini-chart { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; height: 128px; align-self: stretch; min-height: 110px; }
+        .mc { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 5px; min-width: 0; border-radius: 10px; padding-top: 4px; cursor: pointer; transition: background .2s; }
+        .mc:hover { background: rgba(255, 255, 255, .05); }
+        .mc.sel { background: rgba(255, 255, 255, .07); }
+        .mc .bars { flex: 1; width: 100%; display: flex; align-items: flex-end; justify-content: center; gap: 3px; }
+        .mc .bi, .mc .bo { height: 0; border-radius: 5px 5px 2px 2px; transition: height .9s cubic-bezier(.2, .8, .2, 1); }
+        .mc .bi { width: 38%; max-width: 16px; background: linear-gradient(180deg, #A6F5D2, #2FA674); box-shadow: 0 0 12px rgba(116, 226, 176, .35); }
+        .mc .bo { width: 20%; max-width: 8px; background: linear-gradient(180deg, #FFB8B8, #E25B62); }
+        .mc .lb { font-size: 10.5px; color: var(--h3); white-space: nowrap; padding-bottom: 4px; }
+        .mc.sel .lb { color: #A6F2CF; font-weight: 600; }
+
+        .sav-add .card-head { margin-bottom: 12px; }
+        .type-seg button.on[data-type="in"] { color: var(--green); }
+        .type-seg button.on[data-type="out"] { color: var(--red); }
+        .amt-big {
+            display: flex; align-items: center; gap: 8px; padding: 4px 16px; border-radius: 16px;
+            background: var(--bg); border: 1px solid var(--line); transition: border-color .2s, box-shadow .2s;
+        }
+        .amt-big:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+        .amt-big span { font-size: 22px; font-weight: 600; color: var(--text-3); }
+        .amt-big input {
+            flex: 1; min-width: 0; height: 56px; border: 0; outline: 0; background: transparent; text-align: right;
+            font-size: 30px; font-weight: 700; letter-spacing: -.5px; font-variant-numeric: tabular-nums; color: var(--green);
+        }
+        .amt-big input::placeholder { color: var(--text-3); opacity: .5; }
+        .sav-add.out .amt-big input { color: var(--red); }
+        .sav-add.out #savSubmit { background: linear-gradient(135deg, #FF8E96, #D9434E); color: #fff; box-shadow: 0 8px 20px -10px rgba(217, 67, 78, .85); }
+        .sav-add.in #savSubmit { background: var(--check-grad); color: #fff; box-shadow: 0 8px 20px -10px rgba(47, 166, 116, .85); }
+        .quick-amts { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+        .quick-amts button {
+            height: 28px; padding: 0 11px; border-radius: 999px; font-size: 12px; color: var(--text-2); background: var(--surface-2);
+            transition: transform .2s cubic-bezier(.3, 1.6, .5, 1), background .2s;
+        }
+        .quick-amts button:hover { background: var(--line); color: var(--text); }
+        .quick-amts button:active { transform: scale(.9); }
+        .chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 3px 2px; margin: 10px -2px; }
+        .chips::-webkit-scrollbar { display: none; }
+        .chip {
+            flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 13px 0 10px; border-radius: 999px;
+            border: 1px solid var(--line); background: var(--surface); font-size: 13px; color: var(--text-2);
+            transition: transform .25s cubic-bezier(.3, 1.6, .5, 1), background .2s, border-color .2s, color .2s;
+        }
+        .chip:hover { color: var(--text); }
+        .chip .e { font-size: 16px; }
+        .chip.on { background: var(--accent-soft); border-color: var(--accent); color: var(--text); font-weight: 500; transform: translateY(-1px); }
+        .chip.add { border-style: dashed; color: var(--text-3); padding: 0 13px; }
+        .chip-hint { align-self: center; font-size: 11.5px; color: var(--text-3); white-space: nowrap; }
+        .chips.sm .chip { height: 28px; font-size: 12px; padding: 0 11px 0 8px; }
+        .chips.sm .chip .e { font-size: 13px; }
+        .sav-form .row2 { margin-bottom: 10px; }
+
+        .acc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(158px, 1fr)); gap: 10px; margin-top: 12px; }
+        .acc-tile {
+            position: relative; overflow: hidden; text-align: left; padding: 14px; border-radius: 16px; min-width: 0;
+            background: var(--surface-2); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px;
+            transition: transform .3s cubic-bezier(.3, 1.5, .5, 1), box-shadow .3s;
+        }
+        .acc-tile.enter { animation: rise .45s cubic-bezier(.2, .8, .2, 1) backwards; }
+        .acc-tile:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+        .acc-tile .acc-ico { font-size: 28px; line-height: 1; margin-bottom: 6px; display: inline-block; align-self: flex-start; }
+        .acc-tile:hover .acc-ico { animation: jelly .65s ease; }
+        .acc-name { font-size: 12.5px; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .acc-bal { font-size: 18px; font-weight: 700; letter-spacing: -.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .acc-bar { height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; margin-top: 8px; }
+        .acc-bar i { display: block; height: 100%; border-radius: 999px; background: var(--check-grad); transform-origin: left; animation: growX 1s cubic-bezier(.2, .8, .2, 1) backwards .2s; }
+        .acc-goal { font-size: 11px; color: var(--text-3); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .acc-tile.reached::after {
+            content: "🎯 ถึงเป้า"; position: absolute; top: 10px; right: 10px; font-size: 10.5px; padding: 1px 8px; border-radius: 999px;
+            background: var(--green-soft); color: var(--green); font-weight: 500;
+        }
+        .acc-tile.add { align-items: center; justify-content: center; gap: 6px; border-style: dashed; background: transparent; color: var(--text-3); min-height: 118px; font-size: 13px; }
+        .acc-tile.add svg { width: 22px; height: 22px; }
+
+        .tx-month { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 12px; color: var(--text-3); padding: 14px 2px 6px; }
+        .tx-month:first-child { padding-top: 4px; }
+        .tx-month b { font-weight: 600; font-variant-numeric: tabular-nums; }
+        .txrow { display: grid; grid-template-columns: 38px 1fr auto 30px; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
+        .txrow:last-child { border-bottom: 0; }
+        .txrow.enter { animation: rise .35s ease backwards; }
+        .tx-ico { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; }
+        .tx-ico svg { width: 17px; height: 17px; }
+        .tx-ico.in { background: var(--green-soft); color: var(--green); }
+        .tx-ico.out { background: var(--red-soft); color: var(--red); }
+        .tx-main { min-width: 0; }
+        .tx-main b { display: block; font-weight: 500; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .tx-main span { display: block; font-size: 11.5px; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .tx-amt { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .more-btn { width: 100%; margin-top: 10px; }
+
         /* MacBook / desktop: ปุ่มลบโผล่เมื่อชี้ · คีย์ลัด · การ์ดลอยเล็กน้อย */
         @media (hover: hover) and (pointer: fine) {
             .row .del { opacity: 0; transition: opacity .15s; }
@@ -537,10 +836,15 @@
             .card { transition: box-shadow .25s ease, transform .25s ease; }
             .card:hover { transform: translateY(-1px); }
             .row::after { display: none; }
+            .txrow .del { opacity: 0; transition: opacity .15s; }
+            .txrow:hover .del, .txrow:focus-within .del { opacity: .75; }
+            .loan-card { transition: box-shadow .3s ease, transform .3s ease; }
+            .loan-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
         }
         /* iPhone: ช่องกรอกขนาด 16px เพื่อไม่ให้ Safari ซูมหน้าจอเวลาแตะ */
         @media (pointer: coarse) {
-            .field, .inline { font-size: 16px; }
+            .field, .inline, .date-in { font-size: 16px; }
+            .date-in { width: 138px; }
         }
         @media (min-width: 1024px) {
             .ring { width: 116px; height: 116px; }
@@ -562,6 +866,19 @@
             .brand-title { font-size: 14px; }
             .overlay { align-items: flex-end; padding: 0; }
             .sheet { max-width: none; border-radius: 16px 16px 0 0; padding-bottom: calc(18px + var(--safe-bottom)); transform: translateY(100%); }
+            .loan-grid { grid-template-columns: 1fr; }
+            .loan-card { padding: 14px 14px 8px; }
+            .lc-top { grid-template-columns: 42px 1fr auto auto; gap: 10px; }
+            .lc-ico { width: 42px; height: 42px; font-size: 22px; }
+            .lc-next { flex-wrap: wrap; }
+            .lc-next .pay-btn { width: 100%; justify-content: center; }
+            .srow { gap: 4px 8px; padding: 8px 2px; }
+            .acc-grid { grid-template-columns: 1fr 1fr; }
+            .amt-big input { font-size: 26px; }
+        }
+        @media (max-width: 760px) {
+            .hero.v-sav .summary-body { grid-template-columns: 1fr; }
+            .mini-chart { height: 104px; }
         }
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -611,7 +928,7 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.4z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>
                         <span>มีอะไรใหม่</span>
                     </button>
-                    <div class="kbd-hint">คีย์ลัด: <kbd>←</kbd> <kbd>→</kbd> เปลี่ยนเดือน · <kbd>N</kbd> เพิ่มค่าใช้จ่าย · <kbd>I</kbd> เพิ่มรายรับ · <kbd>R</kbd> รีเฟรช · <kbd>T</kbd> ธีม</div>
+                    <div class="kbd-hint">คีย์ลัด: <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> สลับหน้า · <kbd>←</kbd> <kbd>→</kbd> เปลี่ยนเดือน · <kbd>N</kbd> เพิ่มค่าใช้จ่าย · <kbd>I</kbd> เพิ่มรายรับ · <kbd>R</kbd> รีเฟรช · <kbd>T</kbd> ธีม</div>
                     <hr>
                     <button type="button" class="menu-item danger" id="resetBtn">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
@@ -622,12 +939,22 @@
         </div>
     </header>
 
+    <!-- gradient ที่ใช้ร่วมกันทุกวงแหวน (อยู่นอกหน้า เพื่อให้แสดงได้แม้หน้าที่นิยามไว้ถูกซ่อน) -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+        <defs>
+            <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF1C2"/><stop offset=".5" stop-color="#E9C46F"/><stop offset="1" stop-color="#B9873A"/></linearGradient>
+        </defs>
+    </svg>
+
     <main class="wrap">
+
+      <!-- ================================ หน้า: ภาพรวม ================================ -->
+      <div class="page" data-page="overview">
 
         <!-- ============ Summary ============ -->
         <section class="hero">
             <div class="month-nav">
-                <button type="button" id="prevMonthBtn" class="icon-btn" title="เดือนก่อนหน้า" aria-label="เดือนก่อนหน้า">
+                <button type="button" id="prevMonthBtn" data-month-step="-1" class="icon-btn" title="เดือนก่อนหน้า" aria-label="เดือนก่อนหน้า">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                 </button>
                 <label class="month-label" title="แตะเพื่อเลือกเดือน">
@@ -635,7 +962,7 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
                     <input type="month" id="selectedMonthPicker" aria-label="เลือกเดือน">
                 </label>
-                <button type="button" id="nextMonthBtn" class="icon-btn" title="เดือนถัดไป" aria-label="เดือนถัดไป">
+                <button type="button" id="nextMonthBtn" data-month-step="1" class="icon-btn" title="เดือนถัดไป" aria-label="เดือนถัดไป">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                 </button>
             </div>
@@ -649,7 +976,6 @@
                     </div>
                     <div class="ring" id="ring" title="สัดส่วนเงินคงเหลือเทียบกับรายรับทั้งหมด">
                         <svg viewBox="0 0 100 100" aria-hidden="true">
-                            <defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF1C2"/><stop offset=".5" stop-color="#E9C46F"/><stop offset="1" stop-color="#B9873A"/></linearGradient></defs>
                             <circle class="trk" cx="50" cy="50" r="42" fill="none" stroke-width="8"/>
                             <circle class="val" id="ringVal" cx="50" cy="50" r="42" fill="none" stroke-width="8" stroke-dasharray="263.9" stroke-dashoffset="263.9"/>
                         </svg>
@@ -673,6 +999,16 @@
                 <div class="progress-top"><span>จ่ายค่าใช้จ่ายแล้ว</span><span class="num" id="paidProgressText">0 / 0 รายการ</span></div>
                 <div class="bar"><span id="paidProgressBar"></span></div>
             </div>
+        </section>
+
+        <!-- ============ Installments due this month ============ -->
+        <section class="card hide" id="loanStrip">
+            <div class="card-head">
+                <h2><span class="ico violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/></svg></span>ค่าผ่อนเดือนนี้ <span class="count" id="stripCount">0</span></h2>
+                <button type="button" class="chip-btn" data-goto="loans">ดูทั้งหมด <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+            </div>
+            <div class="card-sub"><span>ติ๊ก ✓ = จ่ายงวดนี้แล้ว · แยกจากค่าใช้จ่ายด้านล่าง</span><b class="strip-total num amber" id="stripTotal">0 ฿</b></div>
+            <div id="stripList"></div>
         </section>
 
         <div class="grid2">
@@ -732,6 +1068,140 @@
             </div>
         </section>
 
+      </div>
+
+      <!-- ================================ หน้า: ผ่อนชำระ ================================ -->
+      <div class="page" data-page="loans">
+        <section class="hero v-loan">
+            <div class="month-nav">
+                <button type="button" data-month-step="-1" class="icon-btn" title="เดือนก่อนหน้า" aria-label="เดือนก่อนหน้า">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <div class="hero-label"><span class="eyebrow">✦ Installments</span><b id="loanMonthLabel">—</b></div>
+                <button type="button" data-month-step="1" class="icon-btn" title="เดือนถัดไป" aria-label="เดือนถัดไป">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+            </div>
+            <div class="summary-body">
+                <div class="net-wrap">
+                    <div class="net-main">
+                        <div class="net-k">ค่างวดที่ยังไม่จ่ายเดือนนี้</div>
+                        <div class="net-v num" id="loanDueAmt">0<small>฿</small></div>
+                        <div class="net-f" id="loanDueSub">—</div>
+                    </div>
+                    <div class="ring" id="loanRing" title="ผ่อนไปแล้วกี่ % ของยอดผ่อนทั้งหมด">
+                        <svg viewBox="0 0 100 100" aria-hidden="true">
+                            <circle class="trk" cx="50" cy="50" r="42" fill="none" stroke-width="8"/>
+                            <circle class="val" id="loanRingVal" cx="50" cy="50" r="42" fill="none" stroke-width="8" stroke-dasharray="263.9" stroke-dashoffset="263.9"/>
+                        </svg>
+                        <div class="ring-c"><b class="num" id="loanRingPct">0%</b><span>ผ่อนแล้ว</span></div>
+                    </div>
+                </div>
+                <div class="kpis">
+                    <div class="kpi">
+                        <div class="kpi-k"><i class="sw amber"></i>ค่างวดรวมเดือนนี้</div>
+                        <div class="kpi-v num amber" id="kLoanMonth">0 ฿</div>
+                        <div class="kpi-s num" id="kLoanMonthSub">—</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-k"><i class="sw green"></i>ยอดผ่อนคงเหลือ</div>
+                        <div class="kpi-v num green" id="kLoanLeft">0 ฿</div>
+                        <div class="kpi-s num" id="kLoanLeftSub">—</div>
+                    </div>
+                </div>
+            </div>
+            <div class="progress">
+                <div class="progress-top"><span>จ่ายค่างวดเดือนนี้แล้ว</span><span class="num" id="loanProgressText">0 / 0 งวด</span></div>
+                <div class="bar"><span id="loanProgressBar"></span></div>
+            </div>
+        </section>
+
+        <div class="toolbar">
+            <div class="seg-sm three" id="loanFilterSeg">
+                <button type="button" data-filter="active">กำลังผ่อน<span class="n" id="lfcActive">0</span></button>
+                <button type="button" data-filter="done">ผ่อนครบ<span class="n" id="lfcDone">0</span></button>
+                <button type="button" data-filter="all">ทั้งหมด<span class="n" id="lfcAll">0</span></button>
+            </div>
+            <button type="button" class="btn-add" id="addLoanBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>เพิ่มรายการผ่อน</button>
+        </div>
+        <div class="loan-grid" id="loanList"></div>
+      </div>
+
+      <!-- ================================ หน้า: เงินฝาก ================================ -->
+      <div class="page" data-page="savings">
+        <section class="hero v-sav">
+            <div class="month-nav">
+                <button type="button" data-month-step="-1" class="icon-btn" title="เดือนก่อนหน้า" aria-label="เดือนก่อนหน้า">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <div class="hero-label"><span class="eyebrow">✦ Savings</span><b id="savMonthLabel">—</b></div>
+                <button type="button" data-month-step="1" class="icon-btn" title="เดือนถัดไป" aria-label="เดือนถัดไป">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+            </div>
+            <div class="summary-body">
+                <div>
+                    <div class="net-k">เงินฝากทั้งหมด</div>
+                    <div class="net-v num" id="savTotal">0<small>฿</small></div>
+                    <div class="net-f" id="savTotalSub">—</div>
+                    <div class="kpis" style="margin-top:12px">
+                        <div class="kpi">
+                            <div class="kpi-k"><i class="sw green"></i>ฝากเดือนนี้</div>
+                            <div class="kpi-v num green" id="kSavIn">0 ฿</div>
+                            <div class="kpi-s num" id="kSavInSub">—</div>
+                        </div>
+                        <div class="kpi">
+                            <div class="kpi-k"><i class="sw red"></i>ถอนเดือนนี้</div>
+                            <div class="kpi-v num red" id="kSavOut">0 ฿</div>
+                            <div class="kpi-s num" id="kSavOutSub">—</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mini-chart" id="savChart" title="ยอดฝาก (เขียว) และถอน (แดง) 6 เดือนล่าสุด"></div>
+            </div>
+        </section>
+
+        <!-- ---- บันทึกฝาก / ถอน ---- -->
+        <section class="card sav-add in" id="savAddCard">
+            <div class="card-head">
+                <h2><span class="ico green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg></span>บันทึกรายการ</h2>
+                <div class="seg-sm type-seg" id="savTypeSeg"><button type="button" data-type="in" class="on">ฝากเงิน</button><button type="button" data-type="out">ถอนเงิน</button></div>
+            </div>
+            <form class="sav-form" id="savForm" autocomplete="off">
+                <label class="amt-big"><span>฿</span><input type="text" id="savAmount" inputmode="decimal" placeholder="0" aria-label="จำนวนเงิน"></label>
+                <div class="quick-amts" id="savQuick">
+                    <button type="button" data-add="100">+100</button><button type="button" data-add="500">+500</button>
+                    <button type="button" data-add="1000">+1,000</button><button type="button" data-add="5000">+5,000</button>
+                    <button type="button" data-add="0">ล้าง</button>
+                </div>
+                <div class="chips" id="savAccChips" aria-label="เลือกบัญชี"></div>
+                <div class="row2">
+                    <input type="date" id="savDate" class="field" aria-label="วันที่">
+                    <input type="text" id="savNote" class="field" placeholder="หมายเหตุ เช่น เงินเดือน" maxlength="100" aria-label="หมายเหตุ">
+                </div>
+                <button type="submit" class="btn btn-primary" id="savSubmit">ฝากเงิน</button>
+            </form>
+        </section>
+
+        <!-- ---- บัญชี & เป้าหมาย ---- -->
+        <section class="card">
+            <div class="card-head">
+                <h2><span class="ico accent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></span>บัญชี & เป้าหมาย <span class="count" id="accCount">0</span></h2>
+                <button type="button" class="chip-btn" id="addAccBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>เพิ่มบัญชี</button>
+            </div>
+            <div class="acc-grid" id="savAccGrid"></div>
+        </section>
+
+        <!-- ---- ประวัติ ---- -->
+        <section class="card">
+            <div class="card-head">
+                <h2><span class="ico amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg></span>ประวัติรายการ <span class="count" id="txCount">0</span></h2>
+            </div>
+            <div class="chips sm" id="savFilterChips"></div>
+            <div id="savHistory"></div>
+        </section>
+      </div>
+
         <p class="foot"><span id="footerNote">ข้อมูลถูกบันทึกอัตโนมัติในเครื่องนี้ · ใช้งานได้แม้ไม่มีอินเทอร์เน็ต</span> · <span class="ver" id="verLabel">v</span></p>
     </main>
 
@@ -790,7 +1260,7 @@
                     <div style="min-width:0"><div class="t" id="gsStatusTitle">เชื่อมต่อแล้ว</div><div class="s" id="gsStatusText">—</div></div>
                 </div>
                 <div class="notice hide" id="gsUpgrade">
-                    <b>มีโค้ด Apps Script เวอร์ชันใหม่</b> — อัปเดตเพื่อให้ช่องติ๊ก “ใช้แล้ว” ของรายรับซิงก์ข้ามเครื่อง และอัปเดตอัตโนมัติได้เร็วขึ้น<br>
+                    <b>มีโค้ด Apps Script เวอร์ชันใหม่</b> — อัปเดตเพื่อให้ข้อมูล <b>ผ่อนชำระ</b> และ <b>เงินฝาก</b> ซิงก์ข้ามเครื่อง (ตอนนี้เก็บไว้เฉพาะในเครื่องนี้)<br>
                     วิธีอัปเดต: เปิดชีต → <b>ส่วนขยาย → Apps Script</b> → ลบโค้ดเดิม วางโค้ดใหม่ → บันทึก → <b>ทำให้ใช้งานได้ → จัดการการทำให้ใช้งานได้</b> → กดไอคอนดินสอ → เวอร์ชัน: <b>เวอร์ชันใหม่</b> → ทำให้ใช้งานได้ (URL เดิมใช้ได้ต่อ)
                     <textarea class="code" id="gsCode2" readonly spellcheck="false">กำลังโหลดโค้ด…</textarea>
                     <button type="button" class="btn btn-ghost btn-sm" id="gsCopyCode2" style="margin-top:6px">คัดลอกโค้ดใหม่</button>
@@ -850,6 +1320,69 @@
         </div>
     </div>
 
+    <!-- ============ Loan add/edit sheet ============ -->
+    <div class="overlay" id="loanModal" aria-hidden="true">
+        <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="loanModalTitle">
+            <div class="sheet-head">
+                <div><h3 id="loanModalTitle">เพิ่มรายการผ่อน</h3><p>กรอกข้อมูล แอปจะสร้างตารางงวดให้อัตโนมัติ</p></div>
+                <button type="button" class="x" data-close aria-label="ปิด"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+            </div>
+            <form class="form" id="loanForm" autocomplete="off">
+                <label class="fl"><span>ผ่อนอะไร</span><input type="text" id="lfName" class="field" placeholder="เช่น iPhone, รถยนต์, โซฟา" maxlength="80"></label>
+                <div class="emoji-pick" id="lfIcons" aria-label="ไอคอน"></div>
+                <div class="row2">
+                    <label class="fl"><span>จำนวนงวด <i>(เดือน)</i></span><input type="text" id="lfMonths" class="field" inputmode="numeric" placeholder="เช่น 10"></label>
+                    <label class="fl"><span>ยอดต่อเดือน <i>(บาท)</i></span><input type="text" id="lfAmount" class="field" inputmode="decimal" placeholder="เช่น 2,500"></label>
+                </div>
+                <div class="row2" id="lfDateRow">
+                    <label class="fl"><span>ครบกำหนดงวดแรก</span><input type="date" id="lfFirst" class="field"></label>
+                    <label class="fl" id="lfPaidWrap"><span>จ่ายไปแล้ว <i>(งวด)</i></span><input type="text" id="lfPaid" class="field" inputmode="numeric" placeholder="0"></label>
+                </div>
+                <label class="fl"><span>หมายเหตุ</span><textarea id="lfNote" class="field ta" rows="2" maxlength="300" placeholder="เช่น ผ่อน 0% บัตรเครดิต, ตัดบัญชีอัตโนมัติ"></textarea></label>
+                <div class="calc-box num" id="lfCalc"></div>
+                <button type="submit" class="btn btn-primary" id="lfSave">บันทึก</button>
+                <button type="button" class="btn btn-danger hide" id="lfDelete">ลบรายการผ่อนนี้</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============ Savings account sheet ============ -->
+    <div class="overlay" id="accModal" aria-hidden="true">
+        <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="accModalTitle">
+            <div class="sheet-head">
+                <div><h3 id="accModalTitle">เพิ่มบัญชีเงินฝาก</h3><p>แยกเงินออมตามบัญชีหรือเป้าหมาย</p></div>
+                <button type="button" class="x" data-close aria-label="ปิด"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+            </div>
+            <form class="form" id="accForm" autocomplete="off">
+                <label class="fl"><span>ชื่อบัญชี / เป้าหมาย</span><input type="text" id="afName" class="field" placeholder="เช่น เงินสำรองฉุกเฉิน, เที่ยวญี่ปุ่น" maxlength="60"></label>
+                <div class="emoji-pick" id="afIcons" aria-label="ไอคอน"></div>
+                <label class="fl"><span>เป้าหมาย <i>(บาท · ไม่ใส่ก็ได้)</i></span><input type="text" id="afGoal" class="field" inputmode="decimal" placeholder="เช่น 50,000"></label>
+                <label class="fl"><span>หมายเหตุ</span><textarea id="afNote" class="field ta" rows="2" maxlength="300" placeholder="เช่น บัญชีออมทรัพย์ กสิกร, ดอกเบี้ย 1.5%"></textarea></label>
+                <div class="calc-box num hide" id="afInfo"></div>
+                <button type="submit" class="btn btn-primary">บันทึก</button>
+                <button type="button" class="btn btn-danger hide" id="afDelete">ลบบัญชีนี้</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============ Tab bar ============ -->
+    <nav class="tabbar" id="tabbar" role="tablist" aria-label="เมนูหลัก">
+        <span class="tab-ind" aria-hidden="true"></span>
+        <button type="button" class="tab" role="tab" data-page="overview">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12A9 9 0 1 1 12 3v9z"/><path d="M15.5 3.7A9 9 0 0 1 20.3 8.5H15.5z"/></svg>
+            <span>ภาพรวม</span>
+        </button>
+        <button type="button" class="tab" role="tab" data-page="loans">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/></svg>
+            <span>ผ่อนชำระ</span>
+            <i class="tab-badge hide" id="loanBadge">0</i>
+        </button>
+        <button type="button" class="tab" role="tab" data-page="savings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>
+            <span>เงินฝาก</span>
+        </button>
+    </nav>
+
     <div class="ptr" id="ptr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></div>
     <div class="update-bar" id="updateBar" role="status"><span id="updateText">มีเวอร์ชันใหม่</span><button type="button" id="updateNowBtn">อัปเดตเลย</button><button type="button" class="ub-x" id="updateCloseBtn" aria-label="ปิด"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
     <div class="updating" id="updatingScreen"><div class="box"><img src="icons/icon-192.png" alt=""><div id="updatingText">กำลังอัปเดตเป็นเวอร์ชันใหม่…</div></div></div>
@@ -863,11 +1396,21 @@
         const POLL_MS = 15000;                       // ตรวจการเปลี่ยนแปลงจากเครื่องอื่นทุก 15 วินาที
         const SEEN_KEY = 'smart_expense_seen_version';
         const YEARVIEW_KEY = 'smart_expense_yearview';
+        const PAGE_KEY = 'smart_expense_page';
+        const LOANFILTER_KEY = 'smart_expense_loanfilter';
+        const SCRIPT_VERSION = 3;                    // โค้ด Apps Script เวอร์ชันล่าสุด (รองรับผ่อนชำระ + เงินฝาก)
 
         // ================= Version / Changelog =================
         // ⚠️ ออกเวอร์ชันใหม่: เพิ่มเลข APP_VERSION + รายการใน CHANGELOG แล้วแก้ version.json ให้ตรงกัน
-        const APP_VERSION = '2.2.1';
+        const APP_VERSION = '2.3.0';
         const CHANGELOG = [
+            { v: '2.3.0', date: '25 พ.ย. 2569', items: [
+                { e: '💳', t: 'เมนูเช็กลิสต์ผ่อนชำระ', d: 'เพิ่มว่าผ่อนอะไร กี่เดือน เดือนละเท่าไหร่ ครบกำหนดวันไหน ติ๊กเมื่อจ่ายแล้วพร้อมบันทึกวันที่จ่าย และใส่หมายเหตุได้ทั้งรายการและรายงวด' },
+                { e: '🐷', t: 'เมนูเงินฝาก', d: 'บันทึกฝาก/ถอน แยกตามบัญชี ตั้งเป้าหมายการออม ดูกราฟ 6 เดือนและประวัติรายเดือน' },
+                { e: '🧭', t: 'แถบเมนูด้านล่าง', d: 'สลับ ภาพรวม · ผ่อนชำระ · เงินฝาก ในแตะเดียว พร้อมป้ายเตือนค่างวดที่ใกล้ครบกำหนด' },
+                { e: '✨', t: 'ดีไซน์ใหม่ ลูกเล่นเพียบ', d: 'การ์ดสรุปหลากโทน ช่องติ๊กเด้ง ไอคอนขยับ แถบความคืบหน้าเป็นประกาย และฉลองเมื่อผ่อนครบหรือออมถึงเป้า' },
+                { e: '📗', t: 'Google Sheets รองรับข้อมูลใหม่', d: 'มีแผ่นงาน ผ่อนชำระ / งวดผ่อน / บัญชีเงินฝาก / รายการฝากเงิน (อัปเดตโค้ด Apps Script เพื่อซิงก์ข้ามเครื่อง)' }
+            ] },
             { v: '2.2.1', date: '25 พ.ย. 2569', items: [
                 { e: '🛠️', t: 'แก้แถบ “มีเวอร์ชันใหม่” ค้างบน iPhone', d: 'แถบไม่โผล่ขึ้นมาเองอีก และมีปุ่ม × ไว้ปิดได้' }
             ] },
@@ -898,6 +1441,10 @@
         // ================= Data =================
         // fixedExpenses: { id, month: 'YYYY-MM', name, amount, paid }
         // customIncomes: { id, name, amount, used: ['YYYY-MM', ...] }  ← เดือนที่ติ๊กว่า "ใช้ไปแล้ว"
+        // loans:        { id, name, icon, months, amount, start: 'YYYY-MM', dueDay: 1-31, note,
+        //                 pays: [{ n: งวดที่, paid, date: 'YYYY-MM-DD' (วันที่จ่าย), note }] }  ← เก็บเฉพาะงวดที่มีข้อมูล
+        // savAccounts:  { id, name, icon, goal, note }
+        // savTx:        { id, acc: id บัญชี, type: 'in' | 'out', amount, date: 'YYYY-MM-DD', note }
         let appData = normalize({});
 
         function safeGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
@@ -909,14 +1456,41 @@
             const arr = Array.isArray(v) ? v : String(v ?? '').split(/[,\s]+/);
             return [...new Set(arr.map(s => String(s).trim()).filter(s => /^\d{4}-\d{2}$/.test(s)))].sort();
         }
+        const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+        const toDateKey = (v) => { const m = String(v ?? '').trim().match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); return m ? `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}` : ''; };
+        const toMonthKey = (v) => { const m = String(v ?? '').trim().match(/^(\d{4})-(\d{1,2})/); return m ? `${m[1]}-${m[2].padStart(2, '0')}` : ''; };
+        const clampInt = (v, lo, hi, def) => { const n = Math.round(toNum(v)); return n ? Math.min(hi, Math.max(lo, n)) : def; };
+        function normLoan(l) {
+            const months = clampInt(l.months, 1, 600, 1);
+            const seen = new Set();
+            const pays = (Array.isArray(l.pays) ? l.pays : [])
+                .map(p => ({ n: Math.round(toNum(p.n)), paid: !!p.paid, date: toDateKey(p.date), note: String(p.note ?? '').trim() }))
+                .filter(p => p.n >= 1 && p.n <= months && (p.paid || p.date || p.note) && !seen.has(p.n) && seen.add(p.n))
+                .sort((a, b) => a.n - b.n);
+            const d = new Date();
+            return {
+                id: String(l.id), name: String(l.name ?? ''), icon: String(l.icon || '💳'), months, amount: toNum(l.amount),
+                start: toMonthKey(l.start) || `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`,
+                dueDay: clampInt(l.dueDay, 1, 31, 1), note: String(l.note ?? ''), pays
+            };
+        }
         function normalize(data) {
+            const d = new Date();
+            const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
             return {
                 fixedExpenses: (data?.fixedExpenses || []).map(f => ({ id: String(f.id), month: f.month, name: String(f.name ?? ''), amount: toNum(f.amount), paid: !!f.paid })),
                 customIncomes: (data?.customIncomes || []).map(i => ({ id: String(i.id), name: String(i.name ?? ''), amount: toNum(i.amount), used: toMonths(i.used) })),
+                loans: (data?.loans || []).map(normLoan),
+                savAccounts: (data?.savAccounts || []).map(a => ({ id: String(a.id), name: String(a.name ?? ''), icon: String(a.icon || '🐷'), goal: Math.max(0, toNum(a.goal)), note: String(a.note ?? '') })),
+                savTx: (data?.savTx || []).map(t => ({
+                    id: String(t.id), acc: String(t.acc ?? ''), type: t.type === 'out' ? 'out' : 'in',
+                    amount: Math.abs(toNum(t.amount)), date: toDateKey(t.date) || today, note: String(t.note ?? '')
+                })),
                 updatedAt: toNum(data?.updatedAt)
             };
         }
-        const hasData = (d) => d.fixedExpenses.length > 0 || d.customIncomes.length > 0;
+        const hasData = (d) => d.fixedExpenses.length > 0 || d.customIncomes.length > 0 || d.loans.length > 0 || d.savAccounts.length > 0 || d.savTx.length > 0;
+        const itemCount = (d) => d.fixedExpenses.length + d.customIncomes.length + d.loans.length + d.savTx.length;
 
         (function loadFromLocalStorage() {
             const saved = safeGet(STORAGE_KEY);
@@ -1036,10 +1610,9 @@
             updateUI();
             if (reduceMotion()) return;
             const fx = [{ opacity: 0, transform: `translateX(${off * 18}px)` }, { opacity: 1, transform: 'none' }];
-            ['monthLabel', 'fixedExpenseList'].forEach(id => $(id).animate?.(fx, { duration: 280, easing: 'cubic-bezier(.2,.8,.2,1)' }));
+            ['monthLabel', 'fixedExpenseList', 'loanMonthLabel', 'savMonthLabel', 'stripList'].forEach(id => $(id).animate?.(fx, { duration: 280, easing: 'cubic-bezier(.2,.8,.2,1)' }));
         }
-        $('prevMonthBtn').addEventListener('click', () => changeMonth(-1));
-        $('nextMonthBtn').addEventListener('click', () => changeMonth(1));
+        document.querySelectorAll('[data-month-step]').forEach(b => b.addEventListener('click', () => changeMonth(Number(b.dataset.monthStep))));
         picker.addEventListener('change', updateUI);
         picker.closest('label').addEventListener('click', (e) => {
             if (typeof picker.showPicker === 'function') { try { picker.showPicker(); e.preventDefault(); } catch {} }
@@ -1056,7 +1629,7 @@
         try { gs = JSON.parse(safeGet(GS_KEY) || 'null'); } catch { gs = null; }
         const saveGs = () => gs ? safeSet(GS_KEY, JSON.stringify(gs)) : safeDel(GS_KEY);
         const GS_URL_RE = /^https:\/\/script\.google\.com\/(a\/macros\/[^/]+|macros)\/s\/[\w-]+\/exec\/?$/;
-        const hasNewScript = () => !!gs && (gs.version || 0) >= 2;
+        const hasNewScript = () => !!gs && (gs.version || 0) >= SCRIPT_VERSION;
 
         let syncState = gs ? (safeGet(PENDING_KEY) === '1' ? 'pending' : 'ok') : 'local';
         let syncError = '';
@@ -1141,11 +1714,19 @@
             saveGs();
         }
 
-        // โค้ด Apps Script เวอร์ชันเก่ายังไม่เก็บช่อง "ใช้แล้ว" ของรายรับ → คงค่าที่ติ๊กไว้ในเครื่องนี้ไว้
+        // โค้ด Apps Script เวอร์ชันเก่ายังไม่เก็บข้อมูลบางส่วน → คงข้อมูลส่วนนั้นในเครื่องนี้ไว้ ไม่ให้หายไป
+        //   v1: ไม่มีช่อง "ใช้แล้ว" ของรายรับ · v1–2: ไม่มีผ่อนชำระและเงินฝาก
         function keepLocalUsed(cloud, json) {
-            if (toNum(json.version) >= 2) return cloud;
-            const local = new Map(appData.customIncomes.map(i => [i.id, i.used]));
-            cloud.customIncomes.forEach(i => { if (!i.used.length && local.has(i.id)) i.used = local.get(i.id); });
+            const v = toNum(json.version);
+            if (v < 2) {
+                const local = new Map(appData.customIncomes.map(i => [i.id, i.used]));
+                cloud.customIncomes.forEach(i => { if (!i.used.length && local.has(i.id)) i.used = local.get(i.id); });
+            }
+            if (v < 3) {
+                cloud.loans = appData.loans;
+                cloud.savAccounts = appData.savAccounts;
+                cloud.savTx = appData.savTx;
+            }
             return cloud;
         }
 
@@ -1243,7 +1824,7 @@
                 if (hasData(cloud) && hasData(appData)) {
                     const choice = await confirmDialog(
                         'พบข้อมูลทั้งในชีตและในเครื่องนี้',
-                        `ในชีตมี ${cloud.fixedExpenses.length + cloud.customIncomes.length} รายการ · ในเครื่องนี้มี ${appData.fixedExpenses.length + appData.customIncomes.length} รายการ — ต้องการใช้ข้อมูลชุดไหน? (อีกชุดจะถูกแทนที่)`,
+                        `ในชีตมี ${itemCount(cloud)} รายการ · ในเครื่องนี้มี ${itemCount(appData)} รายการ — ต้องการใช้ข้อมูลชุดไหน? (อีกชุดจะถูกแทนที่)`,
                         'ใช้ข้อมูลจาก Google Sheets', 'ใช้ข้อมูลในเครื่องนี้', 'btn-primary');
                     if (choice === null) return false;
                     useCloud = choice;
@@ -1408,6 +1989,10 @@
             listEl.addEventListener('change', (e) => {
                 const item = findItem(e.target); if (!item) return;
                 const field = e.target.dataset.field;
+                if (e.target.checked && (field === 'paid' || field === 'used')) {
+                    const ck = e.target.closest('.check');
+                    ck.classList.remove('pop'); void ck.offsetWidth; ck.classList.add('pop');
+                }
                 if (field === 'paid') {
                     item.paid = e.target.checked;
                     e.target.closest('.row').classList.toggle('done', item.paid);
@@ -1490,7 +2075,7 @@
         bindList($('fixedExpenseList'), 'fixedExpenses');
 
         $('resetBtn').addEventListener('click', async () => {
-            if (!(await confirmDialog('ล้างข้อมูลทั้งหมด?', 'รายรับและค่าใช้จ่ายทุกเดือนจะถูกลบถาวร ไม่สามารถกู้คืนได้', 'ล้างข้อมูล'))) return;
+            if (!(await confirmDialog('ล้างข้อมูลทั้งหมด?', 'รายรับ ค่าใช้จ่าย รายการผ่อน และเงินฝากทั้งหมดจะถูกลบถาวร ไม่สามารถกู้คืนได้', 'ล้างข้อมูล'))) return;
             appData = normalize({});
             saveData(); updateUI();
             toast('ล้างข้อมูลเรียบร้อย');
@@ -1514,7 +2099,7 @@
 
         // ================= Render =================
         const emptyHTML = (text) => `<div class="empty">${text}</div>`;
-        const isEditing = () => !!document.activeElement?.matches?.('.list .inline');
+        const isEditing = () => !!document.activeElement?.matches?.('.list .inline, .sched input, #stripList input, .overlay.open input, .overlay.open textarea');
         let renderDeferred = false;
 
         // ข้อมูลเปลี่ยนจากเครื่อง/แท็บอื่น: ถ้ากำลังพิมพ์แก้ไขอยู่ จะรอให้แก้เสร็จก่อนค่อยวาดรายการใหม่
@@ -1531,6 +2116,8 @@
             renderDeferred = false;
             renderLists();
             renderSummary();
+            renderLoans(true);
+            renderSavings(true);
         }
 
         function rowHTML(x, kind, done) {
@@ -1580,6 +2167,7 @@
             $('fixedCount').textContent = c.items.length;
             countTo($('fixedHeadTotal'), c.expTotal, baht);
             $('fixedMonthText').textContent = `${MONTHS_SHORT[Number(month.slice(5)) - 1]} ${Number(month.slice(0, 4)) + 543} · ติ๊ก ✓ = จ่ายแล้ว`;
+            renderLoanStrip();
 
             renderYear(month);
         }
@@ -1626,12 +2214,13 @@
             });
             // เส้นรายรับ: คำนวณตำแหน่งจากความสูงของแท่ง (ไม่รวมป้ายชื่อเดือน)
             const track = cols[0].querySelector('.track');
-            const plotH = track.offsetHeight || 1, chartH = chart.offsetHeight || 1;
+            setCaption(rows.find(r => r.key === currentMonth));
+            if (!track.offsetHeight) return; // หน้าภาพรวมถูกซ่อนอยู่ — จะคำนวณเส้นรายรับใหม่เมื่อกลับมาที่หน้านี้
+            const plotH = track.offsetHeight, chartH = chart.offsetHeight || 1;
             const bottomPx = chartH - (track.offsetTop + plotH) + plotH * (income / max);
             $('plotLine').style.bottom = bottomPx + 'px';
             $('plotLine').style.display = income ? '' : 'none';
             $('plotLabel').textContent = `รายรับ ${fmt(income)}`;
-            setCaption(rows.find(r => r.key === currentMonth));
         }
         function setCaption(r) {
             if (!r) return;
@@ -1694,6 +2283,616 @@
             openSheet('monthDetailModal');
         }
         $('modalSelectBtn').addEventListener('click', () => { closeSheet('monthDetailModal'); if (modalMonth) selectMonth(modalMonth); });
+
+        // ================= Pages (แถบเมนูด้านล่าง) =================
+        const PAGES = ['overview', 'loans', 'savings'];
+        let currentPage = 'overview';
+        function showPage(p, scroll = true) {
+            if (!PAGES.includes(p)) return;
+            const changed = p !== currentPage;
+            currentPage = p;
+            safeSet(PAGE_KEY, p);
+            document.querySelectorAll('.page').forEach(el => el.classList.toggle('on', el.dataset.page === p));
+            document.querySelectorAll('.tab').forEach(b => { const on = b.dataset.page === p; b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on)); });
+            $('tabbar').style.setProperty('--i', PAGES.indexOf(p));
+            if (p === 'overview') requestAnimationFrame(() => renderChart(yearRows, selectedMonth()));
+            if (changed && scroll) window.scrollTo({ top: 0 });
+        }
+        document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => showPage(b.dataset.page)));
+        document.addEventListener('click', (e) => { const g = e.target.closest('[data-goto]'); if (g) showPage(g.dataset.goto); });
+
+        // ================= Shared helpers (วันที่ / ไอคอน) =================
+        const pad2 = (n) => String(n).padStart(2, '0');
+        const todayKey = () => { const d = new Date(); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`; };
+        const keyUTC = (k) => { const [y, m, d] = k.split('-').map(Number); return Date.UTC(y, m - 1, d); };
+        const daysUntil = (k) => Math.round((keyUTC(k) - keyUTC(todayKey())) / 86400000);
+        const daysIn = (y, m) => new Date(y, m, 0).getDate();
+        const monthDiff = (a, b) => { const [ay, am] = a.split('-').map(Number), [by, bm] = b.split('-').map(Number); return (by - ay) * 12 + (bm - am); };
+        const monthShort = (key) => { const [y, m] = key.split('-').map(Number); return `${MONTHS_SHORT[m - 1]} ${y + 543}`; };
+        const dateTitle = (k, short = false) => {
+            if (!DATE_RE.test(k || '')) return '';
+            const [y, m, d] = k.split('-').map(Number);
+            return `${d} ${MONTHS_SHORT[m - 1]} ${short ? String(y + 543).slice(2) : y + 543}`;
+        };
+        const parseAmt = (v) => parseFloat(String(v ?? '').replace(/[,฿\s]/g, ''));
+
+        const ICON_EDIT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+        const ICON_NOTE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg>';
+        const ICON_CHEV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+        const ICON_IN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16M6 14l6 6 6-6"/></svg>';
+        const ICON_OUT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V4M6 10l6-6 6 6"/></svg>';
+        const ICON_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+        const LOAN_ICONS = ['💳', '📱', '💻', '🚗', '🏍️', '🏠', '🛋️', '📺', '❄️', '🎓', '💍', '📦'];
+        const SAV_ICONS = ['🐷', '🏦', '💰', '🎯', '🛡️', '✈️', '🏠', '🚗', '🎓', '💍', '📈', '🎁'];
+
+        function renderIconPick(id, icons, sel) {
+            const list = icons.includes(sel) ? icons : [sel, ...icons];
+            $(id).innerHTML = list.map(e => `<button type="button" data-icon="${esc(e)}" class="${e === sel ? 'on' : ''}" aria-label="ไอคอน ${esc(e)}">${esc(e)}</button>`).join('');
+        }
+        function bindIconPick(id, onPick) {
+            $(id).addEventListener('click', (e) => {
+                const b = e.target.closest('[data-icon]'); if (!b) return;
+                $(id).querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+                onPick(b.dataset.icon);
+            });
+        }
+        const fineMouse = () => window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+        // ================= ผ่อนชำระ (Installments) =================
+        const openLoans = new Set();   // การ์ดที่เปิดดูตารางงวดอยู่
+        const openNotes = new Set();   // งวดที่เปิดช่องหมายเหตุไว้ ('loanId:n')
+        let loanFilter = ['active', 'done', 'all'].includes(safeGet(LOANFILTER_KEY)) ? safeGet(LOANFILTER_KEY) : 'active';
+        let lastTick = null;           // งวดที่เพิ่งติ๊ก (ใช้ทำเอฟเฟกต์เด้ง)
+
+        const loanDue = (l, n) => { const [y, m] = shiftMonth(l.start, n - 1).split('-').map(Number); return `${y}-${pad2(m)}-${pad2(Math.min(l.dueDay, daysIn(y, m)))}`; };
+        const getPay = (l, n) => l.pays.find(p => p.n === n);
+        const isPaid = (l, n) => !!getPay(l, n)?.paid;
+        function setPay(l, n, patch) {
+            let p = getPay(l, n);
+            if (!p) { p = { n, paid: false, date: '', note: '' }; l.pays.push(p); l.pays.sort((a, b) => a.n - b.n); }
+            Object.assign(p, patch);
+            if (!p.paid && !p.date && !p.note) l.pays = l.pays.filter(x => x !== p);
+        }
+        function loanStats(l) {
+            const paidN = l.pays.filter(p => p.paid).length;
+            const total = l.amount * l.months, paidAmt = paidN * l.amount;
+            let next = 0;
+            for (let n = 1; n <= l.months; n++) if (!isPaid(l, n)) { next = n; break; }
+            return { paidN, total, paidAmt, left: total - paidAmt, next, done: next === 0, endMonth: shiftMonth(l.start, l.months - 1) };
+        }
+        const dueStatus = (k) => { const d = daysUntil(k); return d < 0 ? 'overdue' : d === 0 ? 'today' : d <= 7 ? 'soon' : 'later'; };
+        const dueText = (k) => {
+            const d = daysUntil(k);
+            return d < 0 ? `เลยกำหนด ${-d} วัน` : d === 0 ? 'ครบกำหนดวันนี้' : d === 1 ? 'พรุ่งนี้' : d <= 30 ? `อีก ${d} วัน` : 'รอชำระ';
+        };
+        const loanNInMonth = (l, month) => { const n = monthDiff(l.start, month) + 1; return n >= 1 && n <= l.months ? n : 0; };
+        function loanMonth(month) {
+            const due = appData.loans.map(l => ({ l, n: loanNInMonth(l, month) })).filter(x => x.n)
+                .sort((a, b) => loanDue(a.l, a.n).localeCompare(loanDue(b.l, b.n)));
+            const paid = due.filter(x => isPaid(x.l, x.n));
+            const total = due.reduce((s, x) => s + x.l.amount, 0);
+            return { due, paidCount: paid.length, total, unpaid: total - paid.reduce((s, x) => s + x.l.amount, 0) };
+        }
+        // งวดที่ยังไม่จ่ายและเลยกำหนด/ครบกำหนดภายใน 3 วัน (ใช้แสดงป้ายบนแถบเมนู)
+        function loanAlerts() {
+            let c = 0;
+            appData.loans.forEach(l => {
+                for (let n = 1; n <= l.months; n++) {
+                    if (isPaid(l, n)) continue;
+                    if (daysUntil(loanDue(l, n)) <= 3) c++; else break;
+                }
+            });
+            return c;
+        }
+
+        function schedRowHTML(l, n, cur) {
+            const p = getPay(l, n) || {};
+            const due = loanDue(l, n);
+            const st = p.paid ? 'paid' : dueStatus(due);
+            const noteOpen = !!p.note || openNotes.has(`${l.id}:${n}`);
+            const pop = lastTick && lastTick.id === l.id && lastTick.n === n ? 'pop' : '';
+            return `
+                <div class="srow ${p.paid ? 'paid' : ''} ${n === cur ? 'current' : ''}" data-n="${n}">
+                    <label class="check ${pop}" title="จ่ายแล้ว"><input type="checkbox" data-act="tick" ${p.paid ? 'checked' : ''} aria-label="จ่ายงวดที่ ${n} แล้ว"><span>${ICON_CHECK}</span></label>
+                    <div class="s-main"><div class="s-n"><span class="t">งวดที่ ${n}</span></div><div class="s-d num">ครบ ${dateTitle(due)} · ${fmt(l.amount)} ฿</div></div>
+                    <div class="s-side">${p.paid
+                        ? `<label class="paid-date" title="วันที่จ่าย">จ่ายเมื่อ<input type="date" class="date-in" data-act="date" value="${esc(p.date || '')}" aria-label="วันที่จ่ายงวดที่ ${n}"></label>`
+                        : `<span class="badge ${st}">${dueText(due)}</span>`}</div>
+                    <button type="button" class="note-btn ${p.note ? 'has' : ''}" data-act="note" title="หมายเหตุงวดนี้" aria-label="หมายเหตุงวดที่ ${n}">${ICON_NOTE}</button>
+                    ${noteOpen ? `<input class="field s-note" data-act="pnote" value="${esc(p.note || '')}" placeholder="หมายเหตุงวดนี้ เช่น โอนผ่านแอปธนาคาร" maxlength="120" aria-label="หมายเหตุงวดที่ ${n}">` : ''}
+                </div>`;
+        }
+
+        function loanCardHTML(l, enter) {
+            const s = loanStats(l);
+            const open = openLoans.has(l.id);
+            const pct = s.total ? s.paidAmt / s.total : (s.done ? 1 : 0);
+            let next, overdue = false;
+            if (s.done) {
+                next = `<div class="lc-next done"><div class="t">🎉 <b>ผ่อนครบทุกงวดแล้ว</b> · รวม ${baht(s.total)}</div></div>`;
+            } else {
+                const due = loanDue(l, s.next), st = dueStatus(due);
+                overdue = st === 'overdue';
+                next = `
+                    <div class="lc-next ${st}">
+                        <div class="t">งวดถัดไป <b>งวดที่ ${s.next}/${l.months}</b> · <b class="num">${baht(l.amount)}</b><br>ครบกำหนด ${dateTitle(due)} <span class="badge ${st}">${dueText(due)}</span></div>
+                        <button type="button" class="pay-btn" data-act="pay-next">${ICON_CHECK}จ่ายงวดนี้</button>
+                    </div>`;
+            }
+            let sched = '';
+            if (open) { sched = '<div class="sched">'; for (let n = 1; n <= l.months; n++) sched += schedRowHTML(l, n, s.next); sched += '</div>'; }
+            return `
+                <article class="loan-card ${s.done ? 'done' : ''} ${overdue ? 'overdue' : ''} ${open ? 'open' : ''} ${enter ? 'enter' : ''}" data-id="${esc(l.id)}">
+                    <div class="lc-top">
+                        <span class="lc-ico">${esc(l.icon)}</span>
+                        <div class="lc-title"><div class="lc-name">${esc(l.name)}</div><div class="lc-meta num">เดือนละ ${baht(l.amount)} · ${l.months} งวด · ทุกวันที่ ${l.dueDay}</div></div>
+                        <div class="lc-pct num">${Math.round(pct * 100)}<small>%</small></div>
+                        <button type="button" class="icon-btn sm" data-act="edit" title="แก้ไข" aria-label="แก้ไข ${esc(l.name)}">${ICON_EDIT}</button>
+                    </div>
+                    <div class="lc-bar"><span style="width:${(pct * 100).toFixed(1)}%"></span></div>
+                    <div class="lc-prog-t num"><span>จ่ายแล้ว ${s.paidN}/${l.months} งวด</span><span>${monthShort(l.start)} – ${monthShort(s.endMonth)}</span></div>
+                    <div class="lc-stats num">
+                        <div class="lc-stat"><span>ยอดรวม</span><b>${fmt(s.total)}</b></div>
+                        <div class="lc-stat"><span>จ่ายแล้ว</span><b class="green">${fmt(s.paidAmt)}</b></div>
+                        <div class="lc-stat"><span>คงเหลือ</span><b class="${s.left ? 'amber' : 'green'}">${fmt(s.left)}</b></div>
+                    </div>
+                    ${next}
+                    ${l.note ? `<div class="lc-note">📝 ${esc(l.note)}</div>` : ''}
+                    <button type="button" class="lc-toggle" data-act="toggle" aria-expanded="${open}">${open ? 'ซ่อนตารางงวด' : `ดูตารางงวดทั้งหมด (${l.months})`} ${ICON_CHEV}</button>
+                    ${sched}
+                </article>`;
+        }
+
+        // เรียงตามวันครบกำหนดงวดถัดไป (ผ่อนครบแล้วไว้ท้าย)
+        // ตอนติ๊กจ่าย จะคงลำดับเดิมไว้ การ์ดจะได้ไม่กระโดดหนีจากนิ้ว — เรียงใหม่เมื่อเปลี่ยนเดือน/หน้า/ตัวกรอง
+        let loanOrder = [];
+        function sortedLoans(resort) {
+            const key = (l) => { const s = loanStats(l); return s.done ? '9999' : loanDue(l, s.next); };
+            const fresh = [...appData.loans].sort((a, b) => key(a).localeCompare(key(b)));
+            if (resort || !loanOrder.length) { loanOrder = fresh.map(l => l.id); return fresh; }
+            const pos = new Map(loanOrder.map((id, i) => [id, i]));
+            const out = fresh.filter(l => pos.has(l.id)).sort((a, b) => pos.get(a.id) - pos.get(b.id));
+            fresh.forEach(l => { if (!pos.has(l.id)) out.unshift(l); });
+            loanOrder = out.map(l => l.id);
+            return out;
+        }
+
+        function renderLoans(anim = false) {
+            const month = selectedMonth();
+            const lm = loanMonth(month);
+            $('loanMonthLabel').textContent = monthTitle(month);
+            countTo($('loanDueAmt'), lm.unpaid, v => `${fmt(v)}<small>฿</small>`);
+            $('loanDueSub').textContent = lm.due.length
+                ? (lm.unpaid ? `ยังไม่จ่าย ${lm.due.length - lm.paidCount} จาก ${lm.due.length} งวด` : 'จ่ายค่างวดเดือนนี้ครบแล้ว ✓')
+                : 'ไม่มีค่างวดในเดือนนี้';
+
+            let total = 0, paid = 0, active = 0, done = 0;
+            appData.loans.forEach(l => { const s = loanStats(l); total += s.total; paid += s.paidAmt; s.done ? done++ : active++; });
+            const pct = total ? paid / total : 0;
+            $('loanRingVal').style.strokeDashoffset = (263.9 * (1 - pct)).toFixed(1);
+            countTo($('loanRingPct'), Math.round(pct * 100), v => `${v}%`);
+            countTo($('kLoanMonth'), lm.total, baht);
+            $('kLoanMonthSub').innerHTML = `<span>${lm.due.length} รายการ</span><span>จ่ายแล้ว ${fmt(lm.total - lm.unpaid)}</span>`;
+            countTo($('kLoanLeft'), total - paid, baht);
+            $('kLoanLeftSub').innerHTML = `<span>ทั้งหมด ${fmt(total)}</span><span>จ่ายแล้ว ${fmt(paid)}</span>`;
+            $('loanProgressText').textContent = `${lm.paidCount} / ${lm.due.length} งวด`;
+            $('loanProgressBar').style.width = lm.due.length ? (lm.paidCount / lm.due.length * 100) + '%' : '0%';
+            $('lfcActive').textContent = active; $('lfcDone').textContent = done; $('lfcAll').textContent = appData.loans.length;
+
+            const list = sortedLoans(anim).filter(l => loanFilter === 'all' || (loanFilter === 'done') === loanStats(l).done);
+            if (list.length) {
+                $('loanList').innerHTML = list.map(l => loanCardHTML(l, anim)).join('');
+            } else if (!appData.loans.length) {
+                $('loanList').innerHTML = `<div class="card empty-big" style="grid-column:1/-1"><span class="e">💳</span><b>ยังไม่มีรายการผ่อน</b><p>เพิ่มของที่กำลังผ่อน แอปจะสร้างเช็กลิสต์ทุกงวดพร้อมวันครบกำหนดให้อัตโนมัติ</p><button type="button" class="btn-add" data-act="add">${ICON_PLUS}เพิ่มรายการผ่อนแรก</button></div>`;
+            } else {
+                $('loanList').innerHTML = `<div class="card empty-big" style="grid-column:1/-1"><span class="e">${loanFilter === 'done' ? '⏳' : '🎉'}</span><b>${loanFilter === 'done' ? 'ยังไม่มีรายการที่ผ่อนครบ' : 'ไม่มีรายการที่กำลังผ่อน'}</b><p>${loanFilter === 'done' ? 'สู้ ๆ อีกนิดเดียว!' : 'ผ่อนครบทุกรายการแล้ว เก่งมาก!'}</p></div>`;
+            }
+            renderLoanBadge();
+        }
+
+        function renderLoanStrip() {
+            const lm = loanMonth(selectedMonth());
+            $('loanStrip').classList.toggle('hide', !lm.due.length);
+            if (!lm.due.length) return;
+            $('stripCount').textContent = lm.due.length;
+            countTo($('stripTotal'), lm.unpaid, v => lm.unpaid ? `ค้างจ่าย ${baht(v)}` : 'จ่ายครบแล้ว ✓');
+            $('stripTotal').classList.toggle('amber', !!lm.unpaid);
+            $('stripTotal').classList.toggle('green', !lm.unpaid);
+            $('stripList').innerHTML = lm.due.map(({ l, n }) => {
+                const p = getPay(l, n) || {}, due = loanDue(l, n), st = p.paid ? 'paid' : dueStatus(due);
+                const pop = lastTick && lastTick.id === l.id && lastTick.n === n ? 'pop' : '';
+                return `
+                    <div class="srow strip ${p.paid ? 'paid' : ''}" data-id="${esc(l.id)}" data-n="${n}">
+                        <label class="check ${pop}" title="จ่ายแล้ว"><input type="checkbox" data-act="tick" ${p.paid ? 'checked' : ''} aria-label="จ่ายงวดนี้แล้ว"><span>${ICON_CHECK}</span></label>
+                        <div class="s-main"><div class="s-n"><span class="s-e">${esc(l.icon)}</span><span class="nm">${esc(l.name)}</span></div><div class="s-d">งวดที่ ${n}/${l.months} · ครบกำหนด ${dateTitle(due)}</div></div>
+                        <div class="s-side"><b class="num">${baht(l.amount)}</b><span class="badge ${st}">${p.paid ? (p.date ? `จ่าย ${dateTitle(p.date, true)}` : 'จ่ายแล้ว') : dueText(due)}</span></div>
+                    </div>`;
+            }).join('');
+        }
+
+        function renderLoanBadge() {
+            const c = loanAlerts();
+            $('loanBadge').textContent = c > 9 ? '9+' : c;
+            $('loanBadge').classList.toggle('hide', !c);
+        }
+
+        function refreshLoanViews() { renderLoans(false); renderLoanStrip(); lastTick = null; }
+
+        function tickLoan(l, n, checked, el) {
+            const p = getPay(l, n);
+            setPay(l, n, checked ? { paid: true, date: p?.date || todayKey() } : { paid: false, date: '' });
+            saveData();
+            if (checked) {
+                if (el) burstAt(el, 14);
+                lastTick = { id: l.id, n };
+                const s = loanStats(l);
+                if (s.done) setTimeout(() => { celebrate(); toast(`ผ่อน “${l.name}” ครบทุกงวดแล้ว 🎉`); }, 250);
+                else toast(`จ่ายงวดที่ ${n} ของ “${l.name}” แล้ว ✓`);
+            }
+            refreshLoanViews();
+        }
+
+        function setLoanFilter(f) {
+            loanFilter = f;
+            safeSet(LOANFILTER_KEY, f);
+            document.querySelectorAll('#loanFilterSeg button').forEach(b => b.classList.toggle('on', b.dataset.filter === f));
+        }
+        $('loanFilterSeg').addEventListener('click', (e) => {
+            const b = e.target.closest('[data-filter]'); if (!b) return;
+            setLoanFilter(b.dataset.filter); renderLoans(true);
+        });
+
+        // ติ๊ก / วันที่จ่าย / หมายเหตุรายงวด — ใช้ร่วมกันทั้งหน้าผ่อนชำระและการ์ดบนหน้าภาพรวม
+        function onLoanChange(e) {
+            const t = e.target, act = t.dataset.act;
+            if (!act) return;
+            const host = t.closest('[data-id]');
+            const l = host && appData.loans.find(x => x.id === host.dataset.id);
+            const n = Number(t.closest('[data-n]')?.dataset.n);
+            if (!l || !n) return;
+            if (act === 'tick') tickLoan(l, n, t.checked, t);
+            else if (act === 'date') { setPay(l, n, { date: t.value }); saveData(); }
+            else if (act === 'pnote') {
+                setPay(l, n, { note: t.value.trim() });
+                saveData();
+                t.closest('.srow')?.querySelector('.note-btn')?.classList.toggle('has', !!t.value.trim());
+            }
+        }
+        $('loanList').addEventListener('change', onLoanChange);
+        $('stripList').addEventListener('change', onLoanChange);
+        $('loanList').addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.matches('.s-note')) e.target.blur(); });
+
+        function rerenderCard(l) {
+            const card = $('loanList').querySelector(`[data-id="${CSS.escape(l.id)}"]`);
+            if (card) card.outerHTML = loanCardHTML(l, false);
+        }
+        $('loanList').addEventListener('click', (e) => {
+            const b = e.target.closest('[data-act]');
+            if (!b || b.tagName === 'INPUT') return;
+            if (b.dataset.act === 'add') { openLoanModal(); return; }
+            const card = b.closest('[data-id]');
+            const l = card && appData.loans.find(x => x.id === card.dataset.id);
+            if (!l) return;
+            switch (b.dataset.act) {
+                case 'edit': openLoanModal(l.id); break;
+                case 'toggle':
+                    openLoans.has(l.id) ? openLoans.delete(l.id) : openLoans.add(l.id);
+                    rerenderCard(l);
+                    break;
+                case 'pay-next': { const s = loanStats(l); if (s.next) tickLoan(l, s.next, true, b); break; }
+                case 'note': {
+                    const n = Number(b.closest('[data-n]').dataset.n), k = `${l.id}:${n}`;
+                    if (getPay(l, n)?.note) { b.closest('.srow').querySelector('.s-note')?.focus(); break; }
+                    openNotes.has(k) ? openNotes.delete(k) : openNotes.add(k);
+                    rerenderCard(l);
+                    $('loanList').querySelector(`[data-id="${CSS.escape(l.id)}"] [data-n="${n}"] .s-note`)?.focus();
+                    break;
+                }
+            }
+        });
+
+        // ---- เพิ่ม / แก้ไขรายการผ่อน ----
+        let editingLoanId = null, lfIcon = LOAN_ICONS[0];
+        bindIconPick('lfIcons', (ic) => { lfIcon = ic; });
+        function openLoanModal(id = null) {
+            const l = id ? appData.loans.find(x => x.id === id) : null;
+            editingLoanId = l ? l.id : null;
+            $('loanModalTitle').textContent = l ? 'แก้ไขรายการผ่อน' : 'เพิ่มรายการผ่อน';
+            $('lfName').value = l?.name || '';
+            $('lfMonths').value = l ? l.months : '';
+            $('lfAmount').value = l ? l.amount : '';
+            $('lfFirst').value = l ? loanDue(l, 1) : todayKey();
+            $('lfPaid').value = '';
+            $('lfNote').value = l?.note || '';
+            lfIcon = l?.icon || LOAN_ICONS[0];
+            renderIconPick('lfIcons', LOAN_ICONS, lfIcon);
+            $('lfPaidWrap').classList.toggle('hide', !!l);
+            $('lfDateRow').classList.toggle('one', !!l);
+            $('lfDelete').classList.toggle('hide', !l);
+            updateLoanCalc();
+            openSheet('loanModal');
+            if (!l && fineMouse()) setTimeout(() => $('lfName').focus(), 200);
+        }
+        function updateLoanCalc() {
+            const months = clampInt($('lfMonths').value, 1, 600, 0), amount = parseAmt($('lfAmount').value) || 0;
+            const first = $('lfFirst').value;
+            const paidK = Math.min(months, Math.max(0, Math.round(toNum($('lfPaid').value))));
+            if (!months || !amount) { $('lfCalc').innerHTML = '<div><span>กรอกจำนวนงวดและยอดต่อเดือน เพื่อดูยอดรวม</span></div>'; return; }
+            const end = DATE_RE.test(first) ? monthTitle(shiftMonth(first.slice(0, 7), months - 1)) : '—';
+            $('lfCalc').innerHTML = `
+                <div class="big"><span>ยอดผ่อนทั้งหมด</span><b>${baht(months * amount)}</b></div>
+                <div><span>ผ่อนครบเดือน</span><b>${end}</b></div>
+                ${!editingLoanId && paidK ? `<div><span>คงเหลือหลังหักที่จ่ายแล้ว ${paidK} งวด</span><b>${baht((months - paidK) * amount)}</b></div>` : ''}`;
+        }
+        ['lfMonths', 'lfAmount', 'lfFirst', 'lfPaid'].forEach(id => $(id).addEventListener('input', updateLoanCalc));
+        $('loanForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = $('lfName').value.trim();
+            const months = clampInt($('lfMonths').value, 1, 600, 0);
+            const amount = parseAmt($('lfAmount').value);
+            const first = $('lfFirst').value;
+            if (!name) { toast('กรุณากรอกว่าผ่อนอะไร'); $('lfName').focus(); return; }
+            if (!months) { toast('กรุณากรอกจำนวนงวด (เดือน)'); $('lfMonths').focus(); return; }
+            if (!(amount > 0)) { toast('กรุณากรอกยอดผ่อนต่อเดือน'); $('lfAmount').focus(); return; }
+            if (!DATE_RE.test(first)) { toast('กรุณาเลือกวันครบกำหนดงวดแรก'); return; }
+            const old = editingLoanId && appData.loans.find(x => x.id === editingLoanId);
+            const patch = {
+                name, icon: lfIcon, months, amount, note: $('lfNote').value.trim(), start: first.slice(0, 7),
+                // ถ้าไม่ได้เปลี่ยนวันที่ ให้คงวันครบกำหนดเดิม (เช่น ทุกวันที่ 31 ที่ถูกปัดเป็น 30 ในบางเดือน)
+                dueDay: old && first === loanDue(old, 1) ? old.dueDay : Number(first.slice(8))
+            };
+            if (old) {
+                Object.assign(old, patch);
+                old.pays = old.pays.filter(p => p.n <= months);
+                toast('บันทึกการแก้ไขแล้ว');
+            } else {
+                const l = { id: newId(), ...patch, pays: [] };
+                const paidK = Math.min(months, Math.max(0, Math.round(toNum($('lfPaid').value))));
+                for (let n = 1; n <= paidK; n++) l.pays.push({ n, paid: true, date: '', note: '' });
+                appData.loans.push(l);
+                if (loanFilter !== 'all') setLoanFilter(paidK >= months ? 'done' : 'active');
+                toast(`เพิ่ม “${name}” แล้ว · ${months} งวด`);
+            }
+            saveData();
+            closeSheet('loanModal');
+            renderLoans(true); renderLoanStrip();
+            if (!old) showPage('loans');
+        });
+        $('lfDelete').addEventListener('click', async () => {
+            const l = appData.loans.find(x => x.id === editingLoanId); if (!l) return;
+            closeSheet('loanModal');
+            if (!(await confirmDialog('ลบรายการผ่อนนี้?', `“${l.name}” และประวัติการจ่ายทุกงวดจะถูกลบ`, 'ลบรายการ'))) { openSheet('loanModal'); return; }
+            appData.loans = appData.loans.filter(x => x.id !== l.id);
+            saveData(); refreshLoanViews();
+            toast('ลบรายการผ่อนแล้ว');
+        });
+        $('addLoanBtn').addEventListener('click', () => openLoanModal());
+
+        // ================= เงินฝาก (Savings) =================
+        let savType = 'in', savAccSel = '', savFilter = 'all', savLimit = 40;
+        const accBalance = (id) => appData.savTx.reduce((s, t) => t.acc === id ? s + (t.type === 'in' ? t.amount : -t.amount) : s, 0);
+        const accById = (id) => appData.savAccounts.find(a => a.id === id);
+
+        function setSavType(t) {
+            savType = t;
+            $('savAddCard').classList.toggle('in', t === 'in');
+            $('savAddCard').classList.toggle('out', t === 'out');
+            document.querySelectorAll('#savTypeSeg button').forEach(b => b.classList.toggle('on', b.dataset.type === t));
+            $('savSubmit').textContent = t === 'in' ? 'ฝากเงิน' : 'ถอนเงิน';
+        }
+        $('savTypeSeg').addEventListener('click', (e) => { const b = e.target.closest('[data-type]'); if (b) setSavType(b.dataset.type); });
+        $('savQuick').addEventListener('click', (e) => {
+            const b = e.target.closest('[data-add]'); if (!b) return;
+            const add = Number(b.dataset.add);
+            $('savAmount').value = add ? fmt((parseAmt($('savAmount').value) || 0) + add) : '';
+            $('savAmount').animate?.([{ transform: 'scale(1.06)' }, { transform: 'none' }], { duration: 220, easing: 'ease-out' });
+        });
+        $('savAmount').addEventListener('focus', () => { const v = parseAmt($('savAmount').value); $('savAmount').value = isNaN(v) ? '' : String(v); });
+        $('savAmount').addEventListener('blur', () => { const v = parseAmt($('savAmount').value); $('savAmount').value = isNaN(v) ? '' : fmt(v); });
+
+        function renderSavChips() {
+            const accs = appData.savAccounts;
+            if (!accById(savAccSel)) savAccSel = accs[0]?.id || '';
+            $('savAccChips').innerHTML = accs.map(a => `<button type="button" class="chip ${a.id === savAccSel ? 'on' : ''}" data-acc="${esc(a.id)}"><span class="e">${esc(a.icon)}</span>${esc(a.name)}</button>`).join('')
+                + `<button type="button" class="chip add" data-new-acc>${accs.length ? '+ บัญชีใหม่' : '+ สร้างบัญชี'}</button>`
+                + (accs.length ? '' : '<span class="chip-hint">หรือฝากเลย จะเก็บใน “🐷 เงินออม” ให้</span>');
+            $('savFilterChips').innerHTML = accs.length > 1
+                ? [`<button type="button" class="chip ${savFilter === 'all' ? 'on' : ''}" data-filter="all">ทั้งหมด</button>`, ...accs.map(a => `<button type="button" class="chip ${a.id === savFilter ? 'on' : ''}" data-filter="${esc(a.id)}"><span class="e">${esc(a.icon)}</span>${esc(a.name)}</button>`)].join('')
+                : '';
+        }
+        $('savAccChips').addEventListener('click', (e) => {
+            if (e.target.closest('[data-new-acc]')) { openAccModal(); return; }
+            const c = e.target.closest('[data-acc]'); if (!c) return;
+            savAccSel = c.dataset.acc;
+            $('savAccChips').querySelectorAll('[data-acc]').forEach(x => x.classList.toggle('on', x === c));
+        });
+        $('savFilterChips').addEventListener('click', (e) => {
+            const c = e.target.closest('[data-filter]'); if (!c) return;
+            savFilter = c.dataset.filter; savLimit = 40;
+            renderSavChips(); renderSavHistory(true);
+        });
+
+        function renderSavChart(month) {
+            const chart = $('savChart');
+            if (!chart.children.length) {
+                chart.innerHTML = Array.from({ length: 6 }, (_, i) => `<div class="mc" data-i="${i}" role="button" tabindex="0"><div class="bars"><i class="bi"></i><i class="bo"></i></div><span class="lb"></span></div>`).join('');
+            }
+            const months = Array.from({ length: 6 }, (_, i) => shiftMonth(month, i - 5));
+            const data = months.map(m => {
+                const tx = appData.savTx.filter(t => t.date.slice(0, 7) === m);
+                return { m, inn: tx.filter(t => t.type === 'in').reduce((s, t) => s + t.amount, 0), out: tx.filter(t => t.type === 'out').reduce((s, t) => s + t.amount, 0) };
+            });
+            const max = Math.max(1, ...data.map(d => Math.max(d.inn, d.out))) * 1.1;
+            chart.querySelectorAll('.mc').forEach((col, i) => {
+                const d = data[i];
+                col.dataset.month = d.m;
+                col.classList.toggle('sel', d.m === month);
+                col.title = `${monthTitle(d.m)} · ฝาก ${fmt(d.inn)} · ถอน ${fmt(d.out)}`;
+                col.querySelector('.lb').textContent = MONTHS_SHORT[Number(d.m.slice(5)) - 1];
+                col.querySelector('.bi').style.height = (d.inn / max * 100).toFixed(1) + '%';
+                col.querySelector('.bo').style.height = (d.out / max * 100).toFixed(1) + '%';
+            });
+        }
+        $('savChart').addEventListener('click', (e) => { const c = e.target.closest('[data-month]'); if (c) selectMonth(c.dataset.month, false); });
+
+        function renderSavAccounts(anim) {
+            const accs = appData.savAccounts;
+            $('accCount').textContent = accs.length;
+            $('savAccGrid').innerHTML = accs.map((a, i) => {
+                const bal = accBalance(a.id);
+                const pct = a.goal > 0 ? Math.max(0, Math.min(1, bal / a.goal)) : 0;
+                return `
+                    <button type="button" class="acc-tile ${anim ? 'enter' : ''} ${a.goal > 0 && bal >= a.goal ? 'reached' : ''}" data-acc="${esc(a.id)}" style="animation-delay:${i * 40}ms" title="แตะเพื่อแก้ไข">
+                        <span class="acc-ico">${esc(a.icon)}</span>
+                        <span class="acc-name">${esc(a.name)}</span>
+                        <b class="acc-bal num ${bal < 0 ? 'red' : ''}">${baht(bal)}</b>
+                        ${a.goal > 0
+                            ? `<span class="acc-bar"><i style="width:${(pct * 100).toFixed(1)}%"></i></span><span class="acc-goal num">${Math.round(pct * 100)}% ของเป้า ${fmt(a.goal)}${bal < a.goal ? ` · อีก ${fmt(a.goal - bal)}` : ''}</span>`
+                            : `<span class="acc-goal">${esc(a.note || 'ไม่ได้ตั้งเป้าหมาย')}</span>`}
+                    </button>`;
+            }).join('') + `<button type="button" class="acc-tile add" data-new-acc>${ICON_PLUS}เพิ่มบัญชี / เป้าหมาย</button>`;
+        }
+        $('savAccGrid').addEventListener('click', (e) => {
+            if (e.target.closest('[data-new-acc]')) { openAccModal(); return; }
+            const t = e.target.closest('[data-acc]'); if (t) openAccModal(t.dataset.acc);
+        });
+        $('addAccBtn').addEventListener('click', () => openAccModal());
+
+        function renderSavHistory(anim) {
+            const txs = appData.savTx.filter(t => savFilter === 'all' || t.acc === savFilter)
+                .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+            $('txCount').textContent = txs.length;
+            if (!txs.length) {
+                $('savHistory').innerHTML = `<div class="empty-big"><span class="e">🐷</span><b>ยังไม่มีรายการฝากเงิน</b><p>เริ่มออมวันนี้ ทีละนิดก็เป็นก้อนใหญ่ได้ — กรอกจำนวนเงินด้านบนแล้วกด “ฝากเงิน”</p></div>`;
+                return;
+            }
+            const shown = txs.slice(0, savLimit);
+            let html = '', cur = '';
+            shown.forEach((t, i) => {
+                const m = t.date.slice(0, 7);
+                if (m !== cur) {
+                    cur = m;
+                    const net = txs.filter(x => x.date.slice(0, 7) === m).reduce((s, x) => s + (x.type === 'in' ? x.amount : -x.amount), 0);
+                    html += `<div class="tx-month"><span>${monthTitle(m)}</span><b class="${net < 0 ? 'red' : 'green'}">${net < 0 ? '−' : '+'}${fmt(Math.abs(net))} ฿</b></div>`;
+                }
+                const a = accById(t.acc);
+                html += `
+                    <div class="txrow ${anim ? 'enter' : ''}" data-tx="${esc(t.id)}" style="animation-delay:${Math.min(i, 12) * 25}ms">
+                        <span class="tx-ico ${t.type}">${t.type === 'in' ? ICON_IN : ICON_OUT}</span>
+                        <div class="tx-main"><b>${esc(t.note || (t.type === 'in' ? 'ฝากเงิน' : 'ถอนเงิน'))}</b><span>${a ? `${esc(a.icon)} ${esc(a.name)} · ` : ''}${dateTitle(t.date)}</span></div>
+                        <b class="tx-amt ${t.type === 'in' ? 'green' : 'red'}">${t.type === 'in' ? '+' : '−'}${fmt(t.amount)}</b>
+                        <button type="button" class="del" data-del-tx title="ลบ" aria-label="ลบรายการ">${ICON_TRASH}</button>
+                    </div>`;
+            });
+            if (txs.length > savLimit) html += `<button type="button" class="btn btn-ghost btn-sm more-btn" data-more>แสดงเพิ่ม (อีก ${txs.length - savLimit} รายการ)</button>`;
+            $('savHistory').innerHTML = html;
+        }
+        $('savHistory').addEventListener('click', async (e) => {
+            if (e.target.closest('[data-more]')) { savLimit += 60; renderSavHistory(false); return; }
+            const b = e.target.closest('[data-del-tx]'); if (!b) return;
+            const t = appData.savTx.find(x => x.id === b.closest('[data-tx]').dataset.tx); if (!t) return;
+            if (!(await confirmDialog('ลบรายการนี้?', `${t.type === 'in' ? 'ฝาก' : 'ถอน'} ${baht(t.amount)} · ${dateTitle(t.date)}${t.note ? ` · ${t.note}` : ''}`, 'ลบรายการ'))) return;
+            appData.savTx = appData.savTx.filter(x => x.id !== t.id);
+            saveData(); renderSavings(false);
+            toast('ลบรายการแล้ว');
+        });
+
+        function renderSavings(anim = false) {
+            const month = selectedMonth();
+            const total = appData.savTx.reduce((s, t) => s + (t.type === 'in' ? t.amount : -t.amount), 0);
+            const mtx = appData.savTx.filter(t => t.date.slice(0, 7) === month);
+            const ins = mtx.filter(t => t.type === 'in'), outs = mtx.filter(t => t.type === 'out');
+            $('savMonthLabel').textContent = monthTitle(month);
+            countTo($('savTotal'), total, v => `${fmt(v)}<small>฿</small>`);
+            $('savTotal').classList.toggle('neg', total < 0);
+            const goals = appData.savAccounts.filter(a => a.goal > 0);
+            $('savTotalSub').textContent = appData.savTx.length
+                ? `${appData.savAccounts.length} บัญชี · ${appData.savTx.length} รายการ${goals.length ? ` · ถึงเป้าแล้ว ${goals.filter(a => accBalance(a.id) >= a.goal).length}/${goals.length}` : ''}`
+                : 'เริ่มฝากเงินก้อนแรกได้เลย ✨';
+            countTo($('kSavIn'), sum(ins), v => v ? `+${baht(v)}` : baht(0));
+            $('kSavInSub').innerHTML = `<span>${ins.length} รายการ</span>`;
+            countTo($('kSavOut'), sum(outs), v => v ? `−${baht(v)}` : baht(0));
+            $('kSavOutSub').innerHTML = `<span>${outs.length} รายการ</span><span>สุทธิ ${sum(ins) - sum(outs) < 0 ? '−' : '+'}${fmt(Math.abs(sum(ins) - sum(outs)))}</span>`;
+            if (savFilter !== 'all' && !accById(savFilter)) savFilter = 'all';
+            renderSavChart(month);
+            renderSavChips();
+            renderSavAccounts(anim);
+            renderSavHistory(anim);
+        }
+
+        $('savForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const amount = parseAmt($('savAmount').value);
+            if (!(amount > 0)) { toast('กรุณากรอกจำนวนเงิน'); $('savAmount').focus(); return; }
+            if (!appData.savAccounts.length) {
+                const a = { id: newId(), name: 'เงินออม', icon: '🐷', goal: 0, note: '' };
+                appData.savAccounts.push(a); savAccSel = a.id;
+            }
+            const acc = accById(savAccSel) || appData.savAccounts[0];
+            const before = accBalance(acc.id);
+            if (savType === 'out' && amount > before) {
+                if (!(await confirmDialog('ถอนมากกว่ายอดคงเหลือ?', `“${acc.name}” มีอยู่ ${baht(before)} แต่ต้องการถอน ${baht(amount)}`, 'บันทึกต่อ', 'ยกเลิก', 'btn-primary'))) return;
+            }
+            appData.savTx.push({ id: newId(), acc: acc.id, type: savType, amount, date: $('savDate').value || todayKey(), note: $('savNote').value.trim() });
+            saveData();
+            burstAt($('savSubmit'), savType === 'in' ? 16 : 8);
+            $('savAmount').value = ''; $('savNote').value = '';
+            savLimit = 40;
+            renderSavings(false);
+            const after = accBalance(acc.id);
+            if (savType === 'in' && acc.goal > 0 && before < acc.goal && after >= acc.goal) {
+                setTimeout(() => { celebrate(); toast(`ออม “${acc.name}” ถึงเป้า ${baht(acc.goal)} แล้ว 🎯🎉`); }, 250);
+            } else {
+                toast(`${savType === 'in' ? 'ฝาก' : 'ถอน'} ${baht(amount)} ${savType === 'in' ? 'เข้า' : 'จาก'} “${acc.name}” แล้ว`);
+            }
+            $('savHistory').querySelector('.txrow')?.animate?.([{ background: 'var(--accent-soft)' }, { background: 'transparent' }], { duration: 1200 });
+        });
+
+        // ---- เพิ่ม / แก้ไขบัญชีเงินฝาก ----
+        let editingAccId = null, afIcon = SAV_ICONS[0];
+        bindIconPick('afIcons', (ic) => { afIcon = ic; });
+        function openAccModal(id = null) {
+            const a = id ? accById(id) : null;
+            editingAccId = a ? a.id : null;
+            $('accModalTitle').textContent = a ? 'แก้ไขบัญชีเงินฝาก' : 'เพิ่มบัญชีเงินฝาก';
+            $('afName').value = a?.name || '';
+            $('afGoal').value = a?.goal ? fmt(a.goal) : '';
+            $('afNote').value = a?.note || '';
+            afIcon = a?.icon || SAV_ICONS[appData.savAccounts.length % SAV_ICONS.length];
+            renderIconPick('afIcons', SAV_ICONS, afIcon);
+            $('afDelete').classList.toggle('hide', !a);
+            $('afInfo').classList.toggle('hide', !a);
+            if (a) {
+                const n = appData.savTx.filter(t => t.acc === a.id).length;
+                $('afInfo').innerHTML = `<div class="big"><span>ยอดคงเหลือ</span><b>${baht(accBalance(a.id))}</b></div><div><span>จำนวนรายการ</span><b>${n} รายการ</b></div>`;
+            }
+            openSheet('accModal');
+            if (!a && fineMouse()) setTimeout(() => $('afName').focus(), 200);
+        }
+        $('accForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = $('afName').value.trim();
+            if (!name) { toast('กรุณาตั้งชื่อบัญชี'); $('afName').focus(); return; }
+            const goal = Math.max(0, parseAmt($('afGoal').value) || 0);
+            const a = editingAccId && accById(editingAccId);
+            if (a) Object.assign(a, { name, icon: afIcon, goal, note: $('afNote').value.trim() });
+            else {
+                const n = { id: newId(), name, icon: afIcon, goal, note: $('afNote').value.trim() };
+                appData.savAccounts.push(n); savAccSel = n.id;
+            }
+            saveData(); closeSheet('accModal'); renderSavings(!a);
+            toast(a ? 'บันทึกการแก้ไขแล้ว' : `สร้างบัญชี “${name}” แล้ว`);
+        });
+        $('afDelete').addEventListener('click', async () => {
+            const a = accById(editingAccId); if (!a) return;
+            const n = appData.savTx.filter(t => t.acc === a.id).length;
+            closeSheet('accModal');
+            if (!(await confirmDialog('ลบบัญชีนี้?', `“${a.name}”${n ? ` และรายการฝาก/ถอน ${n} รายการของบัญชีนี้` : ''} จะถูกลบถาวร`, 'ลบบัญชี'))) { openSheet('accModal'); return; }
+            appData.savAccounts = appData.savAccounts.filter(x => x.id !== a.id);
+            appData.savTx = appData.savTx.filter(t => t.acc !== a.id);
+            saveData(); renderSavings(false);
+            toast('ลบบัญชีแล้ว');
+        });
 
         // ================= Add to Home Screen =================
         let deferredPrompt = null;
@@ -1771,8 +2970,7 @@
         }
 
         // MacBook: การ์ดสรุปเอียงตามเมาส์ + แสงไฟตามตำแหน่งเมาส์
-        (function heroTilt() {
-            const hero = document.querySelector('.hero');
+        document.querySelectorAll('.hero').forEach(function heroTilt(hero) {
             if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
             hero.addEventListener('pointermove', (e) => {
                 if (reduceMotion()) return;
@@ -1783,7 +2981,7 @@
                 hero.style.setProperty('--my', (py * 100).toFixed(1) + '%');
             });
             hero.addEventListener('pointerleave', () => { hero.style.transform = ''; hero.style.removeProperty('--mx'); hero.style.removeProperty('--my'); });
-        })();
+        });
 
         // iPhone (เปิดจากไอคอนหน้าจอ): ดึงลงเพื่อรีเฟรช
         (function pullToRefresh() {
@@ -1821,8 +3019,9 @@
             if (e.target.closest?.('input, textarea, select') || document.querySelector('.overlay.open')) return;
             const act = {
                 ArrowLeft: () => changeMonth(-1), ArrowRight: () => changeMonth(1),
-                KeyN: () => $('fixedName').focus(), KeyI: () => $('incomeName').focus(),
-                KeyR: () => doRefresh(), KeyT: () => $('themeBtn').click()
+                KeyN: () => { showPage('overview'); $('fixedName').focus(); }, KeyI: () => { showPage('overview'); $('incomeName').focus(); },
+                KeyR: () => doRefresh(), KeyT: () => $('themeBtn').click(),
+                Digit1: () => showPage('overview'), Digit2: () => showPage('loans'), Digit3: () => showPage('savings')
             }[e.key === 'ArrowLeft' || e.key === 'ArrowRight' ? e.key : e.code];
             if (act) { e.preventDefault(); act(); }
         });
@@ -1909,8 +3108,11 @@
 
         // ================= Start =================
         if (new URLSearchParams(location.search).has('v')) history.replaceState(null, '', location.pathname + location.hash);
+        $('savDate').value = todayKey();
+        setLoanFilter(loanFilter);
         updateUI();
         setYearView(safeGet(YEARVIEW_KEY) === 'table' ? 'table' : 'chart');
+        showPage(PAGES.includes(safeGet(PAGE_KEY)) ? safeGet(PAGE_KEY) : 'overview', false);
         renderSyncStatus();
         maybeShowWhatsNew();
         handleConnectLink().then((handled) => { if (!handled && gs) pullCloud(); });
