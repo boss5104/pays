@@ -24,6 +24,7 @@ const LOAN_SHEET = 'ผ่อนชำระ';
 const LOAN_PAY_SHEET = 'งวดผ่อน';
 const SAV_ACC_SHEET = 'บัญชีเงินฝาก';
 const SAV_TX_SHEET = 'รายการฝากเงิน';
+const LEDGER_SHEET = 'รายรับรายจ่าย';
 const META_SHEET = '_meta';
 const FIXED_HEADERS = ['เดือน (ปปปป-ดด)', 'รายการ', 'จำนวนเงิน (บาท)', 'จ่ายแล้ว', 'id'];
 const INCOME_HEADERS = ['รายการ', 'จำนวนเงิน (บาท)', 'id', 'ใช้แล้ว (เดือน)'];
@@ -31,12 +32,15 @@ const LOAN_HEADERS = ['รายการผ่อน', 'ไอคอน', 'จ�
 const LOAN_PAY_HEADERS = ['รายการผ่อน', 'งวดที่', 'ครบกำหนด', 'จ่ายแล้ว', 'วันที่จ่าย', 'หมายเหตุ', 'id รายการผ่อน', 'จ่ายจริง (บาท)', 'ค่างวดที่จ่าย (บาท)', 'ค่าอะไรเพิ่มงวดนี้ (ค่าอะไร=บาท; … / - = ไม่มี)'];
 const SAV_ACC_HEADERS = ['ฝากเงินอะไร (บัญชี / เป้าหมาย)', 'ไอคอน', 'เป้าหมาย (บาท)', 'หมายเหตุ', 'id', 'ประเภทเงินฝาก', 'ฝากต่อเดือน (บาท)'];
 const SAV_TX_HEADERS = ['วันที่', 'ประเภท', 'บัญชี', 'จำนวนเงิน (บาท)', 'หมายเหตุ', 'id', 'id บัญชี'];
-const DATA_SHEETS = [FIXED_SHEET, INCOME_SHEET, LOAN_SHEET, LOAN_PAY_SHEET, SAV_ACC_SHEET, SAV_TX_SHEET];
+// ปรับยอด: + เพิ่ม / − ลด จากยอดของรายการ (เช่น เงินเดือน −120 ค่าข้าว) · เงินเข้า-ออก: + เงินเข้า / − เงินออก
+const LEDGER_HEADERS = ['วันที่', 'หมวด', 'จากรายการ', 'ค่าอะไร / หมายเหตุ', 'ปรับยอด (บาท)', 'เงินเข้า-ออก (บาท)', 'เดือน (ปปปป-ดด)', 'id', 'id รายการ'];
+const DATA_SHEETS = [FIXED_SHEET, INCOME_SHEET, LOAN_SHEET, LOAN_PAY_SHEET, SAV_ACC_SHEET, SAV_TX_SHEET, LEDGER_SHEET];
 // แอปใช้ตรวจว่าเป็นโค้ดเวอร์ชันใหม่
 //   v2: ช่องติ๊ก "ใช้แล้ว" ของรายรับ + อัปเดตอัตโนมัติ · v3: ผ่อนชำระ + เงินฝาก
 //   v4: ผ่อน — ค่าใช้จ่ายเพิ่ม/จ่ายจริง · เงินฝาก — ประเภท/ฝากต่อเดือน
-//   v5: ผ่อน — ค่างวดงวดแรก (ต่างจากงวดอื่นได้)
-const VERSION = 6;
+//   v5: ผ่อน — ค่างวดงวดแรก (ต่างจากงวดอื่นได้) · v6: ลงจ่ายแยกรายงวด
+//   v7: ตารางรายรับรายจ่าย (ปรับยอด +/− ของรายรับ/ค่าใช้จ่าย พร้อมระบุค่าอะไร)
+const VERSION = 7;
 
 function doGet(e) {
   return respond_(handle_((e && e.parameter) || {}));
@@ -180,9 +184,20 @@ function readAll_(ss) {
     })
     .filter(function (x) { return x.amount && x.date; });
 
+  // ---- รายรับรายจ่าย (ปรับยอด +/−) ----
+  const ledger = readRows_(getSheet_(ss, LEDGER_SHEET, LEDGER_HEADERS), LEDGER_HEADERS.length, 7)
+    .map(function (r) {
+      const date = toDate_(r.v[0], tz);
+      return {
+        id: r.id, date: date, kind: String(r.v[1]).trim() === 'ค่าใช้จ่าย' ? 'exp' : 'inc', name: String(r.v[2] || '').trim(),
+        note: String(r.v[3] || '').trim(), amount: toNum_(r.v[4]), month: toMonth_(r.v[6], tz) || date.slice(0, 7), ref: String(r.v[8] || '').trim()
+      };
+    })
+    .filter(function (x) { return x.amount && x.date && (x.ref || x.name); });
+
   return {
     fixedExpenses: fixedExpenses, customIncomes: customIncomes, loans: loans,
-    savAccounts: savAccounts, savTx: savTx, updatedAt: getUpdatedAt_(ss)
+    savAccounts: savAccounts, savTx: savTx, ledger: ledger, updatedAt: getUpdatedAt_(ss)
   };
 }
 
@@ -244,6 +259,18 @@ function writeAll_(ss, data) {
     txRows.sort(function (a, b) { return a[0] < b[0] ? 1 : a[0] > b[0] ? -1 : 0; }); // ใหม่สุดอยู่บน
     writeTable_(getSheet_(ss, SAV_ACC_SHEET, SAV_ACC_HEADERS), SAV_ACC_HEADERS.length, accRows, { textCols: [1, 2, 4, 5, 6], moneyCol: [3, 7] });
     writeTable_(getSheet_(ss, SAV_TX_SHEET, SAV_TX_HEADERS), SAV_TX_HEADERS.length, txRows, { textCols: [1, 2, 3, 5, 6, 7], moneyCol: 4 });
+  }
+
+  // แอปเวอร์ชันเก่าไม่ได้ส่งรายการรับ-จ่ายมา → ไม่แตะแผ่นงานนี้
+  if (Array.isArray(data.ledger)) {
+    const ledRows = data.ledger.map(function (t) {
+      const amt = toNum_(t.amount), exp = t.kind === 'exp';
+      const date = String(t.date || '');
+      return [date, exp ? 'ค่าใช้จ่าย' : 'รายรับ', String(t.name || ''), String(t.note || ''), amt, exp ? -amt : amt,
+        String(t.month || date.slice(0, 7)), String(t.id || Utilities.getUuid()), String(t.ref || '')];
+    });
+    ledRows.sort(function (a, b) { return a[0] < b[0] ? 1 : a[0] > b[0] ? -1 : 0; }); // ใหม่สุดอยู่บน
+    writeTable_(getSheet_(ss, LEDGER_SHEET, LEDGER_HEADERS), LEDGER_HEADERS.length, ledRows, { textCols: [1, 2, 3, 4, 7, 8, 9], moneyCol: [5, 6] });
   }
 
   const at = toNum_(data.updatedAt) || Date.now();
