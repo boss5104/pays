@@ -502,9 +502,12 @@
             position: fixed; left: 50%; bottom: calc(16px + var(--safe-bottom)); transform: translate(-50%, 140%); z-index: 66;
             display: flex; align-items: center; gap: 10px; padding: 7px 7px 7px 16px; border-radius: 999px; max-width: calc(100vw - 24px);
             background: #161B27; color: #F5F0E4; border: 1px solid rgba(232, 196, 106, 0.4); box-shadow: 0 18px 40px -16px rgba(0, 0, 0, .6);
-            font-size: 13px; transition: transform .4s cubic-bezier(.2, .8, .2, 1);
+            font-size: 13px; transition: transform .4s cubic-bezier(.2, .8, .2, 1), opacity .3s, visibility 0s .4s;
+            opacity: 0; visibility: hidden; pointer-events: none;
         }
-        .update-bar.show { transform: translate(-50%, 0); }
+        .update-bar.show { transform: translate(-50%, 0); opacity: 1; visibility: visible; pointer-events: auto; transition: transform .4s cubic-bezier(.2, .8, .2, 1), opacity .3s; }
+        .update-bar .ub-x { width: 30px; height: 30px; padding: 0; border-radius: 50%; display: grid; place-items: center; background: rgba(255, 255, 255, 0.08); color: #F5F0E4; }
+        .update-bar .ub-x svg { width: 14px; height: 14px; }
         .update-bar button { height: 32px; padding: 0 14px; border-radius: 999px; background: linear-gradient(135deg, #F6DE9A, #C9963E); color: #241A05; font-weight: 600; font-size: 12.5px; white-space: nowrap; }
         .updating { position: fixed; inset: 0; z-index: 99; display: grid; place-items: center; background: var(--bg); opacity: 0; pointer-events: none; transition: opacity .3s; }
         .updating.show { opacity: 1; pointer-events: auto; }
@@ -848,7 +851,7 @@
     </div>
 
     <div class="ptr" id="ptr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></div>
-    <div class="update-bar" id="updateBar" role="status"><span id="updateText">มีเวอร์ชันใหม่</span><button type="button" id="updateNowBtn">อัปเดตเลย</button></div>
+    <div class="update-bar" id="updateBar" role="status"><span id="updateText">มีเวอร์ชันใหม่</span><button type="button" id="updateNowBtn">อัปเดตเลย</button><button type="button" class="ub-x" id="updateCloseBtn" aria-label="ปิด"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
     <div class="updating" id="updatingScreen"><div class="box"><img src="icons/icon-192.png" alt=""><div id="updatingText">กำลังอัปเดตเป็นเวอร์ชันใหม่…</div></div></div>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -863,8 +866,11 @@
 
         // ================= Version / Changelog =================
         // ⚠️ ออกเวอร์ชันใหม่: เพิ่มเลข APP_VERSION + รายการใน CHANGELOG แล้วแก้ version.json ให้ตรงกัน
-        const APP_VERSION = '2.2.0';
+        const APP_VERSION = '2.2.1';
         const CHANGELOG = [
+            { v: '2.2.1', date: '25 พ.ย. 2569', items: [
+                { e: '🛠️', t: 'แก้แถบ “มีเวอร์ชันใหม่” ค้างบน iPhone', d: 'แถบไม่โผล่ขึ้นมาเองอีก และมีปุ่ม × ไว้ปิดได้' }
+            ] },
             { v: '2.2.0', date: '24 พ.ย. 2569', items: [
                 { e: '💎', t: 'การ์ดสรุปหรูขึ้น', d: 'วงแหวนทองแสดง % เงินคงเหลือ ตัวเลขนับขึ้นแบบเคลื่อนไหว และประกายทองบนการ์ด' },
                 { e: '📊', t: 'ภาพรวมรายปีแบบกราฟ', d: 'กราฟแท่งแยกจ่ายแล้ว/ยังไม่จ่าย พร้อมเส้นรายรับ แตะแท่งเพื่อเลือกเดือน สลับเป็นตารางได้' },
@@ -1826,11 +1832,22 @@
         function sessSet(k, v) { try { sessionStorage.setItem(k, v); } catch {} }
         const reloadTo = (v) => location.replace(`${location.pathname}?v=${encodeURIComponent(v)}`);
 
+        let pendingVersion = null;
         function showUpdateBar(v) {
+            pendingVersion = v;
+            if (sessGet('smart_expense_update_dismissed') === v) return; // ผู้ใช้กดปิดไว้แล้วในรอบนี้
             $('updateText').textContent = `มีเวอร์ชันใหม่ v${v}`;
             $('updateBar').classList.add('show');
-            $('updateNowBtn').onclick = () => { $('updatingScreen').classList.add('show'); reloadTo(v); };
         }
+        $('updateNowBtn').addEventListener('click', () => {
+            $('updateBar').classList.remove('show');
+            $('updatingScreen').classList.add('show');
+            if (pendingVersion) reloadTo(pendingVersion); else location.reload();
+        });
+        $('updateCloseBtn').addEventListener('click', () => {
+            $('updateBar').classList.remove('show');
+            if (pendingVersion) sessSet('smart_expense_update_dismissed', pendingVersion);
+        });
         function applyUpdate(v) {
             // กันรีโหลดวน: ถ้ารีโหลดไปแล้วแต่ยังได้หน้าเก่า (แคชเบราว์เซอร์) ให้แสดงปุ่มแทน
             if (sessGet('smart_expense_reload_for') === v) { showUpdateBar(v); return; }
