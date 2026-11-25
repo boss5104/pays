@@ -1053,6 +1053,97 @@
         .hm.bad .hm-s, .hm.bad .hm-v { color: var(--red); } .hm.bad .g i { background: var(--red); }
         .hm.na .hm-v { color: var(--text-3); } .hm.na .hm-s { color: var(--text-3); }
 
+        /* ---- v2.6: ลงจ่ายงวด / รายการจ่าย / เปรียบเทียบ ---- */
+        button.lc-col { text-align: left; color: inherit; font: inherit; cursor: pointer; transition: transform .2s cubic-bezier(.3, 1.5, .5, 1), box-shadow .2s, border-color .2s; }
+        button.lc-col:hover { border-color: var(--accent); box-shadow: 0 8px 18px -12px rgba(0, 0, 0, .35); transform: translateY(-1px); }
+        button.lc-col.act:hover { border-color: #9B86F5; }
+        button.lc-col:active { transform: scale(.98); }
+        .lc-col h4 em { margin-left: auto; font-style: normal; font-weight: 500; font-size: 10.5px; color: var(--text-3); }
+        .lc-go { display: flex; align-items: center; justify-content: flex-end; gap: 2px; margin-top: 7px; font-size: 11px; font-weight: 600; color: var(--accent); }
+        .lc-col.act .lc-go { color: #8A72F0; }
+        .lc-go svg { width: 13px; height: 13px; transition: transform .2s; }
+        button.lc-col:hover .lc-go svg { transform: translateX(2px); }
+        .s-open { display: block; text-align: left; color: inherit; font: inherit; padding: 0; background: none; cursor: pointer; }
+        .s-d b { color: var(--text-2); font-weight: 600; }
+        .s-has { font-size: 11px; }
+        .pm-head { display: flex; align-items: center; gap: 12px; min-width: 0; }
+        .pm-head .lc-ico { flex-shrink: 0; }
+        .pf-step { display: grid; gap: 8px; padding: 12px; border-radius: 15px; background: var(--surface-2); border: 1px solid var(--line); }
+        .pf-step .field { background: var(--surface); }
+        .pf-step.act { background: color-mix(in srgb, #9B86F5 8%, var(--surface-2)); border-color: color-mix(in srgb, #9B86F5 30%, var(--line)); }
+        .pf-h { display: flex; align-items: center; gap: 8px; min-width: 0; }
+        .pf-h i { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: 11px; font-weight: 700; color: var(--accent-ink); background: var(--accent-grad); flex-shrink: 0; }
+        .pf-step.act .pf-h i { background: linear-gradient(135deg, #B7A6FF, #7E66E8); color: #fff; }
+        .pf-h > b { font-size: 13px; font-weight: 600; white-space: nowrap; }
+        .pf-h > span { margin-left: auto; font-size: 11.5px; color: var(--text-3); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pf-h > span b { color: var(--text-2); }
+        #pfInst, #pfActual { font-size: 17px; font-weight: 600; text-align: right; }
+        .pf-sum { font-size: 11.5px; color: var(--text-3); text-align: right; }
+        .pf-sum b { color: var(--text-2); }
+        .btn-ic { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-ic svg { width: 16px; height: 16px; }
+        /* การ์ดเปรียบเทียบงวดเดียว */
+        .pc { border-radius: 18px; padding: 14px; background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 9%, var(--surface)), color-mix(in srgb, #9B86F5 10%, var(--surface))); border: 1px solid var(--line); box-shadow: var(--card-shadow); }
+        .pc-cols { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; align-items: end; }
+        .pc-col small { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-3); font-weight: 600; }
+        .pc-col small::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+        .pc-col.a small::before { background: #9B86F5; }
+        .pc-col.a { text-align: right; } .pc-col.a small { justify-content: flex-end; }
+        .pc-col > b { display: block; font-size: 21px; font-weight: 700; letter-spacing: -.4px; white-space: nowrap; }
+        .pc-vs { font-size: 11px; font-weight: 700; color: var(--text-3); padding-bottom: 14px; }
+        .pc-bar { height: 6px; border-radius: 999px; background: color-mix(in srgb, var(--text) 8%, transparent); overflow: hidden; margin-top: 6px; }
+        .pc-bar i { display: block; height: 100%; border-radius: 999px; background: var(--accent-grad); animation: growX .7s cubic-bezier(.2, .8, .2, 1) backwards; transform-origin: left; }
+        .pc-col.a .pc-bar { transform: scaleX(-1); }
+        .pc-col.a .pc-bar i { background: linear-gradient(90deg, #B7A6FF, #7E66E8); }
+        .pc-parts { margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--line-2); }
+        .pc-verdict { margin-top: 10px; padding: 7px 10px; border-radius: 11px; font-size: 12.5px; text-align: center; background: var(--amber-soft); color: var(--amber); }
+        .pc-verdict b { font-weight: 700; } .pc-verdict span { opacity: .8; }
+        .pc-verdict.down { background: var(--green-soft); color: var(--green); }
+        .pc-verdict.same { background: var(--green-soft); color: var(--green); }
+        .pc.compact { padding: 10px 12px; box-shadow: none; border-radius: 14px; }
+        .pc.compact .pc-col > b { font-size: 17px; }
+        .pc.compact .pc-verdict { padding: 5px 8px; font-size: 12px; margin-top: 8px; }
+        /* รายการจ่ายที่ลงไว้ */
+        .hist-sum { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-bottom: 12px; }
+        .hist-sum > div { padding: 9px 10px; border-radius: 13px; background: var(--surface-2); min-width: 0; }
+        .hist-sum > .a { background: color-mix(in srgb, #9B86F5 10%, var(--surface-2)); }
+        .hist-sum small { display: block; font-size: 10.5px; color: var(--text-3); }
+        .hist-sum b { display: block; font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .hist-sum .up b { color: var(--amber); } .hist-sum .down b { color: var(--green); }
+        .ph-item { display: block; width: 100%; text-align: left; color: inherit; font: inherit; padding: 10px 0 12px; border-bottom: 1px solid var(--line); animation: rise .35s ease backwards; cursor: pointer; }
+        .ph-item:last-child { border-bottom: 0; }
+        .ph-top { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+        .ph-n { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+        .ph-date { font-size: 12px; color: var(--text-3); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ph-edit { margin-left: auto; color: var(--text-3); display: grid; place-items: center; }
+        .ph-edit svg { width: 15px; height: 15px; }
+        .ph-item:hover .ph-edit { color: var(--accent); }
+        .ph-note { margin-top: 6px; font-size: 12px; color: var(--text-2); }
+        /* การ์ดเปรียบเทียบรวม */
+        .vs-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+        .vs-legend span { display: inline-flex; align-items: center; gap: 6px; }
+        .vs-legend i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+        .vs-legend i.a { background: #9B86F5; }
+        .vs-list { display: grid; gap: 8px; }
+        .vs-row { padding: 12px 13px; border-radius: 15px; background: var(--surface-2); border: 1px solid var(--line); }
+        .vs-h { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+        .vs-h b { display: block; font-size: 13.5px; font-weight: 600; }
+        .vs-h small { display: block; font-size: 11.5px; color: var(--text-3); }
+        .vs-pill { flex-shrink: 0; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: var(--amber-soft); color: var(--amber); white-space: nowrap; }
+        .vs-pill.down, .vs-pill.same { background: var(--green-soft); color: var(--green); }
+        .vs-pill.same { font-weight: 600; }
+        .vs-bar { position: relative; display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 8px; height: 22px; font-size: 11.5px; color: var(--text-3); }
+        .vs-bar + .vs-bar { margin-top: 4px; }
+        .vs-bar i { grid-column: 2; grid-row: 1; height: 10px; border-radius: 999px; background: var(--accent-grad); animation: growX .8s cubic-bezier(.2, .8, .2, 1) backwards; transform-origin: left; }
+        .vs-bar.a i { background: linear-gradient(90deg, #B7A6FF, #7E66E8); }
+        .vs-bar::before { content: ""; grid-column: 2; grid-row: 1; height: 10px; border-radius: 999px; background: color-mix(in srgb, var(--text) 6%, transparent); }
+        .vs-bar span { grid-column: 1; grid-row: 1; }
+        .vs-bar b { grid-column: 3; grid-row: 1; font-size: 13px; font-weight: 600; color: var(--text); min-width: 64px; text-align: right; }
+        .kind-row span.up, .kind-row span.down { font-weight: 600; }
+        .cmp-empty { font-size: 12.5px; color: var(--text-2); padding: 9px 12px; border-radius: 12px; background: var(--surface-2); }
+        button.cmp-row { width: 100%; text-align: left; color: inherit; font: inherit; cursor: pointer; transition: background .15s; }
+        button.cmp-row:hover { background: var(--surface-2); }
+
         /* ---- ผ่อนชำระ: ตามสัญญา vs จ่ายจริง ---- */
         .pp-box { padding: 12px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--line); display: grid; gap: 8px; }
         .pp-h { display: flex; flex-direction: column; gap: 1px; }
@@ -1508,7 +1599,7 @@
                 <h2><span class="ico violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span>เปรียบเทียบค่างวด</h2>
                 <span class="count">สัญญา vs จ่ายจริง</span>
             </div>
-            <div class="card-sub"><span>ทุกรายการรวมกัน: ตามสัญญา เทียบกับที่จ่ายจริง และจ่ายเพิ่มเป็นค่าอะไร</span></div>
+            <div class="card-sub vs-legend"><span><i class="c"></i>ตามสัญญา = ค่างวดที่ตกลงไว้</span><span><i class="a"></i>จ่ายจริง = ค่างวด + ค่าอื่นที่จ่ายเพิ่ม</span></div>
             <div id="loanCmp"></div>
         </section>
       </div>
@@ -1660,7 +1751,7 @@
                     <div style="min-width:0"><div class="t" id="gsStatusTitle">เชื่อมต่อแล้ว</div><div class="s" id="gsStatusText">—</div></div>
                 </div>
                 <div class="notice hide" id="gsUpgrade">
-                    <b>มีโค้ด Apps Script เวอร์ชันใหม่</b> — อัปเดตเพื่อให้ข้อมูล <b>ผ่อนชำระ</b> (ค่างวดงวดแรก/จ่ายจริง/ค่าอะไร) และ <b>เงินฝาก</b> (ประเภท/ฝากต่อเดือน) ซิงก์ข้ามเครื่อง (ตอนนี้ส่วนที่ยังไม่รองรับเก็บไว้เฉพาะในเครื่องนี้)<br>
+                    <b>มีโค้ด Apps Script เวอร์ชันใหม่</b> — อัปเดตเพื่อให้ข้อมูล <b>ผ่อนชำระ</b> (ค่างวดงวดแรก/ลงจ่ายแยกรายงวด: ค่างวด·ค่าอะไรเพิ่ม·จ่ายจริง) และ <b>เงินฝาก</b> (ประเภท/ฝากต่อเดือน) ซิงก์ข้ามเครื่อง (ตอนนี้ส่วนที่ยังไม่รองรับเก็บไว้เฉพาะในเครื่องนี้)<br>
                     วิธีอัปเดต: เปิดชีต → <b>ส่วนขยาย → Apps Script</b> → ลบโค้ดเดิม วางโค้ดใหม่ → บันทึก → <b>ทำให้ใช้งานได้ → จัดการการทำให้ใช้งานได้</b> → กดไอคอนดินสอ → เวอร์ชัน: <b>เวอร์ชันใหม่</b> → ทำให้ใช้งานได้ (URL เดิมใช้ได้ต่อ)
                     <textarea class="code" id="gsCode2" readonly spellcheck="false">กำลังโหลดโค้ด…</textarea>
                     <button type="button" class="btn btn-ghost btn-sm" id="gsCopyCode2" style="margin-top:6px">คัดลอกโค้ดใหม่</button>
@@ -1742,7 +1833,7 @@
                     </div>
                 </div>
                 <div class="fl">
-                    <span>จ่ายจริงต่องวด — ค่าอะไรเพิ่มบ้าง <i>(ถ้าจ่ายเท่าค่างวดตามสัญญา ไม่ต้องใส่)</i></span>
+                    <span>ค่าที่ต้องจ่ายเพิ่มทุกงวด <i>(ไม่บังคับ — ใช้เป็นค่าเริ่มต้นตอนลงจ่าย แก้รายงวดได้)</i></span>
                     <div class="extras" id="lfExtras"></div>
                     <button type="button" class="chip-btn ex-add" id="lfAddExtra"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>เพิ่มค่าใช้จ่าย เช่น ดอกเบี้ย ค่าธรรมเนียม</button>
                     <datalist id="extraNames"><option value="ดอกเบี้ย"><option value="ค่าธรรมเนียม"><option value="ค่าประกัน"><option value="ค่าปรับล่าช้า"><option value="ภาษี / VAT"><option value="ค่าบริการ"><option value="ส่วนลด"></datalist>
@@ -1753,6 +1844,49 @@
                 <button type="submit" class="btn btn-primary" id="lfSave">บันทึก</button>
                 <button type="button" class="btn btn-danger hide" id="lfDelete">ลบรายการผ่อนนี้</button>
             </form>
+        </div>
+    </div>
+
+    <!-- ============ ลงจ่ายงวด (ค่างวด / ค่าอะไรเพิ่ม / จ่ายจริง) ============ -->
+    <div class="overlay" id="payModal" aria-hidden="true">
+        <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="payTitle">
+            <div class="sheet-head">
+                <div class="pm-head"><span class="lc-ico" id="pfIco">💳</span><div><h3 id="payTitle">ลงจ่ายงวด</h3><p id="paySub">—</p></div></div>
+                <button type="button" class="x" data-close aria-label="ปิด"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+            </div>
+            <form class="form" id="payForm" autocomplete="off">
+                <div class="fl"><span>วันที่จ่าย</span><span class="tdate-wrap"><input type="hidden" id="pfDate"><button type="button" class="field tdate" aria-label="วันที่จ่าย"></button></span></div>
+                <div class="pf-step">
+                    <div class="pf-h"><i>1</i><b>จ่ายค่างวด</b><span>ตามสัญญา <b class="num" id="pfContract">0</b> ฿</span></div>
+                    <input type="text" id="pfInst" class="field num" inputmode="decimal" placeholder="ค่างวดที่จ่าย" aria-label="ค่างวดที่จ่าย (บาท)">
+                </div>
+                <div class="pf-step">
+                    <div class="pf-h"><i>2</i><b>เพิ่มค่าอะไรมา</b><span>ดอกเบี้ย ค่าปรับ ค่าธรรมเนียม ฯลฯ</span></div>
+                    <div class="extras" id="pfItems"></div>
+                    <button type="button" class="chip-btn ex-add" id="pfAddItem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>เพิ่มค่าใช้จ่าย</button>
+                </div>
+                <div class="pf-step act">
+                    <div class="pf-h"><i>3</i><b>จ่ายจริงทั้งหมด</b><span>ไม่ใส่ = รวมให้อัตโนมัติ</span></div>
+                    <input type="text" id="pfActual" class="field num" inputmode="decimal" aria-label="ยอดจ่ายจริงทั้งหมด (บาท)">
+                    <div class="pf-sum num" id="pfSumHint"></div>
+                </div>
+                <label class="fl"><span>หมายเหตุ</span><input type="text" id="pfNote" class="field" maxlength="120" placeholder="เช่น จ่ายช้า 3 วัน, โอนผ่านแอป"></label>
+                <div id="pfCmp"></div>
+                <button type="submit" class="btn btn-primary btn-ic" id="pfSave">บันทึก</button>
+                <button type="button" class="btn btn-danger hide" id="pfUnpay">ยกเลิกการจ่ายงวดนี้</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============ รายการจ่ายที่ลงไว้ ============ -->
+    <div class="overlay" id="histModal" aria-hidden="true">
+        <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="histTitle">
+            <div class="sheet-head">
+                <div class="pm-head"><span class="lc-ico" id="histIco">💳</span><div><h3 id="histTitle">รายการจ่าย</h3><p id="histSub">—</p></div></div>
+                <button type="button" class="x" data-close aria-label="ปิด"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+            </div>
+            <div id="histList"></div>
+            <button type="button" class="btn btn-primary btn-ic" id="histNext" style="width:100%;margin-top:12px">ลงจ่ายงวดถัดไป</button>
         </div>
     </div>
 
@@ -1830,14 +1964,20 @@
         const YEARVIEW_KEY = 'smart_expense_yearview';
         const PAGE_KEY = 'smart_expense_page';
         const LOANFILTER_KEY = 'smart_expense_loanfilter';
-        const SCRIPT_VERSION = 5;                    // โค้ด Apps Script เวอร์ชันล่าสุด (ผ่อนชำระ + เงินฝาก + จ่ายจริง/ประเภทเงินฝาก + ค่างวดงวดแรก)
+        const SCRIPT_VERSION = 6;                    // โค้ด Apps Script เวอร์ชันล่าสุด (ผ่อนชำระ + เงินฝาก + จ่ายจริง/ประเภทเงินฝาก + ค่างวดงวดแรก + ลงจ่ายแยกรายงวด)
         const INC_KEY = 'smart_expense_include';     // การ์ดยอดคงเหลือ: เลือกยอดที่นำมารวม
         const SAVEXCL_KEY = 'smart_expense_sav_excl'; // บัญชีเงินฝากที่ไม่นำมารวมยอด
 
         // ================= Version / Changelog =================
         // ⚠️ ออกเวอร์ชันใหม่: เพิ่มเลข APP_VERSION + รายการใน CHANGELOG แล้วแก้ version.json ให้ตรงกัน
-        const APP_VERSION = '2.5.0';
+        const APP_VERSION = '2.6.0';
         const CHANGELOG = [
+            { v: '2.6.0', date: '25 พ.ย. 2569', items: [
+                { e: '🧾', t: 'ลงจ่ายแยกทีละส่วน', d: 'กด “ลงจ่ายงวดนี้” หรือแตะงวดในตาราง → กรอกแยกว่า จ่ายค่างวดเท่าไหร่ · เพิ่มค่าอะไรมา · จ่ายจริงทั้งหมดเท่าไหร่ แล้วดูการ์ดเทียบกับสัญญาทันที' },
+                { e: '📜', t: 'แตะการ์ด ตามสัญญา / จ่ายจริง = ดูรายการจ่าย', d: 'แสดงทุกงวดที่ลงจ่ายไว้ พร้อมวันที่จ่าย ค่าอะไรบ้าง และส่วนต่างจากสัญญา แตะงวดเพื่อแก้ไขได้' },
+                { e: '⚖️', t: 'การ์ดเปรียบเทียบค่างวดแบบใหม่', d: 'เทียบเป็นแท่ง: เดือนนี้ · ที่จ่ายไปแล้ว · ทั้งสัญญา พร้อมบอกว่าจ่ายต่างเพราะค่าอะไร และแยกตามรายการจากยอดที่จ่ายจริง' },
+                { e: '🧹', t: 'การ์ดผ่อนเรียบขึ้น', d: 'เอาวันครบกำหนดจ่ายออกจากการ์ด (เตือนเฉพาะงวดที่เลยกำหนด)' }
+            ] },
             { v: '2.5.0', date: '25 พ.ย. 2569', items: [
                 { e: '💎', t: 'การ์ดยอดคงเหลือรวมทุกอย่าง', d: 'รายรับ ค่าใช้จ่าย ค่าผ่อนเดือนนี้ และเงินฝากสะสม อยู่ในการ์ดเดียว — แตะการ์ดย่อยเพื่อเลือกว่าจะนำยอดไหนมารวม' },
                 { e: '⏰', t: 'งวดผ่อนใกล้ครบกำหนด', d: 'หน้าแรกแสดงงวดที่ใกล้ครบ/ค้างจ่าย กด “จ่ายแล้ว” ได้ทันที' },
@@ -1894,7 +2034,10 @@
         // loans:        { id, name, icon, months, amount (ค่างวดตามสัญญา งวดที่ 2 เป็นต้นไป), first (ค่างวดงวดแรก | null = เท่า amount),
         //                 start: 'YYYY-MM', dueDay: 1-31, note,
         //                 extras: [{ name: ค่าอะไร, amount }]  ← ค่าใช้จ่ายเพิ่มต่องวด → จ่ายจริงต่องวด = amount + Σextras
-        //                 pays: [{ n: งวดที่, paid, date: 'YYYY-MM-DD' (วันที่จ่าย), note, actual: ยอดจ่ายจริงงวดนี้ | null }] }  ← เก็บเฉพาะงวดที่มีข้อมูล
+        //                 pays: [{ n: งวดที่, paid, date: 'YYYY-MM-DD' (วันที่จ่าย), note,
+        //                          inst: ค่างวดที่จ่ายงวดนี้ | null (= ตามสัญญา),
+        //                          items: [{ name, amount }] ค่าอะไรเพิ่มงวดนี้ | null (= extras ของรายการ),
+        //                          actual: ยอดจ่ายจริงทั้งหมดงวดนี้ | null (= inst + Σitems) }] }  ← เก็บเฉพาะงวดที่มีข้อมูล
         // savAccounts:  { id, name (ฝากเงินอะไร), icon, kind (ประเภท), monthly (ฝากต่อเดือน), goal, note }
         // savTx:        { id, acc: id บัญชี, type: 'in' | 'out', amount, date: 'YYYY-MM-DD', note }
         let appData = normalize({});
@@ -1919,12 +2062,15 @@
             const arr = Array.isArray(v) ? v : String(v ?? '').split(/[;\n]+/).map(x => { const i = x.lastIndexOf('='); return i < 0 ? null : { name: x.slice(0, i), amount: x.slice(i + 1) }; }).filter(Boolean);
             return arr.map(e => ({ name: cleanName(e.name), amount: toNum(e.amount) })).filter(e => e.amount).map(e => ({ ...e, name: e.name || 'ค่าใช้จ่ายเพิ่ม' }));
         }
+        // ค่าอะไรเพิ่มของงวด: null = ใช้ค่าเริ่มต้นของรายการ · [] = ไม่มี (ในชีตเขียนเป็น "-")
+        const normItems = (v) => (v === null || v === undefined || (typeof v === 'string' && !v.trim())) ? null : (String(v).trim() === '-' ? [] : normExtras(v));
+        const payHasData = (p) => !!(p.paid || p.date || p.note || p.actual !== null || p.inst !== null || p.items !== null);
         function normLoan(l) {
             const months = clampInt(l.months, 1, 600, 1);
             const seen = new Set();
             const pays = (Array.isArray(l.pays) ? l.pays : [])
-                .map(p => ({ n: Math.round(toNum(p.n)), paid: !!p.paid, date: toDateKey(p.date), note: String(p.note ?? '').trim(), actual: optNum(p.actual) }))
-                .filter(p => p.n >= 1 && p.n <= months && (p.paid || p.date || p.note || p.actual !== null) && !seen.has(p.n) && seen.add(p.n))
+                .map(p => ({ n: Math.round(toNum(p.n)), paid: !!p.paid, date: toDateKey(p.date), note: String(p.note ?? '').trim(), inst: optNum(p.inst), items: normItems(p.items), actual: optNum(p.actual) }))
+                .filter(p => p.n >= 1 && p.n <= months && payHasData(p) && !seen.has(p.n) && seen.add(p.n))
                 .sort((a, b) => a.n - b.n);
             const d = new Date();
             return {
@@ -2212,6 +2358,22 @@
                 const la = new Map(appData.savAccounts.map(a => [a.id, a]));
                 cloud.savAccounts.forEach(a => { const o = la.get(a.id); if (o) { a.kind = o.kind; a.monthly = o.monthly; } });
             }
+            if (v >= 3 && v < 6) {
+                // v3–v5: ยังไม่มี "ค่างวดที่จ่าย / ค่าอะไรเพิ่ม" รายงวด → ใช้ค่าในเครื่องนี้
+                const ll = new Map(appData.loans.map(l => [l.id, l]));
+                cloud.loans.forEach(l => {
+                    const o = ll.get(l.id); if (!o) return;
+                    o.pays.forEach(op => {
+                        if ((op.inst === null && op.items === null) || op.n > l.months) return;
+                        let p = l.pays.find(x => x.n === op.n);
+                        if (!p) { p = { n: op.n, paid: op.paid, date: op.date, note: op.note, inst: null, items: null, actual: null }; l.pays.push(p); }
+                        p.inst = op.inst; p.items = op.items;
+                        // ยอดจ่ายจริงที่ส่งไปคือยอดรวม → ถ้าเท่ากับ ค่างวด + ค่าเพิ่ม ถือว่าไม่ได้แก้
+                        if (p.actual !== null && Math.abs(p.actual - ((op.inst ?? (op.n === 1 && l.first !== null ? l.first : l.amount)) + (op.items ?? l.extras).reduce((s, e) => s + e.amount, 0))) < 0.005) p.actual = null;
+                    });
+                    l.pays.sort((a, b) => a.n - b.n);
+                });
+            }
             if (v >= 3 && v < 5) {
                 // v3–v4: ยังไม่มี "ค่างวดงวดแรก" → ใช้ค่าในเครื่องนี้
                 const ll = new Map(appData.loans.map(l => [l.id, l]));
@@ -2230,6 +2392,10 @@
             pushTimer = setTimeout(pushCloud, 800);
         }
 
+        // งวดที่ลงค่างวด/ค่าอะไรเพิ่มแยกไว้ → ส่งยอดจ่ายจริงไปด้วยเสมอ (Apps Script เวอร์ชันเก่าจะได้เก็บยอดรวมที่ถูกต้อง)
+        function cloudPayload() {
+            return { ...appData, loans: appData.loans.map(l => ({ ...l, pays: l.pays.map(p => (p.inst !== null || p.items !== null) && p.actual === null ? { ...p, actual: payAmt(l, p.n) } : p) })) };
+        }
         async function pushCloud() {
             if (!gs) return;
             if (pushing) { pushAgain = true; return; }
@@ -2237,7 +2403,7 @@
             pushing = true;
             setSync('syncing');
             try {
-                const json = await gsCall('save', { data: appData });
+                const json = await gsCall('save', { data: cloudPayload() });
                 safeDel(PENDING_KEY);
                 rememberSheet(json);
                 setSync('ok');
@@ -3115,6 +3281,7 @@
 
         const ICON_EDIT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
         const ICON_NOTE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg>';
+        const ICON_CHEVR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>';
         const ICON_CHEV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
         const ICON_IN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16M6 14l6 6 6-6"/></svg>';
         const ICON_OUT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V4M6 10l6-6 6 6"/></svg>';
@@ -3137,7 +3304,6 @@
 
         // ================= ผ่อนชำระ (Installments) =================
         const openLoans = new Set();   // การ์ดที่เปิดดูตารางงวดอยู่
-        const openNotes = new Set();   // งวดที่เปิดช่องหมายเหตุไว้ ('loanId:n')
         let loanFilter = ['active', 'done', 'all'].includes(safeGet(LOANFILTER_KEY)) ? safeGet(LOANFILTER_KEY) : 'active';
         let lastTick = null;           // งวดที่เพิ่งติ๊ก (ใช้ทำเอฟเฟกต์เด้ง)
 
@@ -3146,41 +3312,48 @@
         const isPaid = (l, n) => !!getPay(l, n)?.paid;
         function setPay(l, n, patch) {
             let p = getPay(l, n);
-            if (!p) { p = { n, paid: false, date: '', note: '', actual: null }; l.pays.push(p); l.pays.sort((a, b) => a.n - b.n); }
+            if (!p) { p = { n, paid: false, date: '', note: '', inst: null, items: null, actual: null }; l.pays.push(p); l.pays.sort((a, b) => a.n - b.n); }
             Object.assign(p, patch);
-            if (!p.paid && !p.date && !p.note && p.actual === null) l.pays = l.pays.filter(x => x !== p);
+            if (!payHasData(p)) l.pays = l.pays.filter(x => x !== p);
         }
         // ค่างวดตามสัญญาของงวดที่ n (งวดแรกอาจต่างจากงวดอื่น) · จ่ายจริง = ตามสัญญา + ค่าใช้จ่ายเพิ่ม (ดอกเบี้ย ค่าธรรมเนียม ฯลฯ)
         // แก้ยอดจ่ายจริงรายงวดได้ด้วย pays[].actual
-        const extrasSum = (l) => l.extras.reduce((s, e) => s + e.amount, 0);
+        const sumAmt = (arr) => arr.reduce((s, e) => s + e.amount, 0);
+        const extrasSum = (l) => sumAmt(l.extras);
         const schedAmt = (l, n) => (n === 1 && l.first !== null && l.first !== undefined) ? l.first : l.amount;
-        const defPay = (l, n) => schedAmt(l, n) + extrasSum(l);
-        const loanActual = (l) => l.amount + extrasSum(l); // จ่ายจริงต่องวด (งวดที่ 2 เป็นต้นไป)
+        // ลงจ่ายแยกกัน: ค่างวดที่จ่าย (inst) + ค่าอะไรเพิ่ม (items) = จ่ายจริง (actual — แก้ยอดรวมเองได้)
+        const instOf = (l, n) => getPay(l, n)?.inst ?? schedAmt(l, n);
+        const itemsOf = (l, n) => getPay(l, n)?.items ?? l.extras;
+        const defPay = (l, n) => instOf(l, n) + sumAmt(itemsOf(l, n));
         const payAmt = (l, n) => getPay(l, n)?.actual ?? defPay(l, n);
+        const sameItems = (a, b) => a.length === b.length && a.every((e, i) => e.name === b[i].name && Math.abs(e.amount - b[i].amount) < 0.005);
         const signed = (v) => `${v > 0.004 ? '+' : v < -0.004 ? '−' : ''}${fmt(Math.abs(v))}`;
         const diffCls = (v) => v > 0.004 ? 'up' : v < -0.004 ? 'down' : '';
         // ค่าอะไรบ้างในงวดที่ n (ส่วนที่ต่างจากค่างวดตามสัญญา)
+        const OTHER_PART = 'อื่นๆ (ไม่ระบุ)', INST_PART = 'ค่างวดต่างจากสัญญา';
         function payParts(l, n) {
-            const parts = l.extras.map(e => ({ name: e.name, amount: e.amount }));
+            const parts = [];
+            const d = instOf(l, n) - schedAmt(l, n);
+            if (Math.abs(d) >= 0.005) parts.push({ name: INST_PART, amount: d });
+            itemsOf(l, n).forEach(e => parts.push({ name: e.name, amount: e.amount }));
             const a = getPay(l, n)?.actual;
             if (a !== null && a !== undefined) {
                 const adj = a - defPay(l, n);
-                if (Math.abs(adj) >= 0.005) parts.push({ name: 'ปรับยอดรายงวด', amount: adj });
+                if (Math.abs(adj) >= 0.005) parts.push({ name: OTHER_PART, amount: adj });
             }
             return parts;
         }
         const addParts = (map, parts, key = 'v') => parts.forEach(e => { const o = map.get(e.name) || { v: 0, paid: 0 }; o[key] += e.amount; map.set(e.name, o); });
         function loanStats(l) {
-            let paidN = 0, paidAmt = 0, total = 0, next = 0, normal = 0, paidNormal = 0, adjN = 0, adjSum = 0;
+            let paidN = 0, paidAmt = 0, total = 0, next = 0, normal = 0, paidNormal = 0, paidInst = 0;
+            const paidParts = new Map(); // ที่จ่ายแล้ว: จ่ายเพิ่มเป็นค่าอะไร
             for (let n = 1; n <= l.months; n++) {
                 const a = payAmt(l, n), c = schedAmt(l, n);
                 total += a; normal += c;
-                const act = getPay(l, n)?.actual;
-                if (act !== null && act !== undefined) { adjN++; adjSum += act - defPay(l, n); }
-                if (isPaid(l, n)) { paidN++; paidAmt += a; paidNormal += c; } else if (!next) next = n;
+                if (isPaid(l, n)) { paidN++; paidAmt += a; paidNormal += c; paidInst += c; addParts(paidParts, payParts(l, n)); } else if (!next) next = n;
             }
             return {
-                paidN, total, paidAmt, normal, paidNormal, extra: total - normal, adjN, adjSum,
+                paidN, total, paidAmt, normal, paidNormal, paidInst, paidParts, extra: total - normal,
                 left: total - paidAmt, next, done: next === 0, endMonth: shiftMonth(l.start, l.months - 1)
             };
         }
@@ -3217,24 +3390,25 @@
             const p = getPay(l, n) || {};
             const due = loanDue(l, n);
             const st = p.paid ? 'paid' : dueStatus(due);
-            const hasAct = p.actual !== null && p.actual !== undefined;
-            const noteOpen = !!p.note || hasAct || openNotes.has(`${l.id}:${n}`);
             const pop = lastTick && lastTick.id === l.id && lastTick.n === n ? 'pop' : '';
-            const amt = payAmt(l, n);
+            const amt = payAmt(l, n), c = schedAmt(l, n), d = amt - c;
+            const custom = p.inst != null || p.items != null || p.actual != null || !!p.note;
+            const when = p.paid ? (p.date ? `จ่าย ${dateTitle(p.date, true)}` : 'จ่ายแล้ว') : monthShort(due.slice(0, 7));
             return `
                 <div class="srow ${p.paid ? 'paid' : ''} ${n === cur ? 'current' : ''}" data-n="${n}">
                     <label class="check ${pop}" title="จ่ายแล้ว"><input type="checkbox" data-act="tick" ${p.paid ? 'checked' : ''} aria-label="จ่ายงวดที่ ${n} แล้ว"><span>${ICON_CHECK}</span></label>
-                    <div class="s-main"><div class="s-n"><span class="t">งวดที่ ${n}</span></div><div class="s-d num">ครบ ${dateTitle(due)} · ${fmt(amt)} ฿${Math.abs(amt - schedAmt(l, n)) >= 0.005 ? ` <span class="act">(ตามสัญญา ${fmt(schedAmt(l, n))})</span>` : ''}</div></div>
-                    <div class="s-side">${p.paid
-                        ? `<span class="paid-date tdate-wrap" title="วันที่จ่าย">จ่ายเมื่อ<input type="hidden" data-act="date" value="${esc(p.date || '')}"><button type="button" class="date-in tdate" data-short aria-label="วันที่จ่ายงวดที่ ${n}">${tdateHTML(p.date, true)}</button></span>`
-                        : `<span class="badge ${st}">${dueText(due)}</span>`}</div>
-                    <button type="button" class="note-btn ${p.note || hasAct ? 'has' : ''}" data-act="note" title="จ่ายจริง / หมายเหตุงวดนี้" aria-label="จ่ายจริงและหมายเหตุงวดที่ ${n}">${ICON_NOTE}</button>
-                    ${noteOpen ? `<div class="s-extra">
-                        <label class="s-act">จ่ายจริง<input type="text" inputmode="decimal" data-act="actual" value="${hasAct ? fmt(p.actual) : ''}" placeholder="${fmt(defPay(l, n))}" aria-label="ยอดจ่ายจริงงวดที่ ${n}"></label>
-                        <input class="field s-note" data-act="pnote" value="${esc(p.note || '')}" placeholder="ค่าอะไร / หมายเหตุ เช่น ค่าปรับล่าช้า" maxlength="120" aria-label="หมายเหตุงวดที่ ${n}">
-                    </div>` : ''}
+                    <button type="button" class="s-main s-open" data-act="pay" aria-label="ลงจ่าย / ดูงวดที่ ${n}">
+                        <div class="s-n"><span class="t">งวดที่ ${n}</span>${p.note ? '<span class="s-has">📝</span>' : ''}</div>
+                        <div class="s-d num">${when} · <b>${fmt(amt)}</b> ฿${Math.abs(d) >= 0.005 ? ` <span class="${diffCls(d)}">(${signed(d)})</span>` : ''}</div>
+                    </button>
+                    <div class="s-side">${p.paid ? '' : (st === 'overdue' || st === 'today' ? `<span class="badge ${st}">${dueText(due)}</span>` : '')}</div>
+                    <button type="button" class="note-btn ${custom ? 'has' : ''}" data-act="pay" title="ลงจ่าย: ค่างวด / ค่าอะไรเพิ่ม / จ่ายจริง" aria-label="ลงจ่ายงวดที่ ${n}">${ICON_EDIT}</button>
                 </div>`;
         }
+
+        // แถว "ค่าอะไรบ้าง" ของยอดจ่ายจริง (ใช้ในการ์ด / ประวัติ / ฟอร์มลงจ่าย)
+        const partLn = (name, v) => `<div class="lc-ln sub ${v < 0 ? 'minus' : ''}"><span>${v < 0 ? '−' : '+'} ${esc(name)}</span><b>${fmt(Math.abs(v))}</b></div>`;
+        const partRows = (map) => [...map].filter(([, o]) => Math.abs(o.v) >= 0.005).sort((a, b) => b[1].v - a[1].v);
 
         function loanCardHTML(l, enter) {
             const s = loanStats(l);
@@ -3248,32 +3422,35 @@
                 overdue = st === 'overdue';
                 next = `
                     <div class="lc-next ${st}">
-                        <div class="t">งวดถัดไป <b>งวดที่ ${s.next}/${l.months}</b> · <b class="num">${baht(payAmt(l, s.next))}</b><br>ครบกำหนด ${dateTitle(due)} <span class="badge ${st}">${dueText(due)}</span></div>
-                        <button type="button" class="pay-btn" data-act="pay-next">${ICON_CHECK}จ่ายงวดนี้</button>
+                        <div class="t">งวดถัดไป <b>งวดที่ ${s.next}/${l.months}</b>${overdue ? ` <span class="badge overdue">${dueText(due)}</span>` : ''}<br>ตามสัญญา <b class="num">${fmt(schedAmt(l, s.next))}</b> · จ่ายจริง <b class="num">${fmt(payAmt(l, s.next))} ฿</b></div>
+                        <button type="button" class="pay-btn" data-act="pay-next">${ICON_CHECK}ลงจ่ายงวดนี้</button>
                     </div>`;
             }
             const pctN = s.normal ? s.paidNormal / s.normal : 0;
             const two = l.months > 1;
             const ln = (k, v, cls = '') => `<div class="lc-ln ${cls}"><span>${k}</span><b>${v}</b></div>`;
             const sumBox = (paid, total, r) => `<div class="lc-sum"><div class="k">จ่ายแล้ว / ทั้งสัญญา</div><div class="v num">${fmt(paid)} <small>/ ${fmt(total)}</small></div><div class="mb"><i style="width:${(r * 100).toFixed(1)}%"></i></div></div>`;
+            const parts = partRows(s.paidParts);
+            const paidDiff = s.paidAmt - s.paidNormal;
+            const go = `<span class="lc-go">ดูรายการจ่าย ${ICON_CHEVR}</span>`;
             const cmp = `
                 <div class="lc-duo num">
-                    <div class="lc-col">
+                    <button type="button" class="lc-col" data-act="history" aria-label="ดูรายการจ่าย ${esc(l.name)} (ตามสัญญา)">
                         <h4><i></i>ตามสัญญา</h4>
                         ${two ? ln('งวดแรก', fmt(schedAmt(l, 1))) + ln(`งวดต่อไป ×${l.months - 1}`, fmt(l.amount)) : ln('งวดเดียว', fmt(schedAmt(l, 1)))}
                         ${sumBox(s.paidNormal, s.normal, pctN)}
-                    </div>
-                    <div class="lc-col act">
-                        <h4><i></i>จ่ายจริง</h4>
-                        ${two ? ln('งวดแรก', fmt(defPay(l, 1))) + ln('งวดต่อไป', fmt(defPay(l, 2))) : ln('งวดเดียว', fmt(defPay(l, 1)))}
-                        ${l.extras.length ? l.extras.map(e => ln(`${e.amount < 0 ? '−' : '+'} ${esc(e.name)}`, fmt(Math.abs(e.amount)), 'sub' + (e.amount < 0 ? ' minus' : ''))).join('') : ln('ไม่มีค่าใช้จ่ายเพิ่ม', '', 'sub')}
-                        ${s.adjN ? ln(`ปรับยอดรายงวด (${s.adjN} งวด)`, signed(s.adjSum), 'sub' + (s.adjSum < 0 ? ' minus' : '')) : ''}
+                        ${go}
+                    </button>
+                    <button type="button" class="lc-col act" data-act="history" aria-label="ดูรายการจ่าย ${esc(l.name)} (จ่ายจริง)">
+                        <h4><i></i>จ่ายจริง <em>${s.paidN} งวด</em></h4>
+                        ${s.paidN ? ln('ค่างวด', fmt(s.paidInst)) + parts.map(([k, o]) => partLn(k, o.v)).join('') : ln('ยังไม่ได้ลงจ่าย', '', 'sub')}
                         ${sumBox(s.paidAmt, s.total, pct)}
-                    </div>
+                        ${go}
+                    </button>
                 </div>
-                ${Math.abs(s.extra) < 0.005
-                    ? '<div class="lc-verdict same">✓ จ่ายจริงเท่ากับสัญญา ไม่มีค่าใช้จ่ายเพิ่ม</div>'
-                    : `<div class="lc-verdict num"><span>จ่ายจริง${s.extra > 0 ? 'มากกว่า' : 'น้อยกว่า'}สัญญา <b class="${diffCls(s.extra)}">${signed(s.extra)} ฿</b>${s.normal ? ` (${s.extra > 0 ? '+' : '−'}${Math.abs(s.extra / s.normal * 100).toFixed(1)}%)` : ''}</span><span>ที่จ่ายไปแล้วต่าง <b class="${diffCls(s.paidAmt - s.paidNormal)}">${signed(s.paidAmt - s.paidNormal)}</b></span></div>`}
+                ${!s.paidN ? '' : Math.abs(paidDiff) < 0.005
+                    ? '<div class="lc-verdict same">✓ ที่จ่ายไปแล้ว เท่ากับสัญญาพอดี</div>'
+                    : `<div class="lc-verdict num"><span>ที่จ่ายไปแล้ว จ่าย${paidDiff > 0 ? 'มากกว่า' : 'น้อยกว่า'}สัญญา <b class="${diffCls(paidDiff)}">${signed(paidDiff)} ฿</b>${s.paidNormal ? ` (${paidDiff > 0 ? '+' : '−'}${Math.abs(paidDiff / s.paidNormal * 100).toFixed(1)}%)` : ''}</span></div>`}
                 <div class="lc-left num"><span>คงเหลือต้องจ่าย <b class="${s.left ? 'amber' : 'green'}">${baht(s.left)}</b></span><span>เหลือ ${l.months - s.paidN} งวด</span></div>`;
             let sched = '';
             if (open) { sched = '<div class="sched">'; for (let n = 1; n <= l.months; n++) sched += schedRowHTML(l, n, s.next); sched += '</div>'; }
@@ -3281,7 +3458,7 @@
                 <article class="loan-card ${s.done ? 'done' : ''} ${overdue ? 'overdue' : ''} ${open ? 'open' : ''} ${enter ? 'enter' : ''}" data-id="${esc(l.id)}">
                     <div class="lc-top">
                         <span class="lc-ico">${esc(l.icon)}</span>
-                        <div class="lc-title"><div class="lc-name">${esc(l.name)}</div><div class="lc-meta num">${l.months} งวด · ทุกวันที่ ${l.dueDay} · ${monthShort(l.start)} – ${monthShort(s.endMonth)}</div></div>
+                        <div class="lc-title"><div class="lc-name">${esc(l.name)}</div><div class="lc-meta num">${l.months} งวด · ${monthShort(l.start)} – ${monthShort(s.endMonth)}</div></div>
                         <div class="lc-pct num">${Math.round(pct * 100)}<small>%</small></div>
                         <button type="button" class="icon-btn sm" data-act="edit" title="แก้ไข" aria-label="แก้ไข ${esc(l.name)}">${ICON_EDIT}</button>
                     </div>
@@ -3343,49 +3520,59 @@
             renderLoanCompare();
         }
 
-        // ---- เปรียบเทียบ ปกติ vs จ่ายจริง (หน้าผ่อนชำระ) ----
+        // ---- เปรียบเทียบ ตามสัญญา vs จ่ายจริง (หน้าผ่อนชำระ) ----
+        // แต่ละแถว: แท่งสัญญา (ทอง) เทียบแท่งจ่ายจริง (ม่วง) + ส่วนต่าง
+        function vsRowHTML(title, sub, c, a, attrs = '') {
+            const max = Math.max(c, a, 1), d = a - c;
+            const pill = Math.abs(d) < 0.005 ? '<span class="vs-pill same">เท่ากัน</span>' : `<span class="vs-pill ${diffCls(d)}">${signed(d)} ฿</span>`;
+            return `<div class="vs-row" ${attrs}>
+                <div class="vs-h"><div><b>${title}</b>${sub ? `<small>${sub}</small>` : ''}</div>${pill}</div>
+                <div class="vs-bar c"><i style="width:${(c / max * 100).toFixed(1)}%"></i><span>ตามสัญญา</span><b>${fmt(c)}</b></div>
+                <div class="vs-bar a"><i style="width:${(a / max * 100).toFixed(1)}%"></i><span>จ่ายจริง</span><b>${fmt(a)}</b></div>
+            </div>`;
+        }
         function renderLoanCompare() {
             const loans = appData.loans;
             $('loanCmpCard').classList.toggle('hide', !loans.length);
             if (!loans.length) return;
             const month = selectedMonth(), lm = loanMonth(month);
-            let cN = 0, cA = 0, pN = 0, pA = 0;
-            const kinds = new Map();
-            loans.forEach(l => {
+            let cN = 0, cA = 0, pN = 0, pA = 0, pCount = 0;
+            const paidKinds = new Map(), allKinds = new Map();
+            const stats = loans.map(l => {
                 const s = loanStats(l);
-                cN += s.normal; cA += s.total; pN += s.paidNormal; pA += s.paidAmt;
-                for (let n = 1; n <= l.months; n++) { const parts = payParts(l, n); addParts(kinds, parts, 'v'); if (isPaid(l, n)) addParts(kinds, parts, 'paid'); }
+                cN += s.normal; cA += s.total; pN += s.paidNormal; pA += s.paidAmt; pCount += s.paidN;
+                s.paidParts.forEach((o, k) => addParts(paidKinds, [{ name: k, amount: o.v }]));
+                for (let n = 1; n <= l.months; n++) addParts(allKinds, payParts(l, n));
+                return { l, s };
             });
-            const ln = (k, v) => `<div class="lc-ln"><span>${k}</span><b>${v}</b></div>`;
-            const sumBox = (paid, total) => `<div class="lc-sum"><div class="k">จ่ายแล้ว / ทั้งหมด</div><div class="v num">${fmt(paid)} <small>/ ${fmt(total)}</small></div><div class="mb"><i style="width:${(total ? paid / total * 100 : 0).toFixed(1)}%"></i></div></div>`;
-            let html = `
-                <div class="lc-duo num" style="margin-top:2px">
-                    <div class="lc-col"><h4><i></i>ตามสัญญา</h4>${ln(`${monthShort(month)}`, fmt(lm.normal))}${sumBox(pN, cN)}</div>
-                    <div class="lc-col act"><h4><i></i>จ่ายจริง</h4>${ln(`${monthShort(month)}`, fmt(lm.total))}${sumBox(pA, cA)}</div>
-                </div>
-                ${Math.abs(cA - cN) < 0.005 ? '<div class="lc-verdict same">✓ ทุกรายการจ่ายจริงเท่ากับสัญญา</div>'
-                    : `<div class="lc-verdict num"><span>รวมทุกสัญญา จ่ายจริง${cA > cN ? 'มากกว่า' : 'น้อยกว่า'} <b class="${diffCls(cA - cN)}">${signed(cA - cN)} ฿</b></span><span>ที่จ่ายไปแล้วต่าง <b class="${diffCls(pA - pN)}">${signed(pA - pN)}</b></span></div>`}
-                <div class="lc-left num"><span>คงเหลือต้องจ่ายทั้งหมด <b>${baht(cA - pA)}</b></span><span>เดือนนี้ค้าง <b>${fmt(lm.unpaid)}</b></span></div>`;
+            let html = `<div class="vs-list num">
+                ${vsRowHTML(`เดือนนี้ · ${monthShort(month)}`, lm.due.length ? `${lm.due.length} งวด · จ่ายแล้ว ${lm.paidCount}${lm.unpaid ? ` · ค้าง ${fmt(lm.unpaid)}` : ''}` : 'ไม่มีค่างวดเดือนนี้', lm.normal, lm.total)}
+                ${vsRowHTML('ที่จ่ายไปแล้ว', `${pCount} งวด จากทุกรายการ`, pN, pA)}
+                ${vsRowHTML('ทั้งหมดทุกสัญญา', `คงเหลือต้องจ่าย ${fmt(cA - pA)} ฿`, cN, cA)}
+            </div>`;
 
-            const kindRows = [...kinds].filter(([, o]) => Math.abs(o.v) >= 0.005).sort((a, b) => b[1].v - a[1].v);
-            if (kindRows.length) {
-                html += `<div class="sub-h">จ่ายเพิ่มจากสัญญาเป็นค่าอะไรบ้าง</div>`;
-                html += kindRows.map(([name, o]) => `<div class="kind-row num"><b>${esc(name)}</b><span>${signed(o.v)} ฿ <small>· จ่ายแล้ว ${fmt(o.paid)}</small></span><div class="kb"><i style="width:${(o.v ? Math.max(0, Math.min(1, o.paid / o.v)) * 100 : 0).toFixed(1)}%"></i></div></div>`).join('');
+            const rows = partRows(paidKinds), planned = partRows(allKinds);
+            html += `<div class="sub-h">จ่ายต่างจากสัญญาเพราะค่าอะไร</div>`;
+            if (rows.length) {
+                html += rows.map(([name, o]) => {
+                    const tot = allKinds.get(name)?.v || o.v;
+                    return `<div class="kind-row num"><b>${esc(name)}</b><span class="${diffCls(o.v)}">${signed(o.v)} ฿</span>${Math.abs(tot - o.v) >= 0.005 ? `<small>จ่ายแล้ว · ทั้งสัญญา ${signed(tot)}</small>` : '<small>จ่ายแล้ว</small>'}</div>`;
+                }).join('');
+            } else {
+                html += `<div class="cmp-empty">${pCount ? '✓ งวดที่จ่ายไปแล้ว จ่ายเท่ากับสัญญาทุกงวด' : 'ยังไม่มีงวดที่ลงจ่าย'}${planned.length ? ` · งวดที่เหลือมีค่าเพิ่ม ${planned.map(([k, o]) => `${esc(k)} ${signed(o.v)}`).join(', ')}` : ''}</div>`;
             }
 
-            html += `<div class="sub-h">ต่องวด แยกรายการ</div><div class="cmp-row head"><span>รายการ</span><span>สัญญา</span><span>จ่ายจริง</span><span>ส่วนต่าง</span></div>`;
-            let sumN = 0, sumA = 0;
-            [...loans].sort((a, b) => Number(loanStats(a).done) - Number(loanStats(b).done)).forEach(l => {
-                const s = loanStats(l), a = loanActual(l), d = a - l.amount;
-                if (!s.done) { sumN += l.amount; sumA += a; }
-                const what = [l.first !== null && l.months > 1 ? `งวดแรก ${fmt(l.first)}` : '', ...l.extras.map(e => `${e.name} ${signed(e.amount)}`)].filter(Boolean).join(' · ') || 'ไม่มีค่าใช้จ่ายเพิ่ม';
-                html += `<div class="cmp-row" style="${s.done ? 'opacity:.55' : ''}">
-                    <div class="cmp-name"><b>${esc(l.icon)} ${esc(l.name)}</b><small>${esc(what)}${s.done ? ' · ผ่อนครบแล้ว' : ''}</small></div>
-                    <span>${fmt(l.amount)}</span><span><b>${fmt(a)}</b></span><span class="${diffCls(d)}">${signed(d)}</span></div>`;
+            html += `<div class="sub-h">แยกตามรายการ (ที่จ่ายไปแล้ว)</div><div class="cmp-row head"><span>รายการ</span><span>สัญญา</span><span>จ่ายจริง</span><span>ส่วนต่าง</span></div>`;
+            stats.sort((a, b) => Number(a.s.done) - Number(b.s.done)).forEach(({ l, s }) => {
+                const d = s.paidAmt - s.paidNormal;
+                html += `<button type="button" class="cmp-row" data-hist="${esc(l.id)}" style="${s.done ? 'opacity:.6' : ''}">
+                    <div class="cmp-name"><b>${esc(l.icon)} ${esc(l.name)}</b><small>จ่ายแล้ว ${s.paidN}/${l.months} งวด${s.done ? ' · ผ่อนครบ' : ''}</small></div>
+                    <span>${fmt(s.paidNormal)}</span><span><b>${fmt(s.paidAmt)}</b></span><span class="${diffCls(d)}">${signed(d)}</span></button>`;
             });
-            html += `<div class="cmp-row total"><span>รวม/เดือน</span><span>${fmt(sumN)}</span><span>${fmt(sumA)}</span><span class="${diffCls(sumA - sumN)}">${signed(sumA - sumN)}</span></div>`;
+            html += `<div class="cmp-row total"><span>รวมที่จ่ายแล้ว</span><span>${fmt(pN)}</span><span>${fmt(pA)}</span><span class="${diffCls(pA - pN)}">${signed(pA - pN)}</span></div>`;
             $('loanCmp').innerHTML = html;
         }
+        $('loanCmp').addEventListener('click', (e) => { const b = e.target.closest('[data-hist]'); if (b) openPayHistory(b.dataset.hist); });
 
         function renderLoanBadge() {
             const c = loanAlerts();
@@ -3419,38 +3606,12 @@
             setLoanFilter(b.dataset.filter); renderLoans(true);
         });
 
-        // ติ๊ก / วันที่จ่าย / หมายเหตุรายงวด — ใช้ร่วมกันทั้งหน้าผ่อนชำระและการ์ดบนหน้าภาพรวม
-        function onLoanChange(e) {
-            const t = e.target, act = t.dataset.act;
-            if (!act) return;
-            const host = t.closest('[data-id]');
-            const l = host && appData.loans.find(x => x.id === host.dataset.id);
+        // ติ๊กจ่ายเร็วจากตารางงวด (ยอดตามค่าเริ่มต้น) — ถ้าจะลงรายละเอียด แตะที่งวดเพื่อเปิดฟอร์มลงจ่าย
+        $('loanList').addEventListener('change', (e) => {
+            const t = e.target; if (t.dataset.act !== 'tick') return;
+            const l = appData.loans.find(x => x.id === t.closest('[data-id]')?.dataset.id);
             const n = Number(t.closest('[data-n]')?.dataset.n);
-            if (!l || !n) return;
-            if (act === 'tick') tickLoan(l, n, t.checked, t);
-            else if (act === 'date') { setPay(l, n, { date: t.value }); saveData(); }
-            else if (act === 'pnote') {
-                setPay(l, n, { note: t.value.trim() });
-                saveData();
-                t.closest('.srow')?.querySelector('.note-btn')?.classList.toggle('has', !!t.value.trim() || getPay(l, n)?.actual != null);
-            } else if (act === 'actual') {
-                const v = optNum(t.value);
-                setPay(l, n, { actual: v === null || Math.abs(v - defPay(l, n)) < 0.005 ? null : v });
-                saveData();
-                // วาดใหม่หลังพิมพ์เสร็จ (ถ้ากำลังย้ายไปช่องหมายเหตุ จะรอให้ออกจากช่องก่อน)
-                const later = () => { if (!isEditing()) refreshLoanViews(); else renderDeferred = true; };
-                setTimeout(() => {
-                    const a = document.activeElement;
-                    if (a && a.matches?.('.sched input')) a.addEventListener('blur', () => setTimeout(later, 0), { once: true });
-                    else later();
-                }, 0);
-            }
-        }
-        $('loanList').addEventListener('change', onLoanChange);
-        $('loanList').addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.matches('.s-note, .s-act input')) e.target.blur(); });
-        $('loanList').addEventListener('focusin', (e) => {
-            if (!e.target.matches('.s-act input')) return;
-            const v = optNum(e.target.value); if (v !== null) e.target.value = String(v);
+            if (l && n) tickLoan(l, n, t.checked, t);
         });
 
         function rerenderCard(l) {
@@ -3470,17 +3631,174 @@
                     openLoans.has(l.id) ? openLoans.delete(l.id) : openLoans.add(l.id);
                     rerenderCard(l);
                     break;
-                case 'pay-next': { const s = loanStats(l); if (s.next) tickLoan(l, s.next, true, b); break; }
-                case 'note': {
-                    const n = Number(b.closest('[data-n]').dataset.n), k = `${l.id}:${n}`;
-                    const p = getPay(l, n);
-                    if (p?.note || (p && p.actual !== null)) { b.closest('.srow').querySelector('.s-act input')?.focus(); break; }
-                    openNotes.has(k) ? openNotes.delete(k) : openNotes.add(k);
-                    rerenderCard(l);
-                    $('loanList').querySelector(`[data-id="${CSS.escape(l.id)}"] [data-n="${n}"] .s-act input`)?.focus();
-                    break;
-                }
+                case 'history': openPayHistory(l.id); break;
+                case 'pay-next': { const s = loanStats(l); if (s.next) openPayModal(l.id, s.next); break; }
+                case 'pay': openPayModal(l.id, Number(b.closest('[data-n]').dataset.n)); break;
             }
+        });
+
+        // ================= ลงจ่ายงวด: จ่ายค่างวด / ค่าอะไรเพิ่ม / จ่ายจริง → เปรียบเทียบกับสัญญา =================
+        let pf = null; // { id, n, items: [{ name, amount: string }], back: เปิดมาจากหน้าประวัติ }
+        const pfLoan = () => pf && appData.loans.find(x => x.id === pf.id);
+        const pfItems = () => normExtras(pf.items.map(e => {
+            const v = parseAmt(e.amount) || 0;
+            return { name: e.name, amount: /ส่วนลด|ลดราคา|คืนเงิน|cashback/i.test(e.name) && v > 0 ? -v : v };
+        }));
+        function pfValues() {
+            const l = pfLoan(), c = schedAmt(l, pf.n);
+            const iv = parseAmt($('pfInst').value), inst = isNaN(iv) ? c : iv;
+            const items = pfItems(), sum = inst + sumAmt(items);
+            const av = parseAmt($('pfActual').value), actual = isNaN(av) ? sum : av;
+            return { l, c, inst, items, sum, actual, other: actual - sum };
+        }
+        // การ์ดเปรียบเทียบ: ตามสัญญา vs จ่ายจริง ของงวดเดียว (ใช้ทั้งในฟอร์มและหน้าประวัติ)
+        function payCmpHTML({ c, inst, items, other, actual }, compact = false) {
+            const d = actual - c, max = Math.max(c, actual, 1);
+            const rows = [];
+            if (Math.abs(inst - c) >= 0.005 || !compact) rows.push(`<div class="lc-ln"><span>ค่างวด</span><b>${fmt(inst)}</b></div>`);
+            items.forEach(e => rows.push(partLn(e.name, e.amount)));
+            if (Math.abs(other) >= 0.005) rows.push(partLn(OTHER_PART, other));
+            return `<div class="pc ${compact ? 'compact' : ''} num">
+                <div class="pc-cols">
+                    <div class="pc-col c"><small>ตามสัญญา</small><b>${fmt(c)}</b><div class="pc-bar"><i style="width:${(c / max * 100).toFixed(1)}%"></i></div></div>
+                    <div class="pc-vs">vs</div>
+                    <div class="pc-col a"><small>จ่ายจริง</small><b>${fmt(actual)}</b><div class="pc-bar"><i style="width:${(actual / max * 100).toFixed(1)}%"></i></div></div>
+                </div>
+                ${rows.length && (!compact || rows.length > 1 || Math.abs(d) >= 0.005) ? `<div class="pc-parts">${rows.join('')}</div>` : ''}
+                <div class="pc-verdict ${Math.abs(d) < 0.005 ? 'same' : diffCls(d)}">${Math.abs(d) < 0.005 ? '✓ จ่ายเท่าสัญญาพอดี' : `จ่าย${d > 0 ? 'มากกว่า' : 'น้อยกว่า'}สัญญา <b>${signed(d)} ฿</b>${c ? ` <span>(${d > 0 ? '+' : '−'}${Math.abs(d / c * 100).toFixed(1)}%)</span>` : ''}`}</div>
+            </div>`;
+        }
+        function renderPfItems() {
+            $('pfItems').innerHTML = pf.items.map((e, i) => `
+                <div class="ex-row" data-i="${i}">
+                    <input class="field" data-ex="name" list="extraNames" value="${esc(e.name)}" placeholder="ค่าอะไร เช่น ดอกเบี้ย" maxlength="40" aria-label="ค่าอะไร">
+                    <input class="field amt" data-ex="amount" inputmode="decimal" value="${esc(e.amount)}" placeholder="บาท" aria-label="จำนวนเงิน">
+                    <button type="button" class="del" data-ex-del title="ลบ" aria-label="ลบ">${ICON_TRASH}</button>
+                </div>`).join('');
+        }
+        function updatePayCalc() {
+            const v = pfValues();
+            $('pfActual').placeholder = fmt(v.sum);
+            $('pfSumHint').innerHTML = `ค่างวด ${fmt(v.inst)}${v.items.length ? ` + ค่าเพิ่ม ${fmt(sumAmt(v.items))}` : ''} = <b>${fmt(v.sum)}</b>${Math.abs(v.other) >= 0.005 ? ` · ส่วนต่างที่ไม่ระบุ <b class="${diffCls(v.other)}">${signed(v.other)}</b>` : ''}`;
+            $('pfCmp').innerHTML = payCmpHTML(v);
+        }
+        function openPayModal(id, n, back = false) {
+            const l = appData.loans.find(x => x.id === id); if (!l || !n) return;
+            pf = { id, n, back };
+            const p = getPay(l, n) || {};
+            $('pfIco').textContent = l.icon;
+            $('payTitle').textContent = p.paid ? `งวดที่ ${n}/${l.months} · แก้ไขการจ่าย` : `ลงจ่ายงวดที่ ${n}/${l.months}`;
+            $('paySub').textContent = `${l.name} · ${monthTitle(loanDue(l, n).slice(0, 7))}`;
+            $('pfContract').textContent = fmt(schedAmt(l, n));
+            $('pfInst').value = fmt(instOf(l, n));
+            pf.items = itemsOf(l, n).map(e => ({ name: e.name, amount: fmt(Math.abs(e.amount)) }));
+            renderPfItems();
+            $('pfActual').value = p.actual != null ? fmt(p.actual) : '';
+            $('pfNote').value = p.note || '';
+            setTDate($('pfDate'), p.date || todayKey());
+            $('pfSave').innerHTML = `${ICON_CHECK}${p.paid ? 'บันทึกการแก้ไข' : 'บันทึกว่าจ่ายแล้ว'}`;
+            $('pfUnpay').classList.toggle('hide', !p.paid);
+            updatePayCalc();
+            closeSheet('histModal');
+            openSheet('payModal');
+        }
+        $('pfItems').addEventListener('input', (e) => {
+            const row = e.target.closest('[data-i]'); if (!row) return;
+            pf.items[Number(row.dataset.i)][e.target.dataset.ex] = e.target.value;
+            updatePayCalc();
+        });
+        $('pfItems').addEventListener('click', (e) => {
+            if (!e.target.closest('[data-ex-del]')) return;
+            pf.items.splice(Number(e.target.closest('[data-i]').dataset.i), 1);
+            renderPfItems(); updatePayCalc();
+        });
+        $('pfAddItem').addEventListener('click', () => {
+            pf.items.push({ name: '', amount: '' });
+            renderPfItems(); updatePayCalc();
+            $('pfItems').lastElementChild?.querySelector('input')?.focus();
+        });
+        ['pfInst', 'pfActual'].forEach(id => {
+            $(id).addEventListener('input', updatePayCalc);
+            $(id).addEventListener('focus', (e) => { const v = optNum(e.target.value); if (v !== null) e.target.value = String(v); });
+            $(id).addEventListener('blur', (e) => { const v = optNum(e.target.value); if (v !== null) e.target.value = fmt(v); });
+        });
+        function afterPaySheet(l, n, msg) {
+            const back = pf.back;
+            closeSheet('payModal');
+            saveData();
+            lastTick = { id: l.id, n };
+            refreshLoanViews();
+            if (msg) toast(msg);
+            if (back) setTimeout(() => openPayHistory(l.id), 220);
+            pf = null;
+        }
+        $('payForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const l = pfLoan(); if (!l) return;
+            const n = pf.n, v = pfValues(), wasPaid = isPaid(l, n);
+            if (v.inst < 0) { toast('ค่างวดต้องไม่ติดลบ'); $('pfInst').focus(); return; }
+            if (v.actual < 0) { toast('ยอดจ่ายจริงต้องไม่ติดลบ'); $('pfActual').focus(); return; }
+            setPay(l, n, {
+                paid: true, date: DATE_RE.test($('pfDate').value) ? $('pfDate').value : todayKey(), note: $('pfNote').value.trim(),
+                inst: Math.abs(v.inst - v.c) < 0.005 ? null : v.inst,
+                items: sameItems(v.items, l.extras) ? null : v.items,
+                actual: Math.abs(v.other) < 0.005 ? null : v.actual
+            });
+            const s = loanStats(l);
+            if (!wasPaid) burstAt($('pfSave'), 14);
+            afterPaySheet(l, n, wasPaid ? 'บันทึกการแก้ไขแล้ว' : (s.done ? '' : `ลงจ่ายงวดที่ ${n} ของ “${l.name}” แล้ว ✓`));
+            if (!wasPaid && s.done) setTimeout(() => { celebrate(); toast(`ผ่อน “${l.name}” ครบทุกงวดแล้ว 🎉`); }, 250);
+        });
+        $('pfUnpay').addEventListener('click', async () => {
+            const l = pfLoan(); if (!l) return;
+            const n = pf.n, keep = pf;
+            closeSheet('payModal');
+            if (!(await confirmDialog(`ยกเลิกการจ่ายงวดที่ ${n}?`, `ข้อมูลที่ลงไว้ของงวดนี้ (ค่างวด ค่าอะไรเพิ่ม จ่ายจริง หมายเหตุ) จะถูกล้าง`, 'ยกเลิกการจ่าย'))) { pf = keep; openSheet('payModal'); return; }
+            pf = keep;
+            setPay(l, n, { paid: false, date: '', note: '', inst: null, items: null, actual: null });
+            afterPaySheet(l, n, `ยกเลิกการจ่ายงวดที่ ${n} แล้ว`);
+        });
+
+        // ================= รายการจ่ายที่ลงไว้ (แตะการ์ด ตามสัญญา / จ่ายจริง) =================
+        let histId = null;
+        function openPayHistory(id) {
+            const l = appData.loans.find(x => x.id === id); if (!l) return;
+            histId = id;
+            const s = loanStats(l);
+            $('histIco').textContent = l.icon;
+            $('histTitle').textContent = l.name;
+            $('histSub').textContent = `ลงจ่ายแล้ว ${s.paidN}/${l.months} งวด`;
+            const paidNs = [];
+            for (let n = l.months; n >= 1; n--) if (isPaid(l, n)) paidNs.push(n);
+            const d = s.paidAmt - s.paidNormal;
+            let html = `<div class="hist-sum num">
+                    <div><small>ตามสัญญา</small><b>${fmt(s.paidNormal)}</b></div>
+                    <div class="a"><small>จ่ายจริง</small><b>${fmt(s.paidAmt)}</b></div>
+                    <div class="${diffCls(d)}"><small>ส่วนต่าง</small><b>${Math.abs(d) < 0.005 ? '0' : signed(d)}</b></div>
+                </div>`;
+            if (!paidNs.length) {
+                html += `<div class="empty-big"><span class="e">🧾</span><b>ยังไม่มีรายการจ่าย</b><p>ลงจ่ายงวดแรก แล้วรายการจะมาแสดงที่นี่ พร้อมเทียบกับสัญญา</p></div>`;
+            } else {
+                html += paidNs.map((n, i) => {
+                    const p = getPay(l, n), c = schedAmt(l, n), inst = instOf(l, n), items = itemsOf(l, n), sum = inst + sumAmt(items), actual = payAmt(l, n);
+                    return `<button type="button" class="ph-item" data-n="${n}" style="animation-delay:${Math.min(i, 8) * 40}ms">
+                        <div class="ph-top"><span class="ph-n num">งวดที่ ${n}</span><span class="ph-date">${p.date ? `จ่ายเมื่อ ${dateTitle(p.date)}` : 'จ่ายแล้ว'}</span><span class="ph-edit">${ICON_EDIT}</span></div>
+                        ${payCmpHTML({ c, inst, items, other: actual - sum, actual }, true)}
+                        ${p.note ? `<div class="ph-note">📝 ${esc(p.note)}</div>` : ''}
+                    </button>`;
+                }).join('');
+            }
+            $('histList').innerHTML = html;
+            $('histNext').classList.toggle('hide', s.done);
+            if (!s.done) $('histNext').innerHTML = `${ICON_CHECK}ลงจ่ายงวดถัดไป (งวดที่ ${s.next})`;
+            openSheet('histModal');
+        }
+        $('histList').addEventListener('click', (e) => {
+            const b = e.target.closest('.ph-item'); if (b && histId) openPayModal(histId, Number(b.dataset.n), true);
+        });
+        $('histNext').addEventListener('click', () => {
+            const l = appData.loans.find(x => x.id === histId); if (!l) return;
+            const s = loanStats(l); if (s.next) openPayModal(l.id, s.next, true);
         });
 
         // ---- เพิ่ม / แก้ไขรายการผ่อน ----
