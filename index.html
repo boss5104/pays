@@ -1497,26 +1497,6 @@
         .ico.led { background: linear-gradient(135deg, rgba(255, 170, 150, .2), rgba(232, 196, 106, .18)); color: #E58D72; }
         .link-btn { color: var(--accent); text-decoration: underline; font-size: inherit; }
 
-        .led-src { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
-        .src-tile {
-            position: relative; overflow: hidden; text-align: left; padding: 12px 14px 12px 16px; border-radius: 16px; min-width: 0;
-            background: var(--surface-2); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 1px;
-            transition: transform .3s cubic-bezier(.3, 1.5, .5, 1), box-shadow .3s, border-color .2s;
-        }
-        .src-tile::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--check-grad); }
-        .src-tile.exp::before { background: linear-gradient(180deg, #F7C468, #E08A1E); }
-        .src-tile:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: var(--line-2); }
-        .src-tile:active { transform: scale(.97); }
-        .src-tile.enter { animation: rise .45s cubic-bezier(.2, .8, .2, 1) backwards; }
-        .src-tile.flash { animation: rowFlash 1.6s ease; }
-        .st-k { font-size: 11px; color: var(--text-3); }
-        .st-n { font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 30px; }
-        .st-v { font-size: 17px; font-weight: 700; letter-spacing: -.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .st-a { font-size: 11px; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .st-a.out { color: var(--red); } .st-a.in { color: var(--green); }
-        .st-pm { position: absolute; top: 10px; right: 10px; width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); transition: transform .4s cubic-bezier(.3, 1.6, .5, 1), background .2s, color .2s; }
-        .st-pm svg { width: 14px; height: 14px; }
-        .src-tile:hover .st-pm { transform: rotate(180deg); background: var(--accent-grad); color: var(--accent-ink); }
 
         .led-cats { display: grid; gap: 10px; margin-top: 12px; }
         .lcat { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 10px; align-items: center; animation: rise .45s cubic-bezier(.2, .8, .2, 1) backwards; animation-delay: var(--d); }
@@ -1602,9 +1582,6 @@
         @media (max-width: 420px) {
             .row { grid-template-columns: 22px minmax(0, 1fr) 28px auto 28px; gap: 8px; }
             .pm-btn { width: 28px; height: 28px; border-radius: 9px; }
-            .led-src { grid-template-columns: 1fr 1fr; gap: 8px; }
-            .src-tile { padding: 10px 12px 10px 14px; }
-            .st-v { font-size: 15.5px; }
             .led-foot b { font-size: 13.5px; }
             .led-foot div { padding: 8px 10px; }
             .adj-flow { padding: 10px 12px; }
@@ -1612,6 +1589,63 @@
             .adj-flow b { font-size: 15px; }
         }
         @media (max-width: 380px) { .tab { font-size: 10.5px; } }
+
+        /* ================= v2.9: ป้อปอัพแป้นตัวเลข ================= */
+        .np-ov {
+            position: fixed; inset: 0; z-index: 65; display: flex; align-items: flex-end; justify-content: center;
+            background: rgba(0, 0, 0, .28); opacity: 0; pointer-events: none; transition: opacity .18s ease;
+            -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+        }
+        .np-ov.open { opacity: 1; pointer-events: auto; }
+        .np {
+            width: 100%; max-width: 400px; margin: 0 16px calc(16px + var(--safe-bottom)); padding: 14px;
+            background: var(--surface); border: 1px solid var(--line); border-radius: 22px; box-shadow: 0 -10px 40px -12px rgba(0, 0, 0, .45);
+            transform: translateY(24px); transition: transform .26s cubic-bezier(.2, .9, .25, 1);
+        }
+        .np-ov.open .np { transform: none; }
+        .np-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .np-head > div { min-width: 0; display: flex; flex-direction: column; }
+        .np-head b { font-size: 14.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .np-head small { font-size: 12px; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .np-head small:empty { display: none; }
+        .np-disp {
+            display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end; gap: 2px; min-height: 76px;
+            padding: 10px 14px; margin-bottom: 12px; border-radius: 16px; background: var(--surface-2); border: 1px solid var(--line); overflow: hidden;
+        }
+        .np-disp.bad { animation: npShake .32s; border-color: var(--red); }
+        .np-expr { font-size: 14px; color: var(--text-3); max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; direction: rtl; text-align: right; unicode-bidi: plaintext; }
+        .np-expr:empty::before { content: "\00a0"; }
+        .np-val { display: flex; align-items: baseline; gap: 6px; max-width: 100%; }
+        .np-val span { font-size: 34px; font-weight: 700; letter-spacing: -.5px; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-radius: 8px; padding: 0 4px; }
+        .np-val span.ph { color: var(--text-3); font-weight: 500; font-size: 22px; }
+        .np-val span.fresh { background: var(--accent-soft); }
+        .np-val span.neg { color: var(--red); }
+        .np-val small { font-size: 16px; color: var(--text-3); }
+        .np-val small:empty { display: none; }
+        .np-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .np-keys button {
+            height: 54px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--line); color: var(--text);
+            font-size: 22px; font-weight: 500; display: grid; place-items: center; touch-action: manipulation;
+            transition: transform .12s, background .15s, filter .15s;
+        }
+        .np-keys button:active, .np-keys button.hit { transform: scale(.93); filter: brightness(1.12); }
+        .np-keys button:disabled { opacity: .3; pointer-events: none; }
+        .np-keys .op { background: var(--accent-soft); color: var(--accent); border-color: transparent; font-size: 24px; }
+        .np-keys .fn { color: var(--text-2); font-size: 18px; }
+        .np-keys .fn svg { width: 24px; height: 24px; }
+        .np-keys .ok {
+            grid-row: span 2; height: auto; background: var(--accent-grad); color: var(--accent-ink); border-color: transparent;
+            font-size: 15px; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+        }
+        .np-keys .ok svg { width: 26px; height: 26px; }
+        @keyframes npShake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+        input[data-np] { cursor: pointer; caret-color: transparent; }
+        input[data-np].np-on { outline: 2px solid var(--accent); outline-offset: 2px; }
+        @media (max-width: 520px) {
+            .np { max-width: none; margin: 0; border-radius: 20px 20px 0 0; border-bottom: 0; padding: 14px 14px calc(14px + var(--safe-bottom)); }
+            .np-keys button { height: 56px; }
+        }
+        @media (max-height: 560px) { .np-keys button { height: 44px; } .np-disp { min-height: 60px; } }
 
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -1773,7 +1807,7 @@
                 <div class="card-sub"><span>ใช้ทุกเดือน · ติ๊ก ✓ = ใช้ไปแล้วในเดือนนี้</span></div>
                 <form class="add" id="incomeForm" autocomplete="off">
                     <input type="text" id="incomeName" class="field" placeholder="รายรับ เช่น เงินเดือน" maxlength="80" aria-label="ชื่อรายรับ">
-                    <input type="text" id="incomeAmount" class="field amt" placeholder="บาท" inputmode="decimal" aria-label="จำนวนเงิน">
+                    <input type="text" id="incomeAmount" class="field amt" placeholder="บาท" inputmode="none" data-np="dec" aria-label="จำนวนเงิน">
                     <button type="submit" class="add-btn" title="เพิ่มรายรับ" aria-label="เพิ่มรายรับ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
                 </form>
                 <div class="list" id="customIncomeList"></div>
@@ -1794,7 +1828,7 @@
                 </div>
                 <form class="add" id="fixedForm" autocomplete="off">
                     <input type="text" id="fixedName" class="field" placeholder="รายการ เช่น ค่าหอ, Netflix" maxlength="80" aria-label="ชื่อรายการ">
-                    <input type="text" id="fixedAmount" class="field amt" placeholder="บาท" inputmode="decimal" aria-label="ราคา">
+                    <input type="text" id="fixedAmount" class="field amt" placeholder="บาท" inputmode="none" data-np="dec" aria-label="ราคา">
                     <button type="submit" class="add-btn" title="เพิ่มค่าใช้จ่าย" aria-label="เพิ่มค่าใช้จ่าย"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
                 </form>
                 <div class="list" id="fixedExpenseList"></div>
@@ -1869,16 +1903,6 @@
                     <div class="led-cap" id="ledCap">—</div>
                 </div>
             </div>
-        </section>
-
-        <!-- ---- เลือกรายการเพื่อเพิ่ม / ลดยอด ---- -->
-        <section class="card">
-            <div class="card-head">
-                <h2><span class="ico led"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 4v9M7.5 8.5h9M7.5 19h9"/></svg></span>เพิ่ม / ลดยอด</h2>
-                <span class="count" id="ledSrcMonth">—</span>
-            </div>
-            <div class="card-sub"><span>แตะรายรับหรือค่าใช้จ่าย แล้วใส่จำนวนเงินกับค่าอะไร — เช่น เงินเดือน −120 ค่าข้าว</span></div>
-            <div class="led-src" id="ledSrc"></div>
         </section>
 
         <!-- ---- ใช้จ่ายกับอะไรบ้าง ---- -->
@@ -2025,7 +2049,7 @@
             <form class="sav-form" id="savForm" autocomplete="off">
                 <div class="sec-label">บัญชี</div>
                 <div class="acc-pick" id="savAccChips" aria-label="เลือกบัญชี"></div>
-                <label class="amt-big"><span class="cur">฿</span><input type="text" id="savAmount" inputmode="decimal" placeholder="0" aria-label="จำนวนเงิน"></label>
+                <label class="amt-big"><span class="cur">฿</span><input type="text" id="savAmount" inputmode="none" data-np="dec" placeholder="0" aria-label="จำนวนเงิน"></label>
                 <div class="amt-preview num" id="savPreview"></div>
                 <div class="quick-amts" id="savQuick">
                     <button type="button" data-add="100">+100</button><button type="button" data-add="500">+500</button>
@@ -2196,14 +2220,14 @@
                 <label class="fl"><span>ผ่อนอะไร</span><input type="text" id="lfName" class="field" placeholder="เช่น iPhone, รถยนต์, โซฟา" maxlength="80"></label>
                 <div class="emoji-pick" id="lfIcons" aria-label="ไอคอน"></div>
                 <div class="row2">
-                    <label class="fl"><span>จำนวนงวด <i>(เดือน)</i></span><input type="text" id="lfMonths" class="field" inputmode="numeric" placeholder="เช่น 10"></label>
+                    <label class="fl"><span>จำนวนงวด <i>(เดือน)</i></span><input type="text" id="lfMonths" class="field" inputmode="none" data-np="int" placeholder="เช่น 10"></label>
                     <div class="fl"><span>ครบกำหนดงวดแรก</span><span class="tdate-wrap"><input type="hidden" id="lfFirst"><button type="button" class="field tdate" aria-label="วันครบกำหนดงวดแรก"></button></span></div>
                 </div>
                 <div class="pp-box">
                     <div class="pp-h"><b>ค่างวดตามสัญญา</b><span>งวดแรกต่างจากงวดอื่นได้ เช่น มีเงินดาวน์/ค่าเปิดสัญญา</span></div>
                     <div class="row2">
-                        <label class="fl"><span>งวดแรกจ่าย <i>(บาท)</i></span><input type="text" id="lfFirstAmt" class="field" inputmode="decimal" placeholder="เท่างวดต่อไป"></label>
-                        <label class="fl"><span>งวดต่อไปจ่าย <i>(บาท/เดือน)</i></span><input type="text" id="lfAmount" class="field" inputmode="decimal" placeholder="เช่น 2,500"></label>
+                        <label class="fl"><span>งวดแรกจ่าย <i>(บาท)</i></span><input type="text" id="lfFirstAmt" class="field" inputmode="none" data-np="dec" placeholder="เท่างวดต่อไป"></label>
+                        <label class="fl"><span>งวดต่อไปจ่าย <i>(บาท/เดือน)</i></span><input type="text" id="lfAmount" class="field" inputmode="none" data-np="dec" placeholder="เช่น 2,500"></label>
                     </div>
                 </div>
                 <div class="fl">
@@ -2212,7 +2236,7 @@
                     <button type="button" class="chip-btn ex-add" id="lfAddExtra"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>เพิ่มค่าใช้จ่าย เช่น ดอกเบี้ย ค่าธรรมเนียม</button>
                     <datalist id="extraNames"><option value="ดอกเบี้ย"><option value="ค่าธรรมเนียม"><option value="ค่าประกัน"><option value="ค่าปรับล่าช้า"><option value="ภาษี / VAT"><option value="ค่าบริการ"><option value="ส่วนลด"></datalist>
                 </div>
-                <label class="fl" id="lfPaidWrap"><span>จ่ายไปแล้ว <i>(งวด — ถ้าเริ่มบันทึกระหว่างผ่อน)</i></span><input type="text" id="lfPaid" class="field" inputmode="numeric" placeholder="0"></label>
+                <label class="fl" id="lfPaidWrap"><span>จ่ายไปแล้ว <i>(งวด — ถ้าเริ่มบันทึกระหว่างผ่อน)</i></span><input type="text" id="lfPaid" class="field" inputmode="none" data-np="int" placeholder="0"></label>
                 <label class="fl"><span>หมายเหตุ</span><textarea id="lfNote" class="field ta" rows="2" maxlength="300" placeholder="เช่น ผ่อน 0% บัตรเครดิต, ตัดบัญชีอัตโนมัติ"></textarea></label>
                 <div class="calc-box num" id="lfCalc"></div>
                 <button type="submit" class="btn btn-primary" id="lfSave">บันทึก</button>
@@ -2232,7 +2256,7 @@
                 <div class="fl"><span>วันที่จ่าย</span><span class="tdate-wrap"><input type="hidden" id="pfDate"><button type="button" class="field tdate" aria-label="วันที่จ่าย"></button></span></div>
                 <div class="pf-step">
                     <div class="pf-h"><i>1</i><b>จ่ายค่างวด</b><span>ตามสัญญา <b class="num" id="pfContract">0</b> ฿</span></div>
-                    <input type="text" id="pfInst" class="field num" inputmode="decimal" placeholder="ค่างวดที่จ่าย" aria-label="ค่างวดที่จ่าย (บาท)">
+                    <input type="text" id="pfInst" class="field num" inputmode="none" data-np="dec" placeholder="ค่างวดที่จ่าย" aria-label="ค่างวดที่จ่าย (บาท)">
                 </div>
                 <div class="pf-step">
                     <div class="pf-h"><i>2</i><b>เพิ่มค่าอะไรมา</b><span>ดอกเบี้ย ค่าปรับ ค่าธรรมเนียม ฯลฯ</span></div>
@@ -2241,7 +2265,7 @@
                 </div>
                 <div class="pf-step act">
                     <div class="pf-h"><i>3</i><b>จ่ายจริงทั้งหมด</b><span>ไม่ใส่ = รวมให้อัตโนมัติ</span></div>
-                    <input type="text" id="pfActual" class="field num" inputmode="decimal" aria-label="ยอดจ่ายจริงทั้งหมด (บาท)">
+                    <input type="text" id="pfActual" class="field num" inputmode="none" data-np="dec" aria-label="ยอดจ่ายจริงทั้งหมด (บาท)">
                     <div class="pf-sum num" id="pfSumHint"></div>
                 </div>
                 <label class="fl"><span>หมายเหตุ</span><input type="text" id="pfNote" class="field" maxlength="120" placeholder="เช่น จ่ายช้า 3 วัน, โอนผ่านแอป"></label>
@@ -2277,8 +2301,8 @@
                 <label class="fl"><span>ประเภทเงินฝาก</span><input type="text" id="afKind" class="field" list="savKinds" placeholder="เช่น ออมทรัพย์, ฝากประจำ, สลากออมสิน" maxlength="40"></label>
                 <datalist id="savKinds"><option value="ออมทรัพย์"><option value="ฝากประจำ"><option value="สลากออมสิน"><option value="สลาก ธ.ก.ส."><option value="กองทุนรวม"><option value="ทองคำ"><option value="หุ้น"><option value="ประกันออมทรัพย์"><option value="เงินสด / กระปุก"></datalist>
                 <div class="row2">
-                    <label class="fl"><span>ฝากเดือนละ <i>(บาท)</i></span><input type="text" id="afMonthly" class="field" inputmode="decimal" placeholder="เช่น 1,000"></label>
-                    <label class="fl"><span>เป้าหมาย <i>(บาท)</i></span><input type="text" id="afGoal" class="field" inputmode="decimal" placeholder="ไม่ใส่ก็ได้"></label>
+                    <label class="fl"><span>ฝากเดือนละ <i>(บาท)</i></span><input type="text" id="afMonthly" class="field" inputmode="none" data-np="dec" placeholder="เช่น 1,000"></label>
+                    <label class="fl"><span>เป้าหมาย <i>(บาท)</i></span><input type="text" id="afGoal" class="field" inputmode="none" data-np="dec" placeholder="ไม่ใส่ก็ได้"></label>
                 </div>
                 <label class="fl"><span>หมายเหตุ</span><textarea id="afNote" class="field ta" rows="2" maxlength="300" placeholder="เช่น บัญชีออมทรัพย์ กสิกร, ดอกเบี้ย 1.5%"></textarea></label>
                 <div class="calc-box num hide" id="afInfo"></div>
@@ -2307,7 +2331,7 @@
                 <button type="button" data-type="in" role="tab"><i class="pm-i" id="adjInI">+</i><span><b id="adjInT">รับเพิ่ม</b><small id="adjInS">เพิ่มเข้ารายรับนี้</small></span></button>
             </div>
             <form class="adj-form out" id="adjForm" autocomplete="off">
-                <label class="amt-big"><span class="cur" id="adjSign">−</span><input type="text" id="adjAmount" inputmode="decimal" placeholder="0" aria-label="จำนวนเงิน"><span class="cur sm">฿</span></label>
+                <label class="amt-big"><span class="cur" id="adjSign">−</span><input type="text" id="adjAmount" inputmode="none" data-np="dec" placeholder="0" aria-label="จำนวนเงิน"><span class="cur sm">฿</span></label>
                 <div class="quick-amts" id="adjQuick">
                     <button type="button" data-add="20">+20</button><button type="button" data-add="50">+50</button><button type="button" data-add="100">+100</button>
                     <button type="button" data-add="500">+500</button><button type="button" data-add="1000">+1,000</button><button type="button" data-add="0" class="clr">ล้าง</button>
@@ -2323,6 +2347,33 @@
                 <button type="button" class="btn btn-danger hide" id="adjDelete">ลบรายการนี้</button>
             </form>
             <div class="adj-hist" id="adjHist"></div>
+        </div>
+    </div>
+
+    <!-- ============ ป้อปอัพแป้นตัวเลข ============ -->
+    <div class="np-ov" id="npOv" aria-hidden="true">
+        <div class="np" role="dialog" aria-modal="true" aria-labelledby="npTitle">
+            <div class="np-head">
+                <div><b id="npTitle">จำนวนเงิน</b><small id="npSub"></small></div>
+                <button type="button" class="x" data-k="cancel" aria-label="ยกเลิก"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+            </div>
+            <div class="np-disp" id="npDisp" aria-live="polite">
+                <div class="np-expr num" id="npExpr"></div>
+                <div class="np-val num"><span id="npVal">0</span><small id="npUnit">฿</small></div>
+            </div>
+            <div class="np-keys" id="npKeys">
+                <button type="button" class="fn" data-k="C" aria-label="ล้าง">C</button>
+                <button type="button" class="op" data-k="÷" aria-label="หาร">÷</button>
+                <button type="button" class="op" data-k="×" aria-label="คูณ">×</button>
+                <button type="button" class="fn" data-k="bs" aria-label="ลบตัวสุดท้าย"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1z"/><path d="m16 9-5 6M11 9l5 6"/></svg></button>
+                <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button>
+                <button type="button" class="op" data-k="-" aria-label="ลบ">−</button>
+                <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button>
+                <button type="button" class="op" data-k="+" aria-label="บวก">+</button>
+                <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button>
+                <button type="button" class="ok" data-k="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>ตกลง</button>
+                <button type="button" data-k="000">000</button><button type="button" data-k="0">0</button><button type="button" data-k="." id="npDot" aria-label="จุดทศนิยม">.</button>
+            </div>
         </div>
     </div>
 
@@ -2386,8 +2437,12 @@
 
         // ================= Version / Changelog =================
         // ⚠️ ออกเวอร์ชันใหม่: เพิ่มเลข APP_VERSION + รายการใน CHANGELOG แล้วแก้ version.json ให้ตรงกัน
-        const APP_VERSION = '2.8.0';
+        const APP_VERSION = '2.9.0';
         const CHANGELOG = [
+            { v: '2.9.0', date: '25 พ.ย. 2569', items: [
+                { e: '🔢', t: 'ป้อปอัพแป้นตัวเลขทุกช่องกรอกจำนวนเงิน', d: 'แตะช่องจำนวนเงิน/จำนวนงวด จะมีแป้นตัวเลขใหญ่กดง่ายขึ้นมาแทนคีย์บอร์ด มีปุ่ม 000 และบวก ลบ คูณ หารได้ เช่น 120+45 แล้วกด “ตกลง” · บนคอมพิมพ์ตัวเลขแล้วกด Enter ได้เลย' },
+                { e: '🧹', t: 'หน้ารายรับจ่ายเรียบขึ้น', d: 'เอาการ์ด “เพิ่ม / ลดยอด” ออก — ยังกด ± ที่รายรับ/ค่าใช้จ่ายในหน้าภาพรวม หรือกด “บันทึก” ที่ตารางรายรับรายจ่ายได้เหมือนเดิม' }
+            ] },
             { v: '2.8.0', date: '25 พ.ย. 2569', items: [
                 { e: '±', t: 'ปุ่ม ± เพิ่ม / ลดยอดที่รายรับและค่าใช้จ่าย', d: 'เช่น จ่ายค่าข้าว 120 จากเงินเดือน → แตะ ± ที่ “เงินเดือน” เลือก “ใช้จ่าย” ใส่ 120 และ “ค่าข้าว” — ยอดเงินเดือนเดือนนี้ลดลงทันที พร้อมแสดงว่าใช้ไปกับอะไร' },
                 { e: '🧾', t: 'เมนูใหม่: ตารางรายรับรายจ่าย', d: 'ทุกครั้งที่เพิ่ม/ลดยอดจะถูกเก็บเป็นตาราง แยกตามวัน มีเงินเข้า · เงินออก · คงเหลือของรายการ ค้นหา กรอง และแตะเพื่อแก้ไข/ลบได้' },
@@ -3266,7 +3321,7 @@
                     <label class="check ${isInc ? 'used' : ''}" title="${isInc ? 'ใช้ไปแล้วในเดือนนี้' : 'จ่ายแล้ว'}"><input type="checkbox" data-field="${kind}" ${done ? 'checked' : ''} aria-label="${isInc ? 'ใช้ไปแล้ว' : 'จ่ายแล้ว'}"><span>${ICON_CHECK}</span></label>
                     <input class="inline" data-field="name" value="${esc(x.name)}" aria-label="ชื่อรายการ" maxlength="80">
                     <button type="button" class="pm-btn ${k}" data-adj title="เพิ่ม / ลดยอด (บันทึกลงตารางรายรับรายจ่าย)" aria-label="เพิ่มหรือลดยอด ${esc(x.name)}">${ICON_PM}</button>
-                    <span class="amt-wrap" data-base="ยอดตั้งต้น"><input class="inline amt ${eff < 0 ? 'neg' : ''}" type="text" inputmode="decimal" data-field="amount" value="${fmt(eff)}" aria-label="จำนวนเงิน"></span>
+                    <span class="amt-wrap" data-base="ยอดตั้งต้น"><input class="inline amt ${eff < 0 ? 'neg' : ''}" type="text" inputmode="none" data-np="dec" data-field="amount" value="${fmt(eff)}" aria-label="จำนวนเงิน"></span>
                     <button type="button" class="del" data-del title="ลบ" aria-label="ลบ">${ICON_TRASH}</button>
                     ${adj}
                 </div>`;
@@ -4158,7 +4213,7 @@
             $('pfItems').innerHTML = pf.items.map((e, i) => `
                 <div class="ex-row" data-i="${i}">
                     <input class="field" data-ex="name" list="extraNames" value="${esc(e.name)}" placeholder="ค่าอะไร เช่น ดอกเบี้ย" maxlength="40" aria-label="ค่าอะไร">
-                    <input class="field amt" data-ex="amount" inputmode="decimal" value="${esc(e.amount)}" placeholder="บาท" aria-label="จำนวนเงิน">
+                    <input class="field amt" data-ex="amount" inputmode="none" data-np="dec" value="${esc(e.amount)}" placeholder="บาท" aria-label="จำนวนเงิน">
                     <button type="button" class="del" data-ex-del title="ลบ" aria-label="ลบ">${ICON_TRASH}</button>
                 </div>`).join('');
         }
@@ -4295,7 +4350,7 @@
             $('lfExtras').innerHTML = lfExtras.map((e, i) => `
                 <div class="ex-row" data-i="${i}">
                     <input class="field" data-ex="name" list="extraNames" value="${esc(e.name)}" placeholder="ค่าอะไร เช่น ดอกเบี้ย" maxlength="40" aria-label="ค่าอะไร">
-                    <input class="field amt" data-ex="amount" inputmode="decimal" value="${esc(e.amount)}" placeholder="บาท/งวด" aria-label="จำนวนเงินต่องวด">
+                    <input class="field amt" data-ex="amount" inputmode="none" data-np="dec" value="${esc(e.amount)}" placeholder="บาท/งวด" aria-label="จำนวนเงินต่องวด">
                     <button type="button" class="del" data-ex-del title="ลบ" aria-label="ลบ">${ICON_TRASH}</button>
                 </div>`).join('');
         }
@@ -4904,7 +4959,6 @@
             openSheet('adjModal');
             $('adjModal').querySelector('.sheet').scrollTop = 0;
             if (focusList) setTimeout(() => $('adjHist').scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 280);
-            else if (!t && window.matchMedia('(hover: hover) and (pointer: fine)').matches) setTimeout(() => $('adjAmount').focus(), 180);
         }
 
         function renderAdj() {
@@ -5024,7 +5078,7 @@
             closeSheet('adjModal');
             updateUI();
             const ref = it.id;
-            requestAnimationFrame(() => document.querySelectorAll(`[data-id="${CSS.escape(ref)}"], [data-src-tile="${CSS.escape(ref)}"]`).forEach(el => { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }));
+            requestAnimationFrame(() => document.querySelectorAll(`[data-id="${CSS.escape(ref)}"]`).forEach(el => { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }));
             toast(`${it.name} ${signed(delta)} ฿ · ${note} ✓ ${old ? 'แก้ไขแล้ว' : 'บันทึกลงตารางแล้ว'}`);
         });
         $('adjDelete').addEventListener('click', async () => {
@@ -5057,7 +5111,6 @@
             const all = ledOfMonth(month);
             const bal = ledBalances(all);
             $('ledMonthLabel').textContent = monthTitle(month);
-            $('ledSrcMonth').textContent = monthShort(month);
 
             let inn = 0, out = 0, nIn = 0, nOut = 0;
             all.forEach(t => { const f = ledFlow(t); if (f > 0) { inn += f; nIn++; } else { out -= f; nOut++; } });
@@ -5095,21 +5148,6 @@
             $('ledCap').innerHTML = ledDay
                 ? (() => { const d = byDay[Number(ledDay.slice(8)) - 1]; return `<b>${dateTitle(ledDay)}</b> · เข้า <b class="g">+${fmt(d.i)}</b> · ออก <b class="r">−${fmt(d.o)}</b>`; })()
                 : top ? `ใช้มากสุด <b>${dateTitle(`${month}-${pad2(top.d)}`)}</b> <b class="r">−${fmt(top.o)}</b> · แตะแท่งเพื่อดูรายวัน` : 'แตะแท่งเพื่อดูรายการของวันนั้น';
-
-            // รายการให้เลือกปรับยอด
-            const srcs = [
-                ...appData.customIncomes.map(x => ({ k: 'inc', x, v: effAmt(x, 'inc', month), a: adjOf(x.id, month) })),
-                ...appData.fixedExpenses.filter(f => f.month === month).map(x => ({ k: 'exp', x, v: effAmt(x, 'exp'), a: adjOf(x.id, month) }))
-            ];
-            $('ledSrc').innerHTML = srcs.length ? srcs.map(({ k, x, v, a }, i) => `
-                <button type="button" class="src-tile ${k} ${anim ? 'enter' : ''}" data-src-tile="${esc(x.id)}" data-k="${k}" style="animation-delay:${Math.min(i, 10) * 30}ms">
-                    <span class="st-k">${k === 'inc' ? '💰 รายรับ' : '🧾 ค่าใช้จ่าย'}</span>
-                    <b class="st-n">${esc(x.name)}</b>
-                    <span class="st-v num">${fmt(v)} ฿</span>
-                    <span class="st-a num ${Math.abs(a) < 0.005 ? '' : (k === 'inc' ? a < 0 : a > 0) ? 'out' : 'in'}">${Math.abs(a) < 0.005 ? `ยอดตั้งต้น` : `${signed(a)} จาก ${fmt(x.amount)}`}</span>
-                    <i class="st-pm">${ICON_PM}</i>
-                </button>`).join('')
-                : `<div class="empty">ยังไม่มีรายรับ/ค่าใช้จ่ายเดือนนี้ — <button type="button" class="link-btn" data-goto="overview">ไปเพิ่มที่หน้าภาพรวม</button></div>`;
 
             // ใช้จ่ายกับอะไรบ้าง (จัดกลุ่มตามค่าอะไร)
             const cats = new Map();
@@ -5179,7 +5217,6 @@
             $('ledFoot').innerHTML = `<div><span>รวมเงินเข้า</span><b class="green">+${fmt(fi)}</b></div><div><span>รวมเงินออก</span><b class="red">−${fmt(fo)}</b></div><div class="t"><span>สุทธิ</span><b class="${fi - fo < 0 ? 'red' : 'green'}">${signed(fi - fo)} ฿</b></div>`;
         }
 
-        $('ledSrc').addEventListener('click', (e) => { const b = e.target.closest('[data-src-tile]'); if (b) openAdj({ kind: b.dataset.k, ref: b.dataset.srcTile }); });
         $('ledAdd').addEventListener('click', () => openAdj());
         $('ledTable').addEventListener('click', (e) => {
             if (e.target.closest('[data-led-add]')) { openAdj(); return; }
@@ -5393,6 +5430,170 @@
             const list = seen ? CHANGELOG.filter(c => cmpVer(c.v, seen) > 0) : [CHANGELOG[0]];
             if (list.length) setTimeout(() => showWhatsNew(list, true), 600);
         }
+
+        // ================= ป้อปอัพแป้นตัวเลข: ทุกช่องที่กรอกจำนวนเงิน/ตัวเลข (input[data-np]) =================
+        // ช่องยังได้โฟกัสตามปกติ (handler เดิมแปลงค่าดิบ/ใส่คอมม่าทำงานเหมือนเดิม) แต่ไม่เปิดคีย์บอร์ดของเครื่อง
+        // พิมพ์คิดเลขได้ เช่น 120+45 · กด ตกลง = ใส่ค่า + change · กดนอกป้อปอัพ = ตกลง · ✕ / Esc = ยกเลิก
+        const NP_OPS = '+-×÷';
+        let np = null; // { el, int, orig, expr, fresh }
+        const npNum = (v) => { const n = parseFloat(String(v ?? '').replace(/[,฿\s]/g, '').replace('−', '-')); return isNaN(n) ? null : n; };
+        const npLastNum = () => { const m = np.expr.match(/[\d.]*$/); return m ? m[0] : ''; };
+        const npHasOp = () => /[+×÷]|.-/.test(np.expr);
+        function npEval(expr) {
+            const toks = expr.match(/\d*\.?\d+|\d+\.|[+\-×÷]/g); if (!toks) return null;
+            const t = [...toks];
+            if (t[0] === '-') { t.shift(); if (!t.length) return null; t[0] = '-' + t[0]; }
+            while (t.length && NP_OPS.includes(t[t.length - 1])) t.pop();
+            if (!t.length) return null;
+            const vals = [Number(t[0])], ops = [];
+            for (let i = 1; i < t.length; i += 2) {
+                const op = t[i], v = Number(t[i + 1]);
+                if (op === '×') vals.push(vals.pop() * v);
+                else if (op === '÷') { if (v === 0) return NaN; vals.push(vals.pop() / v); }
+                else { ops.push(op); vals.push(v); }
+            }
+            let r = vals[0];
+            ops.forEach((op, i) => { r = op === '+' ? r + vals[i + 1] : r - vals[i + 1]; });
+            return Math.round(r * 100) / 100;
+        }
+        const npResult = () => { const r = npEval(np.expr); return r === null || !isFinite(r) ? r : (np.int ? Math.round(r) : r); };
+        const npFmtTok = (tok) => { const [i, d] = tok.split('.'); const ii = (i || '0').replace(/\B(?=(\d{3})+(?!\d))/g, ','); return d === undefined ? ii : `${ii}.${d}`; };
+        const npFmtExpr = (expr) => (expr.match(/[\d.]+|[+\-×÷]/g) || []).map((t, i) => /[\d.]/.test(t) ? npFmtTok(t) : i === 0 ? '−' : ` ${t === '-' ? '−' : t} `).join('');
+
+        function npLabel(el) {
+            const fl = el.closest('.fl');
+            const t = (fl && fl.querySelector('span')?.textContent.trim()) || el.getAttribute('aria-label') || el.placeholder || 'จำนวนเงิน';
+            const row = el.closest('[data-id], [data-i]');
+            const sub = row?.querySelector('[data-field="name"], [data-ex="name"]')?.value.trim()
+                || el.closest('.sheet')?.querySelector('.sheet-head h3')?.textContent.trim()
+                || el.form?.querySelector('input:not([data-np]):not([type=hidden]):not([type=checkbox])')?.value.trim() || '';
+            return [t, sub];
+        }
+
+        function npRender() {
+            const r = npResult(), op = npHasOp(), val = $('npVal');
+            $('npExpr').textContent = op ? npFmtExpr(np.expr) : '';
+            val.classList.toggle('fresh', np.fresh && !!np.expr);
+            val.classList.remove('ph');
+            if (!np.expr) { val.textContent = np.el.placeholder && !/^0$|บาท/.test(np.el.placeholder) ? np.el.placeholder : '0'; val.classList.add('ph'); }
+            else if (op) val.textContent = r === null ? '…' : isFinite(r) ? `= ${fmt(r)}` : 'หารด้วย 0 ไม่ได้';
+            else val.textContent = np.expr === '-' ? '−' : (np.expr.startsWith('-') ? '−' : '') + npFmtTok(np.expr.replace(/^-/, ''));
+            val.classList.toggle('neg', r !== null && r < 0);
+            $('npDisp').classList.remove('bad');
+            // อัปเดตช่องจริงทันที (ตัวอย่างยอดหลังบันทึก ฯลฯ จะเปลี่ยนตาม)
+            const v = r === null || !isFinite(r) ? '' : String(r);
+            if (np.el.value !== v) { np.el.value = v; np.el.dispatchEvent(new Event('input', { bubbles: true })); }
+        }
+
+        function npOpen(el) {
+            if (np?.el === el) return;
+            if (np) npClose(false);
+            const int = el.dataset.np === 'int', v = npNum(el.value);
+            np = { el, int, orig: el.value, expr: v === null ? '' : String(int ? Math.round(v) : v), fresh: v !== null };
+            const [t, sub] = npLabel(el);
+            $('npTitle').textContent = t;
+            $('npSub').textContent = sub && sub !== t ? sub : '';
+            $('npUnit').textContent = int ? '' : '฿';
+            $('npDot').disabled = int;
+            el.classList.add('np-on');
+            $('npOv').classList.add('open'); $('npOv').setAttribute('aria-hidden', 'false');
+            npRender();
+        }
+        function npClose(commit) {
+            if (!np) return;
+            const { el } = np;
+            if (commit) {
+                const r = npResult();
+                if (r !== null && !isFinite(r)) { npBad(); return; }
+                const v = r === null ? '' : String(r);
+                el.value = v;
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                const o = npNum(np.orig);
+                if ((o === null ? '' : String(o)) !== v) el.dispatchEvent(new Event('change', { bubbles: true }));
+                np = null;
+                if (document.activeElement === el) el.blur();
+                // ช่องที่ไม่มีตัวจัดรูปแบบเอง → ใส่คอมม่าให้อ่านง่าย
+                if (r !== null && el.value === v && el.dataset.np !== 'int') el.value = fmt(r);
+            } else {
+                el.value = np.orig;
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                np = null;
+                if (document.activeElement === el) el.blur();
+            }
+            el.classList.remove('np-on');
+            $('npOv').classList.remove('open'); $('npOv').setAttribute('aria-hidden', 'true');
+        }
+        function npBad() { const d = $('npDisp'); d.classList.remove('bad'); void d.offsetWidth; d.classList.add('bad'); navigator.vibrate?.(30); }
+
+        function npKey(k) {
+            if (!np) return;
+            if (k === 'ok') { npClose(true); return; }
+            if (k === 'cancel') { npClose(false); return; }
+            const last = np.expr.slice(-1);
+            if (/^\d$/.test(k) || k === '000') {
+                if (np.fresh) { np.expr = ''; np.fresh = false; }
+                const c = npLastNum();
+                if (k === '000' && (!c || /^[0.]*$/.test(c))) { npBad(); return; }
+                if (c.includes('.') && c.split('.')[1].length + k.length > 2) { npBad(); return; }
+                if (c.replace('.', '').length + k.length > 12) { npBad(); return; }
+                if (c === '0') np.expr = np.expr.slice(0, -1); // 0 นำหน้า → แทนที่
+                np.expr += k;
+            } else if (k === '.') {
+                if (np.int) return;
+                if (np.fresh) { np.expr = ''; np.fresh = false; }
+                const c = npLastNum();
+                if (c.includes('.')) { npBad(); return; }
+                np.expr += c ? '.' : '0.';
+            } else if (NP_OPS.includes(k)) {
+                np.fresh = false;
+                if (!np.expr) { if (k === '-') np.expr = '-'; else npBad(); }
+                else if (np.expr === '-') { if (k !== '-') np.expr = ''; }
+                else if (NP_OPS.includes(last)) np.expr = np.expr.slice(0, -1) + k;
+                else np.expr = np.expr.replace(/\.$/, '') + k;
+            } else if (k === 'bs') {
+                np.fresh = false; np.expr = np.expr.slice(0, -1);
+            } else if (k === 'C') {
+                np.fresh = false; np.expr = '';
+            }
+            npRender();
+        }
+
+        // เปิดเมื่อช่องได้โฟกัส (แตะ / Tab / โค้ดสั่ง focus เมื่อกรอกไม่ครบ)
+        document.addEventListener('focusin', (e) => {
+            const el = e.target;
+            if (el.matches?.('input[data-np]') && !el.disabled && !el.readOnly) setTimeout(() => { if (document.activeElement === el) npOpen(el); }, 0);
+        });
+        document.addEventListener('click', (e) => {
+            const el = e.target.closest?.('input[data-np]');
+            if (el && !np && !el.disabled && !el.readOnly) npOpen(el);
+        });
+        const npOv = $('npOv');
+        npOv.addEventListener('mousedown', (e) => e.preventDefault()); // ไม่ให้ช่องหลุดโฟกัสระหว่างกด
+        npOv.addEventListener('click', (e) => {
+            const b = e.target.closest('[data-k]');
+            if (b) { npKey(b.dataset.k); navigator.vibrate?.(6); return; }
+            if (e.target === npOv) npClose(true);
+        });
+        // คีย์บอร์ดจริง (คอม): พิมพ์ตัวเลข / + − × ÷ / Backspace / Enter / Esc
+        document.addEventListener('keydown', (e) => {
+            if (!np || e.metaKey || e.ctrlKey || e.altKey) return;
+            const map = { Enter: 'ok', '=': 'ok', Tab: 'ok', Escape: 'cancel', Backspace: 'bs', Delete: 'C', '*': '×', x: '×', X: '×', '/': '÷', ',': '.', '+': '+', '-': '-', '.': '.' };
+            const k = /^\d$/.test(e.key) ? e.key : map[e.key];
+            e.preventDefault(); e.stopImmediatePropagation();
+            if (!k) return;
+            npKey(k);
+            const btn = npOv.querySelector(`[data-k="${CSS.escape(k)}"]`);
+            if (btn) { btn.classList.remove('hit'); void btn.offsetWidth; btn.classList.add('hit'); setTimeout(() => btn.classList.remove('hit'), 120); }
+        }, true);
+        // กันการพิมพ์/วางตรง ๆ ลงช่อง (เช่น คีย์บอร์ดบางเครื่องที่ไม่สนใจ inputmode=none) — วางตัวเลขได้
+        document.addEventListener('beforeinput', (e) => { if (e.target.matches?.('input[data-np]')) e.preventDefault(); }, true);
+        document.addEventListener('paste', (e) => {
+            if (!np || !e.target.matches?.('input[data-np]')) return;
+            e.preventDefault();
+            const v = npNum(e.clipboardData?.getData('text'));
+            if (v === null) { npBad(); return; }
+            np.expr = String(np.int ? Math.round(v) : Math.round(v * 100) / 100); np.fresh = false; npRender();
+        }, true);
 
         // ================= Start =================
         if (new URLSearchParams(location.search).has('v')) history.replaceState(null, '', location.pathname + location.hash);
